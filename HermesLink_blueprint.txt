@@ -1,0 +1,277 @@
+🏗️ New Phase Structure (Development-Oriented Blueprint)
+
+The phases are now ordered as:
+
+Core Logic → Storage/Sorting → Engines → Status → Telegram Integration → Security
+
+This lets you test every component without Telegram blocking progress.
+
+Phase 1 — Core Execution Layer (Local Controller CLI)
+
+Objective: Make the entire downloading system work locally with manual input.
+
+✔ Features
+
+A single CLI entry point:
+
+python controller.py <URL> --type media/p2p/direct
+
+
+Unified Job Manager that:
+
+creates jobs
+
+assigns engine
+
+tracks progress
+
+stores metadata
+
+✔ Job Structure (Persistent)
+
+Each job stores:
+
+job_id
+type (MEDIA | DIRECT | P2P)
+source_url
+engine
+status (pending, running, paused, completed, error)
+progress (%)
+output_path
+timestamp
+
+
+You can use:
+
+JSON file for testing phase
+
+SQLite later for persistence
+
+✔ Outputs
+
+When you run locally:
+
+> python controller.py https://youtu.be/xyz --type media
+Job #12 started [MediaEngine]
+Progress: 10% ... 90%
+Completed: D:/Media/Movies/xyz.mp4
+
+
+This proves functionality without Telegram.
+
+Phase 2 — Engine Integration Layer
+
+Objective: Make all download engines callable by the controller.
+
+Engine A — Media Engine
+
+Tools:
+
+yt-dlp
+
+ffmpeg
+
+Manual test example:
+
+python controller.py https://youtu.be/abc --type media --quality 1080p
+
+Engine B — P2P Engine
+
+Tools:
+
+qbittorrent-nox or Transmission
+
+Manual test:
+
+python controller.py magnet:?xt=... --type p2p
+
+Engine C — Direct Engine
+
+Tools:
+
+aria2c
+
+Manual test:
+
+python controller.py https://site.com/file.zip --type direct
+
+✔ Engine Standard API (local only)
+
+All engines must expose:
+
+start(url)
+pause(job_id)
+resume(job_id)
+cancel(job_id)
+status(job_id)
+
+
+This gives you one uniform control interface, regardless of engine.
+
+Phase 3 — Storage & Sorting Layer (The Librarian)
+
+Objective: Before Telegram, make sure files land in correct folders.
+
+✔ Sorting Inputs
+
+Sorting can be done via CLI flags first:
+
+Example:
+
+python controller.py <URL> --type media --category movie
+
+✔ Basic Categories
+movie
+series
+music
+iso
+other
+
+✔ Mapping Config (YAML)
+
+Example:
+
+paths:
+  movie: "D:/Media/Movies"
+  series: "D:/Media/Series"
+  music: "D:/Media/Music"
+  iso: "D:/Downloads/ISO"
+  other: "D:/Downloads/Misc"
+
+✔ Automation Rules (optional for now)
+
+regex detection:
+
+S01E02 → series
+
+.mp3 → music
+
+2160p → movie-4k
+
+But keep it manual initially.
+
+Phase 4 — Status & Observability Layer
+
+Objective: Make the system provide progress locally.
+
+✔ CLI Progress Output
+
+For aria2 / yt-dlp, show:
+
+[====------] 45% @ 4.2MB/s (ETA 3m10s)
+
+✔ Logging
+
+Log to file:
+
+logs/jobs.log
+
+
+Store:
+
+time
+
+job_id
+
+status
+
+engine
+
+result
+
+Having logs ready helps debugging BEFORE Telegram layer.
+
+Phase 5 — Telegram Integration Layer
+
+Objective: Now wrap the working local system with a Telegram bot frontend.
+
+✔ Integration pattern
+
+Telegram → Controller → Engine
+
+✔ Telegram only needs:
+
+/download <URL>
+
+/status
+
+/cancel <id>
+
+/jobs
+
+Instead of handling downloads, Telegram only calls* the core system.
+
+This avoids messing with async concurrency inside Telegram.
+
+Phase 6 — Secure Gateway (Identity & Access Control)
+
+Objective: Add access control AFTER integration is working.
+
+✔ Whitelist config
+allowed_users:
+  - 123456789
+allowed_chats:
+  - -987654321
+
+✔ Optional security
+
+PIN for destructive actions
+
+MFA for new devices
+
+token revoke procedure
+
+Phase 7 — Optional Enhancements
+
+After everything works end-to-end:
+
+✔ Scheduling
+✔ VPN routing
+✔ Seeding rules
+✔ Queue priorities
+✔ Low disk alerts
+✔ Jellyfin auto-refresh API
+✔ Web dashboard
+
+🧪 Testing Path
+
+This order makes testing painless:
+
+Local Tests
+
+Test download engines manually
+
+Test sorting manually
+
+Test job status manually
+
+Bot Tests
+
+Bot triggers download
+
+Bot reports progress
+
+Bot sorts output
+
+Bot handles errors
+
+🧱 Final Flow (New Blueprint)
+
+Local Controller
+
+Download Engines
+
+Job Manager
+
+Sorting System
+
+Status/Logging
+
+Telegram Bot Integration
+
+Security & Auth
+
+Enhancements
+
+
+
