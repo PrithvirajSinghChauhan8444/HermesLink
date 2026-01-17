@@ -16,14 +16,14 @@ This document explores **aria2**, a headless and automation-focused download uti
 
 aria2 is an **open-source, command-line download utility** designed for efficiency, reliability, and automation.
 
-🔹 Key characteristics:
+🔹 **Key characteristics:**
 
 - No graphical interface
 - Operates as a background service
 - Supports multiple protocols
 - Fully controllable via remote commands
 
-🔹 Supported protocols:
+🔹 **Supported protocols:**
 
 - HTTP / HTTPS
 - FTP / SFTP
@@ -45,22 +45,13 @@ aria2 follows a **daemon-based architecture**, meaning it runs independently of 
 
 ### 🔁 Conceptual Process Model
 
-```text
-+------------------+
-|  Controller App  |
-+------------------+
-         |
-      JSON-RPC
-         v
-+------------------+
-|     aria2c       |
-| (Download Core)  |
-+------------------+
-         |
-         v
-+------------------+
-| Internet / Disk  |
-+------------------+
+```mermaid
+graph TD
+    A[Controller App] -->|JSON-RPC| B(aria2c<br>Download Core)
+    B --> C[Internet / Disk]
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
 This separation ensures:
@@ -73,13 +64,12 @@ This separation ensures:
 
 ## 📦 3. Why aria2 is Not Imported as a Library
 
-aria2 is **not a programming library**.  
-It is an **external service**.
+aria2 is **not a programming library**. It is an **external service**.
 
 Instead of:
 
 ```python
-import aria2  # This does not exist
+import aria2  # ❌ This does not exist
 ```
 
 Programs:
@@ -102,16 +92,22 @@ aria2 exposes a JSON-RPC API, enabling remote control.
 
 ### 📡 RPC Communication Flow
 
-```text
-[ Client Program ]
-        |
-        |  JSON Request
-        v
-[ aria2 RPC Server ]
-        |
-        |  JSON Response
-        v
-[ Client Program ]
+```mermaid
+sequenceDiagram
+    participant Client as Client Program
+    participant Server as aria2 RPC Server
+
+    Client->>Server: JSON Request (Method: addUri)
+    activate Server
+    Server-->>Client: JSON Response (GID: 2089b05e)
+    deactivate Server
+
+    Note over Client, Server: Later...
+
+    Client->>Server: JSON Request (Method: tellStatus)
+    activate Server
+    Server-->>Client: JSON Response (Status: active, Progress: 45%)
+    deactivate Server
 ```
 
 This enables:
@@ -131,15 +127,27 @@ aria2 accelerates downloads using parallel HTTP range requests.
 
 ### 🧩 Conceptual Chunking Model
 
-```text
-File: [==============================]
+```mermaid
+graph TD
+    File[Target File]
+    subgraph Chunks
+        C1[Chunk 1]
+        C2[Chunk 2]
+        C3[Chunk 3]
+        C4[Chunk 4]
+    end
 
-Chunks:
-[====] [====] [====] [====]
+    S1[Server Conn 1] --> C1
+    S2[Server Conn 2] --> C2
+    S3[Server Conn 3] --> C3
+    S4[Server Conn 4] --> C4
 
-Connections:
-  ↓       ↓       ↓       ↓
-Server  Server  Server  Server
+    C1 -.-> File
+    C2 -.-> File
+    C3 -.-> File
+    C4 -.-> File
+
+    style File fill:#fff,stroke:#333,stroke-width:4px
 ```
 
 Benefits:
@@ -161,16 +169,14 @@ aria2 persistently stores:
 
 ### 🔄 Recovery Flow
 
-```text
-Download Running
-       |
-   (Crash / Power Loss)
-       |
-System Restart
-       |
-aria2 Reads Metadata
-       |
-Download Resumes ✅
+```mermaid
+stateDiagram-v2
+    [*] --> Running
+    Running --> Crash: Power Loss / Error
+    Crash --> Restart: System Reboot
+    Restart --> MetadataCheck: aria2 Reads .aria2 File
+    MetadataCheck --> Resumed: State Restored
+    Resumed --> [*]
 ```
 
 This ensures:
@@ -233,16 +239,23 @@ It focuses **solely** on:
 
 ### 🧱 Layered Responsibility Model
 
-```text
-+-----------------------+
-|  Orchestration Layer  |
-| (Jobs, Logic, Policy) |
-+-----------------------+
-            |
-+-----------------------+
-|       aria2           |
-|  (Execution Engine)   |
-+-----------------------+
+```mermaid
+graph TD
+    subgraph Orchestration [Orchestration Layer]
+        Jobs[Job Management]
+        Logic[Business Logic]
+        Policy[Policy Enforcement]
+    end
+
+    subgraph Execution [aria2 Execution Layer]
+        Engine[aria2 Daemon]
+    end
+
+    Orchestration -->|Commands| Execution
+    Execution -->|Events/Status| Orchestration
+
+    style Orchestration fill:#eee,stroke:#333
+    style Execution fill:#ddd,stroke:#333
 ```
 
 This separation improves maintainability and extensibility.
