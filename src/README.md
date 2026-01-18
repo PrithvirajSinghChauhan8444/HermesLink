@@ -4,7 +4,9 @@ This directory contains the core source code for the HermesLink application.
 
 ## Files
 
-- `controller.py`: The main CLI entry point for the application. Handles user input and arguments.
+- `controller.py`: The main CLI entry point.
+  - Supports interactive controls (Pause/Resume/Stop).
+  - Features smart error recovery and interactive prompts for unrecoverable errors.
 
 ## Subdirectories
 
