@@ -47,8 +47,9 @@ aria2 follows a **daemon-based architecture**, meaning it runs independently of 
 
 ```mermaid
 graph TD
-    A[Controller App] -->|JSON-RPC| B(aria2c<br>Download Core)
+    A[Controller App<br>Python/Node/Bash] -->|JSON-RPC| B(aria2c<br>Download Daemon)
     B --> C[Internet / Disk]
+
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:2px
     style C fill:#bfb,stroke:#333,stroke-width:2px
@@ -129,18 +130,18 @@ aria2 accelerates downloads using parallel HTTP range requests.
 
 ```mermaid
 graph TD
-    File[Target File]
-    subgraph Chunks
-        C1[Chunk 1]
-        C2[Chunk 2]
-        C3[Chunk 3]
-        C4[Chunk 4]
+    File["Target File"]
+    subgraph Chunks["Chunks"]
+        C1["Chunk 1"]
+        C2["Chunk 2"]
+        C3["Chunk 3"]
+        C4["Chunk 4"]
     end
 
-    S1[Server Conn 1] --> C1
-    S2[Server Conn 2] --> C2
-    S3[Server Conn 3] --> C3
-    S4[Server Conn 4] --> C4
+    S1["Server Conn 1"] --> C1
+    S2["Server Conn 2"] --> C2
+    S3["Server Conn 3"] --> C3
+    S4["Server Conn 4"] --> C4
 
     C1 -.-> File
     C2 -.-> File
@@ -241,14 +242,14 @@ It focuses **solely** on:
 
 ```mermaid
 graph TD
-    subgraph Orchestration [Orchestration Layer]
-        Jobs[Job Management]
-        Logic[Business Logic]
-        Policy[Policy Enforcement]
+    subgraph Orchestration["Orchestration Layer"]
+        Jobs["Job Management"]
+        Logic["Business Logic"]
+        Policy["Policy Enforcement"]
     end
 
-    subgraph Execution [aria2 Execution Layer]
-        Engine[aria2 Daemon]
+    subgraph Execution["aria2 Execution Layer"]
+        Engine["aria2 Daemon"]
     end
 
     Orchestration -->|Commands| Execution
