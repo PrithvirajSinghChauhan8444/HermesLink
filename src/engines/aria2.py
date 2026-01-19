@@ -99,19 +99,29 @@ class Aria2Engine(BaseEngine):
             return True
         return False
 
-    def start(self, url: str, output_path: str) -> str:
-        logger.info(f"Starting download process for URL: {url}")
+    def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> str:
+        logger.info(f"Starting download process for Job {job_id} | URL: {url}")
         
-        # Reset state for new download
         self.current_url = url
         self.current_output_path = output_path
         self.is_downgraded = False 
         
+        from src.core.models import JobState
+        
         if not self.ensure_daemon_running():
             logger.error("Could not verify or start Aria2 daemon. Aborting.")
+            job_manager.transition_job(job_id, JobState.FAILED, "Aria2 Daemon Failed")
             return "ERROR_DAEMON_FAILED"
 
-        return self._add_uri_internal(url, output_path, use_multithread=True)
+        gid = self._add_uri_internal(url, output_path, use_multithread=True)
+        
+        if gid and gid != "ERROR":
+            self.gid = gid
+            job_manager.transition_job(job_id, JobState.RUNNING)
+            return gid
+        else:
+            job_manager.transition_job(job_id, JobState.FAILED, "Failed to add URI to Aria2")
+            return "ERROR"
 
     def _add_uri_internal(self, url, output_path, use_multithread=True):
         logger.info(f"Sending addUri command to {self.rpc_url} (Multi-thread: {use_multithread})")
@@ -138,16 +148,61 @@ class Aria2Engine(BaseEngine):
         response = self._call_rpc("aria2.addUri", [[url], options])
         
         if response and "result" in response:
-            self.gid = response["result"]
-            logger.info(f"Download successfully added. GID: {self.gid}")
-            return self.gid
+            return response["result"]
         else:
-            logger.error(f"Failed to add download. Response: {response}")
             return "ERROR"
 
     def cancel(self):
         """Phase 6: Stop/Cancel - Destructive Control"""
         self.stop()
+
+    def sync_state(self, job_id: str, job_manager: Any):
+        """Syncs Aria2 status to JobManager."""
+        from src.core.models import JobState
+        
+        if not self.gid:
+            return
+
+        status = self.get_status()
+        if not status:
+            # Maybe lost connection?
+            return
+
+        aria2_status = status.get("status") # active, waiting, paused, error, complete, removed
+        
+        # Calculate Progress
+        percent, speed_str = self.calculate_progress(status)
+        job_manager.update_progress(job_id, {
+            "percent": percent,
+            "speed": speed_str,
+            "total_length": status.get("totalLength"),
+            "completed_length": status.get("completedLength"),
+            "eta": "N/A" # Could calculate ETA
+        })
+
+        # State Mapping
+        current_job = job_manager.get_job(job_id)
+        if not current_job: 
+            return
+            
+        current_internal_state = current_job.state
+
+        if aria2_status == "active" and current_internal_state != JobState.RUNNING:
+            try: job_manager.transition_job(job_id, JobState.RUNNING)
+            except: pass
+        elif aria2_status == "paused" and current_internal_state != JobState.PAUSED:
+            try: job_manager.transition_job(job_id, JobState.PAUSED)
+            except: pass
+        elif aria2_status == "complete" and current_internal_state != JobState.COMPLETED:
+            try: job_manager.transition_job(job_id, JobState.COMPLETED)
+            except: pass
+        elif aria2_status == "error" and current_internal_state != JobState.FAILED:
+            error_msg = status.get("errorMessage", "Unknown Aria2 Error")
+            try: job_manager.transition_job(job_id, JobState.FAILED, error_msg)
+            except: pass
+        elif aria2_status == "removed" and current_internal_state != JobState.STOPPED:
+             try: job_manager.transition_job(job_id, JobState.STOPPED)
+             except: pass
 
     # --- Phase 1 & 2: Progress & Status ---
     def get_status(self):

@@ -3,7 +3,10 @@ import os
 import sys
 
 # Ensure src is in python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Ensure src and project root are in python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_dir) # For 'engines', 'core' imports relative to src
+sys.path.append(os.path.dirname(current_dir)) # For 'src.core' imports relative to root
 
 
 
@@ -37,158 +40,121 @@ def main():
     if not os.path.exists(DOWNLOAD_DIR):
         os.makedirs(DOWNLOAD_DIR)
 
+    # Initialize Job Manager
+    from core.job_manager import JobManager
+    from core.models import JobState
+    job_manager = JobManager()
+
     print(f"Controller: Received {url} (Type: {download_type})")
     print(f"Target Directory: {DOWNLOAD_DIR}")
 
+    # Create Job
+    job = job_manager.create_job({
+        "url": url,
+        "type": download_type,
+        "destination": DOWNLOAD_DIR
+    })
+    print(f"Job Initialized: {job.job_id} (State: {job.state.value})")
+
+
+    # Select Engine
+    engine = None
+    needs_thread = False
+    
     if download_type == "media":
         from engines.media import MediaEngine
         engine = MediaEngine()
-        
-        import threading
-        
-        # Define a wrapper to run the engine in a thread
-        def run_engine():
-            engine.start(url, DOWNLOAD_DIR)
-
-        t = threading.Thread(target=run_engine)
-        t.start()
-        
-        print("Download started. Type 'stop' or press Enter to cancel.")
-        
-        user_cmd = input()
-        if user_cmd.strip().lower() == 'stop' or user_cmd == "":
-            print("Stopping download...")
-            engine.cancel()
-            t.join()
-            print("Download process finished.")
-        else:
-            # If user types something else, just wait for thread? 
-            # For now, let's treat any input as 'stop' or wait loop.
-            # But the requirement is "option to stop".
-            # If the download completes before user types 'stop', we should handle that.
-            t.join() # Wait for completion if not stopped.
-            
+        needs_thread = True
     elif download_type == "direct":
         from engines.direct import DirectEngine
         engine = DirectEngine()
-        
-        import threading
-        def run_engine():
-            engine.start(url, DOWNLOAD_DIR)
-
-        t = threading.Thread(target=run_engine)
-        t.start()
-        
-        print("Download started. Type 'stop' or press Enter to cancel.")
-        
-        user_cmd = input()
-        if user_cmd.strip().lower() == 'stop' or user_cmd == "":
-             print("Stopping download...")
-             engine.cancel()
-             t.join()
-             print("Download process finished.")
-        else:
-             t.join()
-
+        needs_thread = True
     elif download_type == "aria2":
         from engines.aria2 import Aria2Engine
-        import time
-        
         engine = Aria2Engine()
-        gid = engine.start(url, DOWNLOAD_DIR)
-        
-        if gid and gid != "ERROR" and gid != "ERROR_DAEMON_FAILED":
-            print("Download started. Entering monitor loop.")
-            print("Controls: [P]ause | [R]esume | [S]top | [Ctrl+C] Cancel")
-            
-            import msvcrt
-            
-            try:
-                while True:
-                    # Non-blocking input check
-                    if msvcrt.kbhit():
-                        key = msvcrt.getch().decode('utf-8').lower()
-                        if key == 'p':
-                            print("\n(User) Pausing...")
-                            engine.pause()
-                        elif key == 'r':
-                            print("\n(User) Resuming...")
-                            engine.resume()
-                        elif key == 's':
-                            print("\n(User) Stopping...")
-                            engine.stop()
-                            # We don't break immediately, we wait for status to become 'removed' or loop to exit naturally
-                    
-                    status = engine.get_status()
-                    if not status:
-                        # If status fails (e.g. daemon died), we might want to break or retry.
-                        # For now, just print unavailable and wait.
-                        # But if we stopped, status might be empty if GID is gone?
-                        # Actually aria2 returns error if GID not found. aria2.py handles it by returning None.
-                        # If we just stopped, it might be gone.
-                        pass
-                        
-                    if status:
-                        state = status.get("status")
-                        percent, speed = engine.calculate_progress(status)
-                        
-                        # \r to overwrite line
-                        # Padding spaces at end to clear previous longer lines
-                        print(f"Status: {state:<8} | Progress: {percent:05.2f}% | Speed: {speed:<12}    ", end="\r", flush=True)
-                        
-                        if state == "complete":
-                            print("\nDownload Completed!")
-                            break
-                        elif state == "error":
-                            msg = status.get('errorMessage', 'Unknown Error')
-                            print(f"\nDownload Error: {msg}")
-                            
-                            # Attempt Recovery
-                            print("Attempting recovery...")
-                            recovered, recover_msg = engine.recover()
-                            if recovered:
-                                print(f"Recovery Successful: {recover_msg}")
-                                print("Restarting monitor...")
-                                time.sleep(1) # Give it a moment to initialize
-                                continue # Loop again with new GID
-                            else:
-                                print(f"Recovery Failed: {recover_msg}")
-                                
-                                # Interactive prompt for full restart
-                                print("\nThis error is unrecoverable with the current state.")
-                                choice = input("Do you want to wipe files and restart the download completely? (y/n): ").strip().lower()
-                                if choice == 'y':
-                                    print("Forcing full restart...")
-                                    restarted, restart_msg = engine.force_restart()
-                                    if restarted:
-                                        print(f"Restart Successful: {restart_msg}")
-                                        time.sleep(1)
-                                        continue
-                                    else:
-                                        print(f"Restart Failed: {restart_msg}")
-                                        break
-                                else:
-                                    print("Stopping program.")
-                                    break
-                        elif state == "removed":
-                            print("\nDownload Removed.")
-                            break
-                    else:
-                        # If status is None, it implies GID is invalid or connection lost.
-                        # If we just sent a stop command, this is expected eventually.
-                        print("\nDownload status unavailable (Finished or Removed).")
-                        break
-
-                    time.sleep(0.5)
-                    
-            except KeyboardInterrupt:
-                print("\nUser interrupted (Ctrl+C). Stopping download...")
-                engine.stop()
-                print("Download stopped.")
-        pass
-
+        needs_thread = False # Aria2 start is non-blocking
     else:
         print(f"Engine '{download_type}' not implemented yet.")
+        return
+
+    # Start Engine
+    import threading
+    import time
+    import msvcrt
+    
+    if needs_thread:
+        # For blocking engines (Media, Direct), run start() in a separate thread
+        def run_engine():
+            engine.start(job.job_id, url, DOWNLOAD_DIR, job_manager)
+        
+        t = threading.Thread(target=run_engine, daemon=True)
+        t.start()
+        print("Download started (Threaded).")
+    else:
+        # For non-blocking engines (Aria2), just call start()
+        gid = engine.start(job.job_id, url, DOWNLOAD_DIR, job_manager)
+        print(f"Download started (GID: {gid}).")
+
+    # Unified Monitor Loop
+    print("Controls: [S]top | [Ctrl+C] Cancel")
+    
+    try:
+        while True:
+            # Sync state if needed (Aria2)
+            if hasattr(engine, 'sync_state'):
+                engine.sync_state(job.job_id, job_manager)
+            
+            # Read fresh state
+            current_job = job_manager.get_job(job.job_id)
+            state = current_job.state
+            progress = current_job.progress
+            
+            # UI Display
+            percent = progress.get("percent", 0)
+            speed = progress.get("speed", "N/A")
+            filename = progress.get("filename", "")
+            if len(filename) > 20: filename = filename[:17] + "..."
+            
+            print(f"Status: {state.value:<10} | Progress: {percent:05.2f}% | Speed: {speed:<10} | File: {filename:<20}", end="\r", flush=True)
+
+            # Handle Exit States
+            if state == JobState.COMPLETED:
+                print("\nDownload Completed!")
+                break
+            elif state == JobState.FAILED:
+                print(f"\nDownload Failed: {current_job.error_reason}")
+                break
+            elif state == JobState.STOPPED:
+                print("\nDownload Stopped.")
+                break
+
+            # Non-blocking input check
+            if msvcrt.kbhit():
+                try:
+                    ch = msvcrt.getch()
+                    # Handle special keys (arrows, F-keys) which send 0x00 or 0xe0 first
+                    if ch in [b'\x00', b'\xe0']:
+                        msvcrt.getch() # Consume the second byte
+                        key = None
+                    else:
+                        key = ch.decode('utf-8', errors='ignore').lower()
+                except Exception:
+                    key = None
+
+                if key == 's':
+                    print("\n(User) Stopping...")
+                    engine.cancel() # Or engine.stop() depending on interface consistency
+                    # Wait slightly for update
+                    time.sleep(1)
+
+            time.sleep(0.5)
+            
+    except KeyboardInterrupt:
+        print("\nUser interrupted (Ctrl+C). Stopping download...")
+        engine.cancel() if hasattr(engine, 'cancel') else engine.stop()
+        # Ensure final update
+        time.sleep(1)
+        print("Download stopped.")
 
 if __name__ == "__main__":
     main()

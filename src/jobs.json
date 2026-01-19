@@ -1,0 +1,57 @@
+{
+  "4e913417-328d-42ef-a1f0-544e1f8c9d73": {
+    "job_id": "4e913417-328d-42ef-a1f0-544e1f8c9d73",
+    "state": "STOPPED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+      "type": "media",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {
+      "percent": 0.0,
+      "speed": "\u001b[0;32m   5.75MiB/s\u001b[0m",
+      "eta": "\u001b[0;33m16:22\u001b[0m",
+      "filename": "G:\\STUFF\\Watch\\hermeslink_test_download\\ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf.mkv"
+    },
+    "created_at": "2026-01-19T20:46:02.691399",
+    "updated_at": "2026-01-19T20:46:43.828234"
+  },
+  "6b6b182a-2999-4990-9a68-4556f5aa665a": {
+    "job_id": "6b6b182a-2999-4990-9a68-4556f5aa665a",
+    "state": "STOPPED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+      "type": "media",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {
+      "percent": 0.0,
+      "speed": "\u001b[0;32m   7.10MiB/s\u001b[0m",
+      "eta": "\u001b[0;33m12:09\u001b[0m",
+      "filename": "G:\\STUFF\\Watch\\hermeslink_test_download\\ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf.mkv"
+    },
+    "created_at": "2026-01-19T20:49:50.328888",
+    "updated_at": "2026-01-19T20:51:32.337126"
+  },
+  "1a8816dd-8ea7-4b4d-bf40-b906bb679714": {
+    "job_id": "1a8816dd-8ea7-4b4d-bf40-b906bb679714",
+    "state": "STOPPED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+      "type": "direct",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {
+      "percent": 6.39982904074901,
+      "speed": "7.88 MB/s",
+      "total_length": 6155684433,
+      "completed_length": 393953280,
+      "filename": "A Knight of the Seven Kingdoms S01E01 2160p HMAX WEB-DL DV HDR 10bit HEVC [Hindi AAC 2.0 + Englisg DDP 5.1] x265 (playWEB-UHDMovies).mkv"
+    },
+    "created_at": "2026-01-19T20:51:52.372960",
+    "updated_at": "2026-01-19T20:52:40.214784"
+  }
+}
