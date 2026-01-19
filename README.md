@@ -153,14 +153,17 @@ If a download encounters a critical error (like a server refusing to resume), He
 
 ```
 HermesLink/
+├── .venv/              # Python Virtual Environment
 ├── src/
 │   ├── controller.py       # Main Application Entry Point
-│   ├── core/               # Business Logic
-│   └── engines/            # Engine Implementations
-│       ├── base.py         # Abstract Base Class
-│       ├── aria2.py        # Aria2 Wrapper (JSON-RPC)
-│       ├── media.py        # yt-dlp Wrapper
-│       └── direct.py       # Direct HTTP Wrapper
+│   ├── dashboard.py        # Dashboard Interface
+│   ├── jobs.json           # Job State Persistence
+│   ├── core/               # Business Logic (JobManager, Models)
+│   ├── engines/            # Engine Implementations (Aria2, Media, Direct)
+│   └── research/           # Research Docs (Aria2 Routing)
+├── tests/                  # Test Suite
+├── .env                    # Environment Variables
+├── requirements.txt        # Project Dependencies
 ├── config.yaml             # Configuration Settings
 └── README.md               # Documentation
 ```
@@ -172,4 +175,3 @@ HermesLink/
 Contributions are welcome! Please submit a Pull Request or open an Issue for discuss new features.
 
 ---
-
