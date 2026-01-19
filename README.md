@@ -35,6 +35,8 @@ Move beyond "fire and forget." HermesLink understands _why_ a download failed an
 
 HermesLink follows a controller-engine pattern, abstracting complexity away from the user.
 
+> **[View Detailed Architecture Graph](ARCHITECTURE.md)**
+
 ### System Overview
 
 ```mermaid
