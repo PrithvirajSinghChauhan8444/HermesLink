@@ -53,5 +53,88 @@
     },
     "created_at": "2026-01-19T20:51:52.372960",
     "updated_at": "2026-01-19T20:52:40.214784"
+  },
+  "982989d2-69f9-45a9-801f-e3b4fb8a20f5": {
+    "job_id": "982989d2-69f9-45a9-801f-e3b4fb8a20f5",
+    "state": "PENDING",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+      "type": "direct",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {},
+    "created_at": "2026-01-20T01:12:46.500346",
+    "updated_at": "2026-01-20T01:12:46.500363"
+  },
+  "3ffd7068-1723-4f85-9499-54a6f23acfab": {
+    "job_id": "3ffd7068-1723-4f85-9499-54a6f23acfab",
+    "state": "STOPPED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+      "type": "direct",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {
+      "percent": 17.792828919695207,
+      "speed": "9.89 MB/s",
+      "total_length": 6155684433,
+      "completed_length": 1095270400,
+      "filename": "A Knight of the Seven Kingdoms S01E01 2160p HMAX WEB-DL DV HDR 10bit HEVC [Hindi AAC 2.0 + Englisg DDP 5.1] x265 (playWEB-UHDMovies).mkv"
+    },
+    "created_at": "2026-01-20T01:13:34.333464",
+    "updated_at": "2026-01-20T01:15:20.104556"
+  },
+  "09059b05-0380-4752-8ea0-9ad8ee232931": {
+    "job_id": "09059b05-0380-4752-8ea0-9ad8ee232931",
+    "state": "FAILED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+      "type": "direct",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": "500 Server Error: Internal Server Error for url: https://video-downloads.googleusercontent.com/ADGPM2kDod3bLuV3kxva8ZiImG6hT7AEwHEc5jIAZGQnq8cFIyOzp3hk-46_gTDpTMxyLDsDP3PloMF9qqIdP6fOSg3bT5PVZKKf9_tWQm_DdJ02n-QpfP-031_101crDm4z6gzizYCoi0OEOsanCKGYnCPCGAfJXCUDGR40i_0GzwFTthZ6hESJMCzNS7UDiNfSJ84f4Ij8QJagdXfjU0OmXhYifDirlc2Rczm6yWoDN5f64oaaZRxR87zlHdLH616B09Kqiwz3Nh15AypGKllK3eSqBqPNlH8itBGiSSAZdko5dfwzj8JOc_-4h1TeeO8MW5_7ejefbxO0en2brewsojg2Kl-ZkRUxWbHkH705g9mHEchCyy5QmryvSvkBwDjf6oQzXh6WTJLPRBs2AbLKFdrZS4vlpEF6SpDWYR7_swGr76zF8VJKoeBb1RNU0CeJE94S8VGaWrp6X12MiikgAwvzZv8a8tj_FTKAy_rD27M3rxxzLzIkn-BE0ftVvyeMlrExcAyqaIgRqeEhQEaLeGFhFlgVKMUyE3GnGDDIsysL5b735w9nSeiZ2a4WMe2xCyQenbnNlcPc3uHLmJWgocm7__3HsYKdVlZHmzPj128t5W6DAgPtrIcuddB7PxK-2gX4qI8iySeLBmK9f6mSZoQQ_hsqMxZTN2_uQBJfnj0W9hvc2ANKGnMdroRqG6JdAyrntZjIWGpMZhaAiZ2KZAU59mqQsjuXM2774uX0ZJIzrzGZz_gP5Hv9g5P_pKKN3BQPxgn3K2IyeOk7FPI0aiCKrQovNhdnmIbFMznMS5-4neE0I-r1JaFhFxYFtcRsyGQ1uFBNmrfwf5EKURZY16JGjr1aaQ_sPETcROE-r220bKixBPyZfwqnKABULspe05DchfteGVDgHY4gXVGDMR2JzGHjs4Z2-Lhxm44NztgJccb7RxLnm_vIHzWl-mfEeznAWfzj6QVUj7cWXFG59vR4OSP-DB3HmhPDja6zwjAExVoCoEIZO5eMRSOVNaVL3SyZZlpK5nNAXYED4Vq5b5LbMmzEhKuDafR4NrjjNzXEJImInlC5u0sN2l8yPrBqxQyy_oHO",
+    "progress": {},
+    "created_at": "2026-01-20T01:21:04.997046",
+    "updated_at": "2026-01-20T01:21:05.926587"
+  },
+  "c17833db-ec58-406f-b73e-4b8fe238411d": {
+    "job_id": "c17833db-ec58-406f-b73e-4b8fe238411d",
+    "state": "STOPPED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2m2FVsegYsFrKqlfIjPtsdXGUp-muB6l3FfiwTSYVNb3dIHxPmQ8K7i1Ew1oBBg-JCgpT98v44ej1IRmah5TTf-ymeb0g5QhRQjFk8URYYw-7dGX3r1wZd7MezWvlJz6vgnLNhXIdo8Ep5z02k_BGlcS7upV7cYg-9nx3E2GoYdjpbG8kyX1RZETIUp5fx-SZhmybr8M5W2bsZMYpKkSLS0Y9oOoGVSBlWdhGk9RemxhO-Ys9t3lcDBdpCzH7xxY7r0CxR0Zw7hR9gJoHkDBmjdxFCxEYygwcPBh0lqfrNPLPkp4DcCK4mJFHRiVev2JYzTPi5j0ZddHm32hrBabyTEL5db9kCGb01tGaW3A4jlvqdenSDjIGcO2jN7PSU5f5ZAQ2TNCrzSKpIg82sIYjmzDo2RfPrVPgQX3RjtwDeRJbw9ymyHJaMFQZYh4oQo35tEviEvasZ81sS8zl7moFl-Yu3Q6SbnQGMVVZ6AGqAptb8Ga__xMnm_PB2A2cbkQ4K3pHtP6N9glOXNVT9SAFpqSVM7gkdmQwuGCDTZMnasSnYwnnt2Tojana-Q1FbwS7Yf6__RJMtHVb1WlvoxYrFviABtddA_zNJ-9w624hJBXTfy7hGGnytrr0yKlJxJ6yYN7S-tBtHr6NJFk__MdoPetn-PMLYfcfRaBJcGAlZci8bP55b84fdoxjqARoUgbEPe3yVzK3i22xnLp7TjDK4qqnCcyvA10srgiIFkr3WodvbTqxzmAzq8_U1elyECvXQc08J9UUlMoIcL-gOGh8iIto_u_pcotO2koeeebT4ji421Mg_KW1UA-jdDgpVMFLxxRubcp0YZqI8v_lq9-MpGaFByEND-StRz5vW_fDCowbuSb6AtvGkjvW8kgT8nfnQwSD0vIGEJUdzJ9Ahgf5mFZClTAwbPvAnuN9CGhN53Gwx4HSEjSEoCRuowSChMdjtYmMhBc37GhOZKzprxoeqD14dj_PmtbUbQ-DdUV32_g5eX5jkSDl0KtzyO3ECyBgn69NeJnk-vw3Ct3KNnqyQ4P6wCmurWFziDSMg4KaFM7IWDz8AwbEDD98AYaiU2r_CAhSSO",
+      "type": "direct",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {
+      "percent": 3.1559286056052143,
+      "speed": "7.21 MB/s",
+      "total_length": 18937290246,
+      "completed_length": 597647360,
+      "filename": "Eye For an Eye 2 (2024) 1080p BluRay REMUX AVC [Hindi DDP 2.0 + Chinese DTS-HDMA 5.1] x264 (chr00t-UHDMovies).mkv"
+    },
+    "created_at": "2026-01-20T14:37:25.796591",
+    "updated_at": "2026-01-20T14:38:44.996414"
+  },
+  "41c65c38-431b-4f44-a6a8-8ab30d0a7141": {
+    "job_id": "41c65c38-431b-4f44-a6a8-8ab30d0a7141",
+    "state": "STOPPED",
+    "engine_config": {
+      "url": "https://video-downloads.googleusercontent.com/ADGPM2m2FVsegYsFrKqlfIjPtsdXGUp-muB6l3FfiwTSYVNb3dIHxPmQ8K7i1Ew1oBBg-JCgpT98v44ej1IRmah5TTf-ymeb0g5QhRQjFk8URYYw-7dGX3r1wZd7MezWvlJz6vgnLNhXIdo8Ep5z02k_BGlcS7upV7cYg-9nx3E2GoYdjpbG8kyX1RZETIUp5fx-SZhmybr8M5W2bsZMYpKkSLS0Y9oOoGVSBlWdhGk9RemxhO-Ys9t3lcDBdpCzH7xxY7r0CxR0Zw7hR9gJoHkDBmjdxFCxEYygwcPBh0lqfrNPLPkp4DcCK4mJFHRiVev2JYzTPi5j0ZddHm32hrBabyTEL5db9kCGb01tGaW3A4jlvqdenSDjIGcO2jN7PSU5f5ZAQ2TNCrzSKpIg82sIYjmzDo2RfPrVPgQX3RjtwDeRJbw9ymyHJaMFQZYh4oQo35tEviEvasZ81sS8zl7moFl-Yu3Q6SbnQGMVVZ6AGqAptb8Ga__xMnm_PB2A2cbkQ4K3pHtP6N9glOXNVT9SAFpqSVM7gkdmQwuGCDTZMnasSnYwnnt2Tojana-Q1FbwS7Yf6__RJMtHVb1WlvoxYrFviABtddA_zNJ-9w624hJBXTfy7hGGnytrr0yKlJxJ6yYN7S-tBtHr6NJFk__MdoPetn-PMLYfcfRaBJcGAlZci8bP55b84fdoxjqARoUgbEPe3yVzK3i22xnLp7TjDK4qqnCcyvA10srgiIFkr3WodvbTqxzmAzq8_U1elyECvXQc08J9UUlMoIcL-gOGh8iIto_u_pcotO2koeeebT4ji421Mg_KW1UA-jdDgpVMFLxxRubcp0YZqI8v_lq9-MpGaFByEND-StRz5vW_fDCowbuSb6AtvGkjvW8kgT8nfnQwSD0vIGEJUdzJ9Ahgf5mFZClTAwbPvAnuN9CGhN53Gwx4HSEjSEoCRuowSChMdjtYmMhBc37GhOZKzprxoeqD14dj_PmtbUbQ-DdUV32_g5eX5jkSDl0KtzyO3ECyBgn69NeJnk-vw3Ct3KNnqyQ4P6wCmurWFziDSMg4KaFM7IWDz8AwbEDD98AYaiU2r_CAhSSO",
+      "type": "direct",
+      "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+    },
+    "error_reason": null,
+    "progress": {
+      "percent": 1.0387679200383524,
+      "speed": "5.00 MB/s",
+      "total_length": 18937290246,
+      "completed_length": 196714496,
+      "filename": "Eye For an Eye 2 (2024) 1080p BluRay REMUX AVC [Hindi DDP 2.0 + Chinese DTS-HDMA 5.1] x264 (chr00t-UHDMovies).mkv"
+    },
+    "created_at": "2026-01-20T15:24:26.376361",
+    "updated_at": "2026-01-20T15:25:04.149971"
   }
 }

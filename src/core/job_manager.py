@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from typing import Dict, List, Optional
 from datetime import datetime
 from .models import Job, JobState
@@ -101,10 +102,32 @@ class JobManager:
             self.save_jobs()
 
     def save_jobs(self):
-        """Persist all jobs to disk."""
+        """Persist all jobs to disk using atomic write."""
         data = {original_id: job.to_dict() for original_id, job in self.jobs.items()}
-        with open(self.persistence_file, 'w') as f:
-            json.dump(data, f, indent=2)
+        temp_file = self.persistence_file + ".tmp"
+        try:
+            with open(temp_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            
+            # Retry loop for atomic rename (Windows lock handling)
+            max_retries = 5
+            for attempt in range(max_retries):
+                try:
+                    os.replace(temp_file, self.persistence_file)
+                    break
+                except PermissionError:
+                    if attempt < max_retries - 1:
+                        time.sleep(0.1)
+                    else:
+                        raise
+                        
+        except Exception as e:
+            print(f"[JobManager] Error saving jobs: {e}")
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except OSError:
+                    pass
 
     def load_jobs(self):
         """Load jobs from disk."""
@@ -114,9 +137,11 @@ class JobManager:
         try:
             with open(self.persistence_file, 'r') as f:
                 data = json.load(f)
+                new_jobs = {}
                 for job_id, job_data in data.items():
-                    self.jobs[job_id] = Job.from_dict(job_data)
+                    new_jobs[job_id] = Job.from_dict(job_data)
+                self.jobs = new_jobs # Only update if successful
         except (json.JSONDecodeError, IOError) as e:
-            print(f"Error loading jobs: {e}")
-            # Decision: Start fresh or backup? For now, just start fresh if corrupt.
-            self.jobs = {}
+            print(f"[JobManager] Error loading jobs (keeping cached state): {e}")
+            # Do not clear self.jobs on error to prevent dashboard flickering
+            pass

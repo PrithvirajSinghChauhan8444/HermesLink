@@ -70,7 +70,7 @@ def main():
             print("-" * 80)
             print("Press Ctrl+C to exit dashboard.")
             
-            time.sleep(1)
+            time.sleep(3)
             
     except KeyboardInterrupt:
         print("\nDashboard closed.")
