@@ -1,51 +1,39 @@
 import argparse
 import os
 import sys
+import threading
+import time
+import msvcrt
 
-# Ensure src is in python path
 # Ensure src and project root are in python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir) # For 'engines', 'core' imports relative to src
 sys.path.append(os.path.dirname(current_dir)) # For 'src.core' imports relative to root
 
+from core.job_manager import JobManager
+from core.models import JobState
+from core.job_controller import JobController
 
-
-def main():
-    parser = argparse.ArgumentParser(description="HermesLink Controller")
-    parser.add_argument("url", nargs="?", help="URL to download")
-    parser.add_argument("--type", default="media", choices=["media", "p2p", "direct", "aria2"], help="Type of download")
-    
-    args = parser.parse_args()
-    
-    url = args.url
-    download_type = args.type
-
-    # Interactive mode if no URL provided
+def add_new_download(job_manager):
+    print("\n--- Add New Download ---")
+    url = input("Enter URL to download: ").strip()
     if not url:
-        print("--- HermesLink Interactive Mode ---")
-        url = input("Enter URL to download: ").strip()
-        if not url:
-            print("No URL provided. Exiting.")
-            return
-        
-        type_input = input(f"Enter type (media/p2p/direct) [default: {download_type}]: ").strip()
-        if type_input:
-            if type_input in ["media", "p2p", "direct", "aria2"]:
-                download_type = type_input
-            else:
-                print(f"Invalid type '{type_input}'. Using default '{download_type}'.")
+        print("No URL provided.")
+        return
 
-    # Hardcoded for this step
+    download_type = "media"
+    type_input = input(f"Enter type (media/p2p/direct/aria2) [default: {download_type}]: ").strip()
+    if type_input:
+        if type_input in ["media", "p2p", "direct", "aria2"]:
+            download_type = type_input
+        else:
+            print(f"Invalid type '{type_input}'. Using default '{download_type}'.")
+
+    # Hardcoded for this step (consistent with previous version)
     DOWNLOAD_DIR = r"G:\STUFF\Watch\hermeslink_test_download"
     if not os.path.exists(DOWNLOAD_DIR):
         os.makedirs(DOWNLOAD_DIR)
 
-    # Initialize Job Manager
-    from core.job_manager import JobManager
-    from core.models import JobState
-    job_manager = JobManager()
-
-    print(f"Controller: Received {url} (Type: {download_type})")
     print(f"Target Directory: {DOWNLOAD_DIR}")
 
     # Create Job
@@ -55,7 +43,6 @@ def main():
         "destination": DOWNLOAD_DIR
     })
     print(f"Job Initialized: {job.job_id} (State: {job.state.value})")
-
 
     # Select Engine
     engine = None
@@ -78,10 +65,6 @@ def main():
         return
 
     # Start Engine
-    import threading
-    import time
-    import msvcrt
-    
     if needs_thread:
         # For blocking engines (Media, Direct), run start() in a separate thread
         def run_engine():
@@ -95,8 +78,8 @@ def main():
         gid = engine.start(job.job_id, url, DOWNLOAD_DIR, job_manager)
         print(f"Download started (GID: {gid}).")
 
-    # Unified Monitor Loop
-    print("Controls: [S]top | [Ctrl+C] Cancel")
+    # Monitor Loop for this specific download
+    print("Controls: [S]top | [Ctrl+C] Cancel | [B]ack to Menu (Leave running)")
     
     try:
         while True:
@@ -117,44 +100,118 @@ def main():
             
             print(f"Status: {state.value:<10} | Progress: {percent:05.2f}% | Speed: {speed:<10} | File: {filename:<20}", end="\r", flush=True)
 
-            # Handle Exit States
-            if state == JobState.COMPLETED:
-                print("\nDownload Completed!")
-                break
-            elif state == JobState.FAILED:
-                print(f"\nDownload Failed: {current_job.error_reason}")
-                break
-            elif state == JobState.STOPPED:
-                print("\nDownload Stopped.")
+            # Handle Exit States (Break loop, but don't stop app)
+            if state in [JobState.COMPLETED, JobState.FAILED, JobState.STOPPED]:
+                print(f"\nJob ended with state: {state.value}")
+                if current_job.error_reason:
+                    print(f"Reason: {current_job.error_reason}")
+                input("\nPress Enter to return...")
                 break
 
             # Non-blocking input check
             if msvcrt.kbhit():
                 try:
                     ch = msvcrt.getch()
-                    # Handle special keys (arrows, F-keys) which send 0x00 or 0xe0 first
                     if ch in [b'\x00', b'\xe0']:
-                        msvcrt.getch() # Consume the second byte
+                        msvcrt.getch()
                         key = None
                     else:
                         key = ch.decode('utf-8', errors='ignore').lower()
-                except Exception:
+                except:
                     key = None
 
                 if key == 's':
                     print("\n(User) Stopping...")
-                    engine.cancel() # Or engine.stop() depending on interface consistency
-                    # Wait slightly for update
+                    engine.cancel() # Or engine.stop()
                     time.sleep(1)
-
+                elif key == 'b':
+                    print("\nReturning to menu (Download continues in background)...")
+                    break
+            
             time.sleep(0.5)
             
     except KeyboardInterrupt:
         print("\nUser interrupted (Ctrl+C). Stopping download...")
         engine.cancel() if hasattr(engine, 'cancel') else engine.stop()
-        # Ensure final update
         time.sleep(1)
-        print("Download stopped.")
+
+def manage_downloads(job_manager, controller):
+    while True:
+        # Refresh jobs
+        jobs = controller.get_all_jobs_status()
+        
+        print("\n\n--- Manage Downloads ---")
+        print(f"{'Sr':<4} | {'ID':<38} | {'State':<10} | {'Progress':<10} | {'File'}")
+        print("-" * 85)
+        
+        if not jobs:
+            print("No jobs found.")
+        
+        # Enumerate to get Sr No
+        for idx, j in enumerate(jobs, 1):
+            p = j.get('progress', {})
+            perc = p.get('percent', 0)
+            fname = p.get('filename', 'N/A')
+            print(f"{idx:<4} | {j['job_id']:<38} | {j['state']:<10} | {perc:05.2f}%     | {fname}")
+
+        print("\nOptions:")
+        print("1. Control a Job (Enter Sr No)")
+        print("2. Back to Main Menu")
+        
+        choice = input("Select: ").strip()
+        
+        if choice == '1':
+            sr_input = input("Enter Sr No: ").strip()
+            
+            try:
+                sr_no = int(sr_input)
+                if 1 <= sr_no <= len(jobs):
+                    selected_job = jobs[sr_no - 1]
+                    job_id = selected_job['job_id']
+                    print(f"Selected Job: {job_id}")
+                    
+                    print("Actions: PAUSE, RESUME, STOP, RETRY, RESTART")
+                    action = input("Action: ").strip().upper()
+                    
+                    result = controller.handle_command(job_id, action)
+                    print(f"Result: {result}")
+                    input("Press Enter to continue...")
+                else:
+                    print(f"Invalid Sr No. Please enter between 1 and {len(jobs)}.")
+                    input("Press Enter to continue...")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+                input("Press Enter to continue...")
+            
+        elif choice == '2':
+            break
+
+def main():
+    # Initialize Core Systems
+    job_manager = JobManager()
+    controller = JobController(job_manager)
+    
+    print("\n===============================")
+    print("   HermesLink Controller CLI   ")
+    print("===============================")
+
+    while True:
+        print("\nMain Menu:")
+        print("1. Manage Downloads")
+        print("2. Add New Download")
+        print("Q. Quit")
+        
+        choice = input("Select: ").strip().lower()
+        
+        if choice == '1':
+            manage_downloads(job_manager, controller)
+        elif choice == '2':
+            add_new_download(job_manager)
+        elif choice == 'q':
+            print("Exiting Controller. (Background jobs may continue running depending on engine)")
+            break
+        else:
+            print("Invalid choice.")
 
 if __name__ == "__main__":
     main()
