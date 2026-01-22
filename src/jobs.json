@@ -176,9 +176,107 @@
       "progress": {},
       "created_at": "2026-01-21T23:21:47.733172",
       "updated_at": "2026-01-21T23:23:17.575078"
+    },
+    "2e27a2c9-7a44-4f45-aa7f-3251f1fc2b3c": {
+      "job_id": "2e27a2c9-7a44-4f45-aa7f-3251f1fc2b3c",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "G:\\Projects\\HermesLink",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "No connection adapters were found for 'G:\\\\Projects\\\\HermesLink'",
+      "progress": {},
+      "created_at": "2026-01-22T19:27:08.341412",
+      "updated_at": "2026-01-22T19:27:08.586881"
+    },
+    "de78198b-e0ed-4413-92fd-6154420451ec": {
+      "job_id": "de78198b-e0ed-4413-92fd-6154420451ec",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-22T19:27:46.072752",
+      "updated_at": "2026-01-22T19:27:50.165203"
+    },
+    "c3174bf3-f3dc-4a8f-850a-796743ef8171": {
+      "job_id": "c3174bf3-f3dc-4a8f-850a-796743ef8171",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328 https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "404 Client Error: Not Found for url: https://www.examplefile.com/file-download/328%20https://www.examplefile.com/file-download/328",
+      "progress": {},
+      "created_at": "2026-01-22T19:28:12.663702",
+      "updated_at": "2026-01-22T19:28:15.547060"
+    },
+    "9d98d128-af2b-4f9d-b601-78ee7949530e": {
+      "job_id": "9d98d128-af2b-4f9d-b601-78ee7949530e",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T20:50:32.489942",
+      "updated_at": "2026-01-22T20:55:30.242698"
+    },
+    "90ce2143-e80e-46c2-999e-92a4f401b608": {
+      "job_id": "90ce2143-e80e-46c2-999e-92a4f401b608",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T20:50:32.494290",
+      "updated_at": "2026-01-22T20:55:49.806555"
+    },
+    "409f28c0-3e57-4e45-812e-5e4ce7ca52af": {
+      "job_id": "409f28c0-3e57-4e45-812e-5e4ce7ca52af",
+      "state": "RUNNING",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T20:54:57.926919",
+      "updated_at": "2026-01-22T20:55:49.808267"
+    },
+    "421854b2-3e81-4fc1-802c-18fbe98fb82b": {
+      "job_id": "421854b2-3e81-4fc1-802c-18fbe98fb82b",
+      "state": "PENDING",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T20:54:57.928634",
+      "updated_at": "2026-01-22T20:54:57.928641"
     }
   },
   "queue": [
-    "f1a678f0-1e0b-4648-9fcf-06327ad05c56"
+    "f1a678f0-1e0b-4648-9fcf-06327ad05c56",
+    "c3174bf3-f3dc-4a8f-850a-796743ef8171",
+    "409f28c0-3e57-4e45-812e-5e4ce7ca52af",
+    "421854b2-3e81-4fc1-802c-18fbe98fb82b"
   ]
 }

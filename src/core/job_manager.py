@@ -320,3 +320,19 @@ class JobManager:
             
         self.transition_job(job_id, JobState.RUNNING)
         # TODO: Call self.engine.start_download(job_id, ...)
+
+    def stop_all_jobs(self):
+        """Stops all PENDING, RUNNING, or PAUSED jobs."""
+        print("[JobManager] Initiating KILL SWITCH: Stopping ALL jobs.")
+        # Iterate over a copy of items since we might modify queue/state
+        for job_id, job in list(self.jobs.items()):
+            if job.state in [JobState.PENDING, JobState.RUNNING, JobState.PAUSED]:
+                try:
+                    self.stop_job(job_id)
+                except Exception as e:
+                    print(f"[JobManager] Error stopping job {job_id}: {e}")
+        
+        # Ensure queue is cleared (stop_job should dequeue, but just in case)
+        self.queue.clear()
+        self.save_jobs()
+

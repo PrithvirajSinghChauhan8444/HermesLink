@@ -3,6 +3,7 @@ import os
 import sys
 import threading
 import time
+import random
 import msvcrt
 
 # Ensure src and project root are in python path
@@ -13,15 +14,29 @@ sys.path.append(os.path.dirname(current_dir)) # For 'src.core' imports relative 
 from core.job_manager import JobManager
 from core.models import JobState
 from core.job_controller import JobController
+from utils.url_utils import extract_urls
 
 def add_new_download(job_manager):
     print("\n--- Add New Download ---")
-    url = input("Enter URL to download: ").strip()
-    if not url:
+    raw_input = input("Enter URL(s) to download: ").strip()
+    if not raw_input:
         print("No URL provided.")
         return
 
-    download_type = "media"
+    # Extract all URLs
+    urls = extract_urls(raw_input)
+    if not urls:
+        # Fallback if no http/https found but user entered something? 
+        # Or just treat raw assumption as single url if logic fails?
+        # Current extract_urls returns empty if no scheme.
+        # Let's assume user might paste proper links.
+        # If extraction failed but text exists, maybe it's a magnet link or something not covered?
+        # For now, trust the extractor or fallback to single raw input if list is empty but input wasn't.
+        urls = [raw_input]
+
+    print(f"Found {len(urls)} URL(s).")
+
+    download_type = "direct"
     type_input = input(f"Enter type (media/p2p/direct/aria2) [default: {download_type}]: ").strip()
     if type_input:
         if type_input in ["media", "p2p", "direct", "aria2"]:
@@ -36,15 +51,33 @@ def add_new_download(job_manager):
 
     print(f"Target Directory: {DOWNLOAD_DIR}")
 
-    # Create Job
-    job = job_manager.create_job({
-        "url": url,
-        "type": download_type,
-        "destination": DOWNLOAD_DIR
-    })
-    print(f"Job Initialized: {job.job_id} (State: {job.state.value})")
+    # Create Jobs for ALL URLs
+    created_jobs = []
+    for url in urls:
+        job = job_manager.create_job({
+            "url": url,
+            "type": download_type,
+            "destination": DOWNLOAD_DIR
+        })
+        created_jobs.append(job)
+        print(f"Job Queued: {job.job_id} (State: {job.state.value}) | URL: {url[:30]}...")
 
-    # Select Engine
+    # We only auto-start the UI monitor for the FIRST one for immediate feedback, 
+    # OR we just return to menu because managing N downloads in this single-job-monitor view is hard.
+    # The existing code went into a specific monitor loop for ONE job.
+    # If we added 10 jobs, locking the user into monitoring the first one might be confusing if they want to see the list.
+    
+    if len(created_jobs) > 1:
+        print(f"\n{len(created_jobs)} jobs have been added to the queue.")
+        print("Returning to Main Menu to manage them.")
+        time.sleep(1.5)
+        return
+    
+    # If only 1 job, we can fall through to the specific monitor loop for better UX (as before)
+    job = created_jobs[0]
+    url = job.engine_config['url']
+    
+    # Select Engine (Just for the single job fall-through case)
     engine = None
     needs_thread = False
     
@@ -65,6 +98,13 @@ def add_new_download(job_manager):
         return
 
     # Start Engine
+    # Note: job_manager.create_job calls advance_queue(), so it might have already started!
+    # We should check if it's RUNNING before calling start() again double?
+    # Actually, advance_queue() calls transition_job(RUNNING). 
+    # But transition_job doesn't call engine.start(). The Controller/Worker separation is a bit fuzzy here.
+    # The original code called engine.start() manually.
+    # So we need to do that here.
+    
     if needs_thread:
         # For blocking engines (Media, Direct), run start() in a separate thread
         def run_engine():
@@ -186,6 +226,27 @@ def manage_downloads(job_manager, controller):
         elif choice == '2':
             break
 
+def kill_switch(job_manager):
+    print("\n" + "!" * 40)
+    print("      CRITICAL: KILL SWITCH INITIATED      ")
+    print("!" * 40)
+    print("This will STOP ALL running and pending jobs.")
+    
+    # Generate verification code
+    code = random.randint(10000, 99999)
+    print(f"\nTo confirm, enter the verification code: [{code}]")
+    
+    user_input = input("Code: ").strip()
+    
+    if user_input == str(code):
+        print("\nVerification SUCCESS. Stopping all jobs...")
+        job_manager.stop_all_jobs()
+        print("All jobs have been stopped.")
+        time.sleep(2)
+    else:
+        print("\nVerification FAILED. Aborting.")
+        time.sleep(1.5)
+
 def main():
     # Initialize Core Systems
     job_manager = JobManager()
@@ -199,6 +260,7 @@ def main():
         print("\nMain Menu:")
         print("1. Manage Downloads")
         print("2. Add New Download")
+        print("3. Kill Switch (Stop All)")
         print("Q. Quit")
         
         choice = input("Select: ").strip().lower()
@@ -207,6 +269,8 @@ def main():
             manage_downloads(job_manager, controller)
         elif choice == '2':
             add_new_download(job_manager)
+        elif choice == '3':
+            kill_switch(job_manager)
         elif choice == 'q':
             print("Exiting Controller. (Background jobs may continue running depending on engine)")
             break
