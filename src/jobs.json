@@ -248,20 +248,20 @@
     },
     "409f28c0-3e57-4e45-812e-5e4ce7ca52af": {
       "job_id": "409f28c0-3e57-4e45-812e-5e4ce7ca52af",
-      "state": "RUNNING",
+      "state": "FAILED",
       "engine_config": {
         "url": "https://www.examplefile.com/file-download/328",
         "type": "direct",
         "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
       },
-      "error_reason": null,
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
       "progress": {},
       "created_at": "2026-01-22T20:54:57.926919",
-      "updated_at": "2026-01-22T20:55:49.808267"
+      "updated_at": "2026-01-22T21:01:19.054853"
     },
     "421854b2-3e81-4fc1-802c-18fbe98fb82b": {
       "job_id": "421854b2-3e81-4fc1-802c-18fbe98fb82b",
-      "state": "PENDING",
+      "state": "STOPPED",
       "engine_config": {
         "url": "https://www.examplefile.com/file-download/328",
         "type": "direct",
@@ -270,13 +270,103 @@
       "error_reason": null,
       "progress": {},
       "created_at": "2026-01-22T20:54:57.928634",
-      "updated_at": "2026-01-22T20:54:57.928641"
+      "updated_at": "2026-01-22T21:01:38.041356"
+    },
+    "c0cb9c5b-b978-44d3-83e9-9023c3756b54": {
+      "job_id": "c0cb9c5b-b978-44d3-83e9-9023c3756b54",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-22T21:01:57.866074",
+      "updated_at": "2026-01-22T21:02:00.091401"
+    },
+    "6432ce77-ea68-4be2-8ba1-169b644c4480": {
+      "job_id": "6432ce77-ea68-4be2-8ba1-169b644c4480",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T21:02:12.534545",
+      "updated_at": "2026-01-22T21:03:07.078765"
+    },
+    "d58b81e2-e5fc-4a33-a151-7acd0d56caca": {
+      "job_id": "d58b81e2-e5fc-4a33-a151-7acd0d56caca",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T21:02:12.538030",
+      "updated_at": "2026-01-22T21:03:07.081926"
+    },
+    "3ab61262-05f4-42b8-9a08-6595550dbc5a": {
+      "job_id": "3ab61262-05f4-42b8-9a08-6595550dbc5a",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T21:02:34.069688",
+      "updated_at": "2026-01-22T21:03:07.083650"
+    },
+    "42bcc7a2-5c21-4d70-923f-a45e9365aef7": {
+      "job_id": "42bcc7a2-5c21-4d70-923f-a45e9365aef7",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T21:03:20.450772",
+      "updated_at": "2026-01-22T21:04:28.342228"
+    },
+    "8e062550-8652-4172-8e63-7997757285bd": {
+      "job_id": "8e062550-8652-4172-8e63-7997757285bd",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T21:03:20.454194",
+      "updated_at": "2026-01-22T21:04:28.344138"
+    },
+    "12dd9dee-a258-494b-8a8c-966932ef56bf": {
+      "job_id": "12dd9dee-a258-494b-8a8c-966932ef56bf",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-22T21:03:35.388792",
+      "updated_at": "2026-01-22T21:04:28.345828"
     }
   },
-  "queue": [
-    "f1a678f0-1e0b-4648-9fcf-06327ad05c56",
-    "c3174bf3-f3dc-4a8f-850a-796743ef8171",
-    "409f28c0-3e57-4e45-812e-5e4ce7ca52af",
-    "421854b2-3e81-4fc1-802c-18fbe98fb82b"
-  ]
+  "queue": []
 }
