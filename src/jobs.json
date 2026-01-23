@@ -366,6 +366,427 @@
       "progress": {},
       "created_at": "2026-01-22T21:03:35.388792",
       "updated_at": "2026-01-22T21:04:28.345828"
+    },
+    "742ecf69-e38b-491f-bb21-fafde1814212": {
+      "job_id": "742ecf69-e38b-491f-bb21-fafde1814212",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://ncert.nic.in/textbook/pdf/leph108.pdf",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:25:11.599919",
+      "updated_at": "2026-01-23T19:25:55.808169"
+    },
+    "ac3d4ac6-f573-46d6-8878-d8a8cf417424": {
+      "job_id": "ac3d4ac6-f573-46d6-8878-d8a8cf417424",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://ncert.nic.in/textbook/pdf/leph103.pdf",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:25:11.603798",
+      "updated_at": "2026-01-23T19:25:55.812058"
+    },
+    "2c46ccb7-e4b4-4f70-9fa0-6374058c330c": {
+      "job_id": "2c46ccb7-e4b4-4f70-9fa0-6374058c330c",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://ncert.nic.in/textbook/pdf/leph101.pdf",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:25:11.606428",
+      "updated_at": "2026-01-23T19:25:55.816498"
+    },
+    "01fc2833-3958-4a19-9d7d-a912bb580bab": {
+      "job_id": "01fc2833-3958-4a19-9d7d-a912bb580bab",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ncert.nic.in/textbook/pdf/leph108.pdf",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",
+      "progress": {},
+      "created_at": "2026-01-23T19:26:17.644183",
+      "updated_at": "2026-01-23T19:26:18.232376"
+    },
+    "4e7e95f1-2402-4e02-8a32-488b37fe2bf2": {
+      "job_id": "4e7e95f1-2402-4e02-8a32-488b37fe2bf2",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ncert.nic.in/textbook/pdf/leph108.pdf",
+        "type": "media",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "\u001b[0;31mERROR:\u001b[0m \r[download] Got error: (<HTTPSConnection(host='ncert.nic.in', port=443) at 0x1a86f4fa350>, 'Connection to ncert.nic.in timed out. (connect timeout=20.0)')",
+      "progress": {},
+      "created_at": "2026-01-23T19:26:35.453487",
+      "updated_at": "2026-01-23T19:26:59.832838"
+    },
+    "ca0075e7-c0b1-445b-b5da-abecc96680cb": {
+      "job_id": "ca0075e7-c0b1-445b-b5da-abecc96680cb",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://ncert.nic.in/textbook/pdf/leph108.pdf",
+        "type": "p2p",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:27:15.274798",
+      "updated_at": "2026-01-23T19:27:26.757254"
+    },
+    "0c8202b3-7192-481f-ba34-6fa676186f99": {
+      "job_id": "0c8202b3-7192-481f-ba34-6fa676186f99",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-23T19:30:49.614732",
+      "updated_at": "2026-01-23T19:30:51.433359"
+    },
+    "e3f76c04-edbf-46f0-821a-de11b5fd2596": {
+      "job_id": "e3f76c04-edbf-46f0-821a-de11b5fd2596",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {},
+      "created_at": "2026-01-23T19:31:09.095979",
+      "updated_at": "2026-01-23T19:31:43.386003"
+    },
+    "67fb1afc-f275-4382-999c-5554566d9943": {
+      "job_id": "67fb1afc-f275-4382-999c-5554566d9943",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:31:09.100302",
+      "updated_at": "2026-01-23T19:31:52.976279"
+    },
+    "2e94b15c-71aa-4c0b-a8ed-01620eb112ba": {
+      "job_id": "2e94b15c-71aa-4c0b-a8ed-01620eb112ba",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:31:24.544008",
+      "updated_at": "2026-01-23T19:31:52.980425"
+    },
+    "36105f95-f506-4961-81da-814495a8d708": {
+      "job_id": "36105f95-f506-4961-81da-814495a8d708",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 1.46640625,
+        "speed": "1.89 MB/s",
+        "total_length": 4194304000,
+        "completed_length": 61505536,
+        "filename": "The Witcher 3 (v4.04).rar.001"
+      },
+      "created_at": "2026-01-23T19:41:11.632551",
+      "updated_at": "2026-01-23T19:41:42.824618"
+    },
+    "121ea1dc-cb23-45f2-a6bc-4f07bf7408a4": {
+      "job_id": "121ea1dc-cb23-45f2-a6bc-4f07bf7408a4",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {},
+      "created_at": "2026-01-23T19:41:53.204688",
+      "updated_at": "2026-01-23T19:42:16.895955"
+    },
+    "8ebf657d-50a0-457a-981d-2b24b9f578bd": {
+      "job_id": "8ebf657d-50a0-457a-981d-2b24b9f578bd",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:41:53.209362",
+      "updated_at": "2026-01-23T19:42:23.941638"
+    },
+    "5271a01f-193c-46b7-a018-df63e6592120": {
+      "job_id": "5271a01f-193c-46b7-a018-df63e6592120",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:44:30.725555",
+      "updated_at": "2026-01-23T19:46:35.479864"
+    },
+    "d47ffd25-f31e-44d2-847c-40eed4093084": {
+      "job_id": "d47ffd25-f31e-44d2-847c-40eed4093084",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:44:30.730567",
+      "updated_at": "2026-01-23T19:46:35.484885"
+    },
+    "a1bafe74-309e-4121-b5fd-36a08251a1f9": {
+      "job_id": "a1bafe74-309e-4121-b5fd-36a08251a1f9",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 5.898046875,
+        "speed": "1.62 MB/s",
+        "total_length": 4194304000,
+        "completed_length": 247382016,
+        "filename": "The Witcher 3 (v4.04).rar.001"
+      },
+      "created_at": "2026-01-23T19:46:40.653384",
+      "updated_at": "2026-01-23T19:49:06.556316"
+    },
+    "b08cf8cd-694d-4380-9101-53435e0c3a61": {
+      "job_id": "b08cf8cd-694d-4380-9101-53435e0c3a61",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:49:39.240550",
+      "updated_at": "2026-01-23T19:59:12.162429"
+    },
+    "575818ac-06a6-4258-ad71-c879d363f0b3": {
+      "job_id": "575818ac-06a6-4258-ad71-c879d363f0b3",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://aaaaaadhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T19:49:39.246652",
+      "updated_at": "2026-01-23T19:59:12.167057"
+    },
+    "3c54a6ef-6e0f-4527-9d6c-261f12eaae17": {
+      "job_id": "3c54a6ef-6e0f-4527-9d6c-261f12eaae17",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T20:03:36.240770",
+      "updated_at": "2026-01-23T20:04:26.907578"
+    },
+    "62776336-ad97-4ce3-889f-f5f295493c0e": {
+      "job_id": "62776336-ad97-4ce3-889f-f5f295493c0e",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T20:03:36.245525",
+      "updated_at": "2026-01-23T20:04:26.912175"
+    },
+    "e170c198-8229-45a4-adb5-85f6b1caa383": {
+      "job_id": "e170c198-8229-45a4-adb5-85f6b1caa383",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 1.39921875,
+        "speed": "1.67 MB/s",
+        "total_length": 4194304000,
+        "completed_length": 58687488,
+        "filename": "The Witcher 3 (v4.04).rar.001"
+      },
+      "created_at": "2026-01-23T20:04:37.145710",
+      "updated_at": "2026-01-23T20:05:12.338741"
+    },
+    "5a1fd30d-d768-4fb6-a04a-4973ce6a7102": {
+      "job_id": "5a1fd30d-d768-4fb6-a04a-4973ce6a7102",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T20:04:37.150810",
+      "updated_at": "2026-01-23T20:28:59.871479"
+    },
+    "74928602-588f-4035-847e-64dd271b8627": {
+      "job_id": "74928602-588f-4035-847e-64dd271b8627",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T20:28:40.972625",
+      "updated_at": "2026-01-23T20:28:59.874196"
+    },
+    "3c446a85-4cdf-4b76-ac87-fc5c0a8ee44f": {
+      "job_id": "3c446a85-4cdf-4b76-ac87-fc5c0a8ee44f",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-01-23T20:28:40.975673",
+      "updated_at": "2026-01-23T20:28:59.880283"
+    },
+    "c7852b8f-b002-4155-8821-3b1c68d6152c": {
+      "job_id": "c7852b8f-b002-4155-8821-3b1c68d6152c",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-23T20:29:40.269666",
+      "updated_at": "2026-01-23T20:29:44.571813"
+    },
+    "82fd4b99-6283-4f5b-9e97-59751e99156e": {
+      "job_id": "82fd4b99-6283-4f5b-9e97-59751e99156e",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-23T20:30:08.858675",
+      "updated_at": "2026-01-23T20:30:11.646970"
+    },
+    "ac6af5a3-4286-4bff-8932-50225fb9a8a5": {
+      "job_id": "ac6af5a3-4286-4bff-8932-50225fb9a8a5",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-23T20:30:08.863790",
+      "updated_at": "2026-01-23T20:30:14.078219"
+    },
+    "5326b406-2dd0-4ef8-a97a-ad6ecd752685": {
+      "job_id": "5326b406-2dd0-4ef8-a97a-ad6ecd752685",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://www.examplefile.com/file-download/328",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0",
+        "filename": "328"
+      },
+      "created_at": "2026-01-23T20:30:30.248530",
+      "updated_at": "2026-01-23T20:30:32.766582"
+    },
+    "91e73301-6fa1-4a4e-8d78-137736d140b6": {
+      "job_id": "91e73301-6fa1-4a4e-8d78-137736d140b6",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://dhruvmirrorpremiumfiletolink-5f2f6b64412a.herokuapp.com/1138573/The+Witcher+3+%28v4.04%29.rar.001?hash=AgADrh",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 0.053125000000000006,
+        "speed": "0.09 MB/s",
+        "total_length": 4194304000,
+        "completed_length": 2228224,
+        "filename": "The Witcher 3 (v4.04).rar.001"
+      },
+      "created_at": "2026-01-23T20:30:30.253983",
+      "updated_at": "2026-01-23T20:30:58.087320"
     }
   },
   "queue": []
