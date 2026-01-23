@@ -43,3 +43,6 @@ venv.bak/
 # Project Specific
 test_downloads/
 *.aria2
+src/engines/__pycache__/base.cpython-314.pyc
+src/engines/__pycache__/media.cpython-314.pyc
+src/engines/__pycache__/direct.cpython-314.pyc
