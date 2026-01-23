@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+src/engines/__pycache__/
 *.py[cod]
 *$py.class
 *.so
