@@ -986,6 +986,27 @@
       "updated_at": "2026-01-24T14:22:50.001918",
       "queue_id": "try1",
       "thread_limit": 4
+    },
+    "59ebd028-575d-4422-b8d7-da44ab29840e": {
+      "job_id": "59ebd028-575d-4422-b8d7-da44ab29840e",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://video-downloads.googleusercontent.com/ADGPM2npYzc-zA-kH14esD-bTU_vZYE-VoO18Y1CX2PDY9WlzMid_QzRZ9FO7Woxib5Dt_xPC27lvZI9DOYHgyeEnDzxPQ70ZQT-T5BPvvfbBeZZ3wCbr82K6zHBACxvdP5mH2CPfa0XEBAKJjeY773g6exHa8Uz5y8GNDSIwppB6kTpOsAtbouaqFahVzRRRw3N0ojcDiGKFVg7EVcDSzOxyBcZTjJTyIlLJ3di8QabBRMEO8xmYnihmVZjtC4yybNYIpoPkL0Wj5VPTNqGc9nfGYpDV-GGWyB0GmxjwSbKHQThzmiz1A957rXHZ40-XH0uo7MRDxshyKXVVJRj_u43Akjiz8eX_8AmxzdjyQJ0VVYzw8v78_j8-B8WbBQ4_HCAKQBcBRT8SnoZkNgGlR9L3ASKYFb0hthZN12HbRcaJA0wxVDFwO6cF9l89gYCNms2RqyyGU3fYr9-tkbG8srgl-UWNYT9v483xHJc_QD6dxJ_wrZiHIO7t-L8JhJ90N5Rdx5DhjbKuJebgU96g5WDTqiQnbTwIG0D8ozaCxY8fTChbZHb9R0Ln6DtJyO0Wu1hkCJ05kzVH0NBmInHUMtiO6TKZyk4o7iTuVrshxYDW8wCHGvX0O6id8iDVy9r0wpVc82mgxxgWv6ki7aUo5EbYcxgtAKtXBoIfY3DfvD1T6H0YuTvWJA0DHb0AiqjAseEM316meNqpgsDtKADXdMfe4HyoldxgkEPz8b9n_oVHGVUoI1RL1pyntlpe5oIxhUb_AIgPI2b8hsGD9YqRd_9rsVvfbHTCX1T27wftjB540r8mzETFtmyyW1Tg5kuUfyZT2pEmHx3J7jfgFnrYQkhi9oJ8wKmymxUC_UEvxWqc3a86HHAONh8W5b4a2bpGSdCBs0xKkcHZdwo5o2uAhE_6cs-a6Wdi0Kz8n_j6Ga8PlcMe9yEAKQH4QUad0J5A2MfVgu2kIv5shTgEVDsjGXdImXvtwVxFT9tBYPzMB6LHGpRxFtdWHcdN7rfScmbFvRk9Dk2qgXYLk0auvKCshX3N6P_GWp4teggh7sVkVIuPoH5i5jvAOTl2jS7CIRB7wtDWYitgSAz",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {
+        "percent": 0.4830431923115337,
+        "speed": "1.60 MB/s",
+        "total_length": 2740597986,
+        "completed_length": 13238272,
+        "filename": "A Knight of the Seven Kingdoms S01E01 1080p AMZN WEB-DL [Hindi AAC 2.0 + Englisg DDP 5.1] x264 (playWEB-UHDMovies).mkv"
+      },
+      "created_at": "2026-01-25T16:30:42.966059",
+      "updated_at": "2026-01-25T16:31:07.603949",
+      "queue_id": "default",
+      "thread_limit": 4
     }
   },
   "queues": {
