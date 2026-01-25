@@ -1,179 +1,127 @@
-# ⚡ HermesLink
+# 🚀 HermesLink
 
-> **Next-Generation Download Orchestrator**
-> _Intelligent, Error-Aware, and Multi-Protocol_
+> **The Advanced, Multi-Queue, All-Seeing Download Manager of Your Dreams!** 🌌✨
 
-HermesLink is a modular python-based download controller designed to unify various download protocols (HTTP, FTP, BitTorrent, Video/Audio) under a single, robust interface. It leverages powerful backend engines like **Aria2** and **yt-dlp** to provide a seamless and resilient download experience.
+Welcome to **HermesLink**, a robust and feature-rich download manager built to handle everything from direct downloads to media streams with style and precision. Whether you're juggling massive ISOs or managing a queue of cat videos, HermesLink has your back! 🐱💻
 
 ---
 
 ## 🌟 Key Features
 
-### 🧠 Smart Control
-
-- **Interactive CLI**: Real-time control loop allowing you to **Pause**, **Resume**, and **Stop** downloads instantly.
-- **Daemon Management**: Automatically detects, starts, and manages background daemons (like `aria2c`).
-- **Live Monitoring**: Real-time feedback on speed, progress percentage, and status.
-
-### 🛡️ Error-Aware Architecture
-
-Move beyond "fire and forget." HermesLink understands _why_ a download failed and acts accordingly.
-
-- **Auto-Classification**: Distinguishes between network timeouts, server rejections, and resume failures.
-- **Downgrade Strategy**: Automatically downgrades multi-threaded optimization to safe single-thread mode if servers reject connections.
-- **Self-Healing**: Capable of detecting corrupted partial files, performing cleanup, and restarting downloads automatically.
-
-### 🔌 Multi-Engine Support
-
-- **Aria2 Engine**: For high-speed HTTP/FTP/Torrent downloads with multi-connection support.
-- **Media Engine**: (Powered by `yt-dlp`) For extracting video and audio from 1000+ sites.
-- **Direct Engine**: Lightweight HTTP downloads via Python `requests`.
+- **🧠 Brainy Scheduler**: A smart, multi-queue system that respects your priorities.
+- **🏎️ Multi-Engine Power**:
+  - **Aria2**: For reliable, high-speed HTTP/FTP/Magnet downloads. 🌪️
+  - **Direct**: Python-based streams for simple tasks. 💾
+  - **Media**: Automatic media extraction (yt-dlp style). 📺
+- **🚦 Traffic Control**:
+  - **Strict Serialization**: One global active job to save bandwidth, but smart queuing to keep the pipeline full.
+  - **State Machine**: Rock-solid job states (PENDING -> RUNNING -> PAUSED).
+- **🛡️ Crash Proof**: Restarts right where it left off. Zombie jobs beware! 🧟‍♂️
+- **📊 CLI Dashboard**: a Retro-cool terminal UI to monitor your bits and bytes.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture at a Glance
 
-HermesLink follows a controller-engine pattern, abstracting complexity away from the user.
+How does the magic happen? Here's a peek under the hood! 🧐
 
-> **[View Detailed Architecture Graph](ARCHITECTURE.md)**
-
-### System Overview
+### The Core Loop
 
 ```mermaid
 graph TD
-    User([User]) -->|CLI Arguments| Controller[Controller.py]
+    A[User / UI] -->|Create Job| B(Job Manager)
+    B -->|Enqueue| C{Priority Queues}
+    C -->|High Prio| D[Queue: GOLD]
+    C -->|Med Prio| E[Queue: SILVER]
+    C -->|Low Prio| F[Queue: BRONZE]
 
-    subgraph Core Logic
-    Controller -->|Dispatch| EngineMgr[Engine Manager]
-    end
+    G[Scheduler Loop] -->|Polls| C
+    G -->|Selects Best Job| H[Global Execution Slot]
 
-    subgraph Engines
-    EngineMgr -->|Select| A[Aria2Engine]
-    EngineMgr -->|Select| M[MediaEngine]
-    EngineMgr -->|Select| D[DirectEngine]
-    end
-
-    subgraph External Tools
-    A <-->|JSON-RPC| A2[aria2c Daemon]
-    M <-->|Subprocess| Y[yt-dlp]
-    D <-->|HTTP| Web[Internet]
-    end
-
-    A2 <--> Web
+    H -->|Dispatch| I[Download Engine]
+    I -->|Aria2 / Direct| J((The Internet ☁️))
 ```
 
-### Self-Healing Workflow (Aria2)
-
-A visual representation of how HermesLink handles complex errors like "Invalid Range Headers" (Resume Not Supported).
+### State Machine Lifecycle
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Active: Start Download (Split=16)
+    [*] --> PENDING: Created
+    PENDING --> RUNNING: Scheduler Picks It
+    RUNNING --> PAUSED: User Pauses ⏸️
+    PAUSED --> RUNNING: User Resumes ▶️
+    RUNNING --> FAILED: Network Error 💥
+    FAILED --> RUNNING: Retry 🔄
+    RUNNING --> COMPLETED: Done! 🎉
 
-    state Active {
+    state RUNNING {
         [*] --> Downloading
-        Downloading --> Error: Server Rejects Range
+        Downloading --> Verifying
     }
-
-    Error --> Analysis: Classify Error
-
-    state Analysis {
-        [*] --> CheckType
-        CheckType --> ResumeFailed: "Invalid Range Header"
-        CheckType --> NetworkFailed: "Timeout"
-    }
-
-    ResumeFailed --> Recovery: Apply Downgrade Strategy
-
-    state Recovery {
-        [*] --> Cleanup: Delete .aria2 & partial files
-        Cleanup --> Restart: Start with Split=1
-    }
-
-    Restart --> Active: Retry with Safe Settings
-    NetworkFailed --> [*]: Notify User
 ```
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1️⃣ Installation
 
-- **Python 3.8+**
-- **Aria2**: Ensure `aria2c` is installed and in your system PATH.
-- **yt-dlp**: Required for media downloads.
-  ```bash
-  pip install yt-dlp requests
-  ```
+Ensure you have **Python 3.10+** and the requirements installed:
 
-### Installation
+```bash
+pip install -r requirements.txt
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/PrithvirajSinghChauhan8444/HermesLink.git
-   ```
-2. Navigate to the project root:
-   ```bash
-   cd HermesLink
-   ```
+### 2️⃣ Run the Beast
+
+Fire up the main system:
+
+```bash
+python src/main.py
+```
+
+### 3️⃣ Control Center
+
+Open the dashboard to watch the magic interactively:
+
+```bash
+python src/dashboard.py
+```
 
 ---
 
-## 📖 Usage
+## 🎮 Controls (Dashboard)
 
-Run the controller via the command line.
-
-### Basic Download
-
-```powershell
-python src/controller.py "https://example.com/file.zip" --type aria2
-```
-
-### Interactive Controls
-
-Once the download starts, you can control it directly from the terminal console:
-
-|  Key  | Action     | Description                                  |
-| :---: | :--------- | :------------------------------------------- |
-| **P** | **Pause**  | Temporarily halt the download.               |
-| **R** | **Resume** | Continue downloading from where it left off. |
-| **S** | **Stop**   | Cancel the download and remove the job.      |
-| **Q** | **Quit**   | Stop and exit the program.                   |
-
-### Handling Errors
-
-If a download encounters a critical error (like a server refusing to resume), HermesLink will:
-
-1. Attempt to auto-recover.
-2. If auto-recovery fails, it will ask you:
-   > "Do you want to wipe files and restart the download completely? (y/n)"
+|  Key  | Action   | Description                                  |
+| :---: | :------- | :------------------------------------------- |
+| **M** | `Menu`   | Switch between views and filters.            |
+| **Q** | `Quit`   | Close the dashboard (Daemon keeps running!). |
+| **P** | `Pause`  | Take a break! (Select Job First).            |
+| **R** | `Resume` | Back to work!                                |
 
 ---
 
 ## 📂 Project Structure
 
 ```
-HermesLink/
-├── .venv/              # Python Virtual Environment
-├── src/
-│   ├── controller.py       # Main Application Entry Point
-│   ├── dashboard.py        # Dashboard Interface
-│   ├── jobs.json           # Job State Persistence
-│   ├── core/               # Business Logic (JobManager, Models)
-│   ├── engines/            # Engine Implementations (Aria2, Media, Direct)
-│   └── research/           # Research Docs (Aria2 Routing)
-├── tests/                  # Test Suite
-├── .env                    # Environment Variables
-├── requirements.txt        # Project Dependencies
-├── config.yaml             # Configuration Settings
-└── README.md               # Documentation
+📂 HermesLink
+├── 📂 src
+│   ├── 📂 core        # 🧠 The Brains (Manager, Scheduler)
+│   ├── 📂 engines     # 🏎️ The Muscle (Aria2, Direct)
+│   ├── 📂 dashboard   # 📺 The Face (UI)
+│   └── 📜 main.py     # 🏁 Start Line
+├── 📜 config.yaml     # ⚙️ Settings
+└── 📜 README.md       # 📖 You are here!
 ```
 
 ---
 
-## 🤝 Contributing
+## 🛠️ Roadmap
 
-Contributions are welcome! Please submit a Pull Request or open an Issue for discuss new features.
+- [ ] **Web UI**: A shiny React/Next.js interface is coming soon! ⚛️
+- [ ] **Plugin System**: Add your own download engines. 🧩
+- [ ] **Cloud Sync**: Manage downloads from anywhere. ☁️
 
 ---
+
+Made with ❤️ and ☕ by the HermesLink Team.
