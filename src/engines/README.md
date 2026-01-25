@@ -1,14 +1,35 @@
-# Engines Directory (`src/engines`)
+# 🏎️ Download Engines (`src/engines`)
 
-This directory contains the implementations for different download engines.
+> **Gotta Go Fast!** ⚡
 
-## Files
+This directory contains the drivers that actually fetch data from the internet. HermesLink supports multiple engines to handle different protocols.
 
-- `base.py`: Defines the abstract base class `BaseEngine` that all engines must inherit from.
-- `media.py`: Implementation of `MediaEngine` using `yt-dlp` for video/audio sites.
-- `direct.py`: Implementation of `DirectEngine` using `requests` for direct HTTP/HTTPS file downloads.
-- `p2p.py`: Placeholder for Peer-to-Peer engine (Torrent/Magnet). Currently empty.
-- `aria2.py`: **[NEW]** Implementation of `Aria2Engine` wrapping the `aria2c` daemon.
-  - **Auto-Start**: Automatically launches `aria2c` process if not running.
-  - **Error-Aware**: Detects "Resume Not Supported" errors and auto-downgrades settings.
-  - **Force Restart**: Supports cleaning up corrupted files and restarting from scratch.
+---
+
+## 🔧 Supported Engines
+
+### 1. **Aria2** (`aria2.py`) 🌪️
+
+- **Best For**: Heavy lifting, HTTP, FTP, Magnet links, BitTorrent.
+- **Features**: Multi-connection downloads, pausing/resuming, high stability.
+
+### 2. **Direct** (`direct.py`) 💾
+
+- **Best For**: Simple, small files via HTTP/HTTPS.
+- **Tech**: Uses Python's native `requests` stream. Good for lightweight tasks.
+
+### 3. **Media** (`media.py`) 📺
+
+- **Best For**: Video/Audio sites (YouTube, standard media).
+- **Tech**: Wraps `yt-dlp` (or similar) to extract media from complex pages.
+
+### 4. **P2P** (`p2p.py`) 🕸️
+
+- **Best For**: Decentralized transfers.
+- _(Experimental / In Progress)_
+
+---
+
+## 🏗️ Adding a New Engine
+
+Implement the `BaseEngine` interface in `base.py`. You need to define methods for `start`, `stop`, `pause`, and `resume`.
