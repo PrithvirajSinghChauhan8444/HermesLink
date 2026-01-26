@@ -1,0 +1,33 @@
+Left Sidebar (Navigation & Queues)
+
+Top: Dashboard Icon, "All Jobs" view.
+
+Middle (Queue List): A vertical list of your named queues (Default, HighPriority, etc.).
+
+Micro-interaction: Each queue item shows a small badge: [Priority: 10] | [3 Pending].
+
+Bottom: System Status footer (Scheduler Running/Idle green dot).
+
+Top Header (Global Controls)
+
+Left: Breadcrumbs (e.g., Home > HighPriority Queue).
+
+Right: "Panic Button" (Red, prominent), Refresh, and Theme Toggle.
+
+Main Content Area (Job Feed)
+
+A dense Data Table (React Table / TanStack).
+
+Columns: ID, Type, Target, Queue, State, Progress.
+
+Feature: Hovering over a row reveals the context-sensitive actions (Pause, Stop, Retry).
+
+Right Panel (The "Inspector")
+
+Clicking a job in the main table opens this panel.
+
+Top: Large Progress bar & Speedometer for the selected job.
+
+Middle: "Technical Metadata" (Logs, Engine Config JSON tree).
+
+Bottom: "Job Control Actions" (Big buttons: Restart, Archive).
