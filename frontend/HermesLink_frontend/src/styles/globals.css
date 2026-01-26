@@ -1,22 +1,29 @@
 :root {
-  /* Color Palette - Dark Mode Optimized */
-  --color-bg-app: #0f1115;
-  --color-bg-sidebar: #161b22;
-  --color-bg-header: #161b22;
-  --color-bg-panel: #1c2128;
-  --color-bg-card: #22272e;
+  /* =========================================
+     Color Palette - Colorful Light Theme
+     ========================================= */
 
-  --color-border-subtle: #30363d;
-  --color-border-default: #484f58;
+  /* Backgrounds: Clean warm whites and soft tints */
+  --color-bg-app: #f0f4f8; /* Very soft blue-grey */
+  --color-bg-sidebar: rgba(255, 255, 255, 0.65);
+  --color-bg-header: rgba(255, 255, 255, 0.65);
+  --color-bg-panel: rgba(255, 255, 255, 0.65);
+  --color-bg-card: rgba(248, 250, 252, 0.5);
 
-  --color-text-primary: #f0f6fc;
-  --color-text-secondary: #8b949e;
-  --color-text-muted: #6e7681;
+  /* Borders: Soft but defined */
+  --color-border-subtle: #e2e8f0;
+  --color-border-default: #cbd5e1;
 
-  --color-accent-primary: #58a6ff;
-  --color-accent-success: #3fb950;
-  --color-accent-warning: #d29922;
-  --color-accent-danger: #f85149;
+  /* Text: High contrast darks */
+  --color-text-primary: #665f5f; /* Slate 800 */
+  --color-text-secondary: #2e3238; /* Slate 500 */
+  --color-text-muted: #94a3b8; /* Slate 400 */
+
+  /* Accents: Vibrant and punchy */
+  --color-accent-primary: #3b82f6; /* Bright Blue */
+  --color-accent-success: #10b981; /* Emerald */
+  --color-accent-warning: #f59e0b; /* Amber */
+  --color-accent-danger: #ef4444; /* Red */
 
   /* Layout Dimensions */
   --width-sidebar: 260px;
@@ -37,10 +44,14 @@
   --font-size-xl: 20px;
 
   /* Border Radius */
-  --radius-sm: 40px;
+  --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-elevation: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+  --shadow-border: 0 0 0 1px var(--color-border-subtle);
 }
 
 /* Reset & Base */
@@ -57,6 +68,25 @@ body {
   color: var(--color-text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.6);
 }
 
 /* Utility Utilities */

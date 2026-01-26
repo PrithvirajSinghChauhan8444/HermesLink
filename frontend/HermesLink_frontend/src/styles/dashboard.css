@@ -6,7 +6,30 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: var(--color-bg-app);
+  /* Artistic Mesh Background (Aurora) */
+  background-color: #f0ebf8;
+  background-image:
+    radial-gradient(at 10% 10%, rgba(255, 182, 193, 0.4) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(173, 216, 230, 0.5) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(255, 239, 213, 0.5) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, rgba(221, 160, 221, 0.4) 0px, transparent 50%);
+  background-size: 200% 200%;
+  animation: auroraFlow 20s ease infinite;
+
+  gap: 24px;
+  padding: 24px;
+}
+
+@keyframes auroraFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .layout-main {
@@ -16,13 +39,32 @@
   height: 100%;
   min-width: 0; /* Prevent flex overflow */
   position: relative;
+  gap: 24px;
 }
 
 .layout-content {
   flex: 1;
   overflow-y: auto;
   position: relative;
+  background-color: var(--color-bg-app); /* Fallback */
+  background-color: var(
+    --color-bg-panel
+  ); /* Matches other panels if desired, or keep app bg? */
+  background-color: transparent; /* Let app bg show? No, usually content has a bg */
   background-color: var(--color-bg-app);
+  /* Actually, usually the main content area is the "canvas". 
+     With gaps, maybe it should be a panel too? 
+     Let's make it a panel. */
+  background-color: var(--color-bg-panel);
+  border-radius: var(--radius-lg);
+  /* Crystal Edge */
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    var(--shadow-elevation),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7); /* Top highlight */
+
+  backdrop-filter: blur(20px) saturate(160%); /* Boost sat for vibrancy */
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 
 /* =========================================
@@ -31,11 +73,18 @@
 .sidebar {
   width: var(--width-sidebar);
   background-color: var(--color-bg-sidebar);
-  border-right: 1px solid var(--color-border-subtle);
-  display: flex;
+  /* Crystal Edge */
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    var(--shadow-elevation),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   flex-direction: column;
   height: 100%;
   flex-shrink: 0;
+  border-radius: var(--radius-lg);
 }
 
 .sidebar-header {
@@ -81,8 +130,10 @@
 
 .nav-item:hover,
 .queue-item:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(255, 255, 255, 0.4);
   color: var(--color-text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .nav-item.active,
@@ -141,7 +192,17 @@
 .header {
   height: var(--height-header);
   background-color: var(--color-bg-header);
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+
+  /* Crystal Edge */
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    var(--shadow-elevation),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,7 +280,17 @@
 .inspector {
   width: var(--width-inspector);
   background-color: var(--color-bg-panel);
-  border-left: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+
+  /* Crystal Edge */
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    var(--shadow-elevation),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -357,7 +428,7 @@
 }
 
 .btn-primary {
-  background-color: #21262d;
+  background-color: #111418;
   border: 1px solid var(--color-border-default);
   color: var(--color-text-primary);
 }
