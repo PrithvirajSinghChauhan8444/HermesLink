@@ -1,2 +1,148 @@
 @import "./styles/globals.css";
-/* @import "./styles/tailwind.css"/; */
+/* @import "./styles/tailwind.css"; */
+
+/* Layout Animations & Structure */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Default alignment: we will control this via state classes */
+  min-height: 100vh;
+  /* background-color removed for Prism transparency */
+  transition: all 0.5s ease;
+  padding-top: 0;
+}
+
+.layout-container.layout-intro {
+  justify-content: center; /* Intro: Dead center */
+}
+
+.layout-container.layout-hub {
+  justify-content: center; /* Hub: Dead center (Title + Nav group) */
+  padding-bottom: 10vh; /* Visual offset to move "a little up" visually */
+}
+
+.layout-container.layout-active {
+  justify-content: flex-start; /* App: Top aligned */
+}
+
+/* Header/Title Container */
+/* Header/Title Container */
+.layout-header {
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Intro State: Centered vertically */
+  height: 100vh;
+  width: 100%;
+}
+
+.layout-container.layout-active .layout-header {
+  /* Active State (App): Top area */
+  height: 150px;
+}
+
+.layout-container.layout-hub {
+  /* Hub State: Still centered vertically, but we shift content alignment */
+  justify-content: center;
+}
+
+.layout-container.layout-hub .layout-header {
+  /* Hub State: Header takes up substantial space but allows Nav below */
+  height: auto;
+  margin-bottom: 2rem; /* Move title up a bit relative to nav */
+  flex: 0 0 auto;
+}
+
+.app-title {
+  font-size: 5rem; /* Big */
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+  transition: font-size 0.5s ease;
+}
+
+/* Navbar Container */
+.layout-nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+  margin-bottom: 2rem;
+}
+
+.navbar-centered {
+  background: transparent; /* No bar background, just links? Or minimal pill? */
+  padding: 1rem 2rem;
+  border-radius: 99px;
+  background-color: rgba(30, 41, 59, 0.8); /* Glassy pill */
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--accent-primary, #3b82f6);
+}
+
+/* Content Container */
+.layout-content {
+  width: 100%;
+  max-width: 1200px;
+  flex: 1;
+  padding: 0 2rem 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.8s ease 0.2s,
+    transform 0.8s ease 0.2s;
+}
+
+.layout-container.layout-active .layout-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Visibility Utilities */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+}
+
+.fade-in {
+  opacity: 1;
+  height: auto;
+}
+
+/* Layout Overrides */
+.layout-vertical {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-primary, #0f172a);
+}
+
+.layout-content-full {
+  flex: 1;
+  overflow-y: auto;
+}
