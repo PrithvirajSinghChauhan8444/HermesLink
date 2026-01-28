@@ -3,6 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import "../../styles/dashboard.css";
 
+import DecryptedText from "../animated_components/title/DecryptedText";
+import GlassSurface from "../animated_components/glass_surface/GlassSurface";
+
 const MainLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -49,7 +52,32 @@ const MainLayout = ({ children }) => {
             setIntroComplete(false);
           }}
           style={{ cursor: "pointer" }}>
-          HermesLink
+          {isRoot ? (
+            <GlassSurface
+              scale={1.2}
+              borderRadius={55}
+              width="fit-content"
+              height="fit-content"
+              displace={0.5}
+              distortionScale={-180}
+              redOffset={0}
+              greenOffset={10}
+              blueOffset={20}
+              brightness={50}
+              opacity={0.93}
+              mixBlendMode="screen">
+              <DecryptedText
+                text="HermesLink"
+                animateOn="view"
+                revealDirection="center"
+                sequential={true}
+                speed={120}
+                maxIterations={20}
+              />
+            </GlassSurface>
+          ) : (
+            "HermesLink"
+          )}
         </h1>
       </div>
 

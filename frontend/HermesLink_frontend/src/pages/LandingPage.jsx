@@ -1,5 +1,5 @@
 import React from "react";
-import Prism from "../components/animated_components/landing_bg";
+import Prism from "../components/animated_components/landing_page/landing_bg";
 
 const LandingPage = () => {
   // The LandingPage content itself is minimal now,
