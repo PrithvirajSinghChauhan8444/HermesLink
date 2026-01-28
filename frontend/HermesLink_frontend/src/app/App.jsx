@@ -1,12 +1,12 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
-import LandingPage from "../pages/LandingPage";
-import ActiveJobs from "../pages/ActiveJobs";
-import QueueManagement from "../pages/QueueManagement";
-import History from "../pages/History";
-import Settings from "../pages/Settings";
-import About from "../pages/About";
+import LandingPage from "../pages/LandingPage/LandingPage";
+import ActiveJobs from "../pages/ActiveJobs/ActiveJobs";
+import QueueManagement from "../pages/QueueManagement/QueueManagement";
+import History from "../pages/History/History";
+import Settings from "../pages/Settings/Settings";
+import About from "../pages/About/About";
 
 function App() {
   return (

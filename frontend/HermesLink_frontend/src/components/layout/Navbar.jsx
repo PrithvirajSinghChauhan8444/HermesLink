@@ -1,57 +1,74 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
+import {
+  VscHome,
+  VscPlay,
+  VscListOrdered,
+  VscHistory,
+  VscSettingsGear,
+  VscInfo,
+} from "react-icons/vsc";
+import Dock from "../animated_components/dock/Dock";
 
-const Navbar = () => {
+const Navbar = ({ style, className, animate, initial }) => {
+  const navigate = useNavigate();
+
+  const items = [
+    {
+      icon: <VscHome size={18} />,
+      label: "Home",
+      onClick: () => navigate("/"),
+    },
+    {
+      icon: <VscPlay size={18} />,
+      label: "Active Jobs",
+      onClick: () => navigate("/active"),
+    },
+    {
+      icon: <VscListOrdered size={18} />,
+      label: "Queue",
+      onClick: () => navigate("/queue"),
+    },
+    {
+      icon: <VscHistory size={18} />,
+      label: "History",
+      onClick: () => navigate("/history"),
+    },
+    {
+      icon: <VscSettingsGear size={18} />,
+      label: "Settings",
+      onClick: () => navigate("/settings"),
+    },
+    {
+      icon: <VscInfo size={18} />,
+      label: "About",
+      onClick: () => navigate("/about"),
+    },
+  ];
+
+  const defaultStyle = {
+    position: "fixed",
+    bottom: "2rem",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 1000,
+  };
+
   return (
-    <nav className="navbar-centered">
-      <div className="navbar-links">
-        <NavLink
-          to="/active"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-          target="_blank"
-          rel="noopener noreferrer">
-          Active
-        </NavLink>
-        <NavLink
-          to="/queue"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-          target="_blank"
-          rel="noopener noreferrer">
-          Queue
-        </NavLink>
-        <NavLink
-          to="/history"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-          target="_blank"
-          rel="noopener noreferrer">
-          History
-        </NavLink>
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-          target="_blank"
-          rel="noopener noreferrer">
-          Settings
-        </NavLink>
-        <NavLink
-          to="/about"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-          target="_blank"
-          rel="noopener noreferrer">
-          About
-        </NavLink>
-      </div>
-    </nav>
+    <motion.div
+      initial={initial || false}
+      animate={animate || style || defaultStyle}
+      style={!animate ? style || defaultStyle : undefined}
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      className={className}>
+      <Dock
+        items={items}
+        panelHeight={68}
+        baseItemSize={50}
+        magnification={80}
+      />
+    </motion.div>
   );
 };
 
