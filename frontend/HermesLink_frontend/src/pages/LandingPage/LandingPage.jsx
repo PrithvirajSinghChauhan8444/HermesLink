@@ -1,5 +1,6 @@
 import React from "react";
-import Prism from "../components/animated_components/landing_page/landing_bg";
+import Prism from "../../components/animated_components/landing_page/landing_bg";
+import "./LandingPage.css";
 
 const LandingPage = () => {
   // The LandingPage content itself is minimal now,
@@ -12,15 +13,15 @@ const LandingPage = () => {
     <div className="landing-placeholder">
       <div style={{ width: "100%", height: "100vh", position: "relative" }}>
         <Prism
-          animationType="hover"
-          timeScale={0.5}
-          height={3.5}
-          baseWidth={5.5}
-          scale={3.6}
+          animationType="3drotate"
+          timeScale={1.2}
+          height={3}
+          baseWidth={4}
+          scale={2}
           hueShift={0}
           colorFrequency={1}
           noise={0}
-          glow={1}
+          glow={2}
         />
       </div>
     </div>

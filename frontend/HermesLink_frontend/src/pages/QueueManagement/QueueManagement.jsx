@@ -1,4 +1,5 @@
 import React from "react";
+import "./QueueManagement.css";
 
 const QueueManagement = () => {
   return (
