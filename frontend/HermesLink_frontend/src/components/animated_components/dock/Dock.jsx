@@ -16,6 +16,7 @@ import {
   useState,
 } from "react";
 
+import GlassSurface from "../glass_surface/GlassSurface";
 import "./Dock.css";
 
 function DockItem({
@@ -124,7 +125,10 @@ export default function Dock({
     <motion.div
       style={{ height, scrollbarWidth: "none" }}
       className="dock-outer">
-      <motion.div
+      <GlassSurface
+        height={panelHeight}
+        width="fit-content"
+        borderRadius={32}
         onMouseMove={({ pageX }) => {
           isHovered.set(1);
           mouseX.set(pageX);
@@ -134,7 +138,6 @@ export default function Dock({
           mouseX.set(Infinity);
         }}
         className={`dock-panel ${className}`}
-        style={{ height: panelHeight }}
         role="toolbar"
         aria-label="Application dock">
         {items.map((item, index) => (
@@ -151,7 +154,7 @@ export default function Dock({
             <DockLabel>{item.label}</DockLabel>
           </DockItem>
         ))}
-      </motion.div>
+      </GlassSurface>
     </motion.div>
   );
 }

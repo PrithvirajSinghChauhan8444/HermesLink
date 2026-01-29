@@ -10,29 +10,57 @@
   bottom: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  align-items: flex-end;
+  /* display: flex; -> Handled by GlassSurface */
+  /* align-items: flex-end; -> Handled by content override */
   width: fit-content;
+  overflow: visible;
+  /* gap: 1rem; -> Handled by content override */
+  border-radius: 2rem;
+  /* padding: 0 0.5rem 0.5rem; -> Handled by content override */
+}
+
+.dock-panel .glass-surface__content {
+  align-items: flex-end;
   gap: 1rem;
-  border-radius: 1rem;
-  background-color: #060010;
-  border: 1px solid #222;
   padding: 0 0.5rem 0.5rem;
 }
 
 .dock-item {
   position: relative;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background-color: #060010;
-  border: 1px solid #222;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   outline: none;
+
+  /* Glass Surface Styles */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  box-shadow:
+    0 0 2px 1px
+      light-dark(
+        color-mix(in oklch, black, transparent 85%),
+        color-mix(in oklch, white, transparent 65%)
+      )
+      inset,
+    0 0 10px 4px
+      light-dark(
+        color-mix(in oklch, black, transparent 90%),
+        color-mix(in oklch, white, transparent 85%)
+      )
+      inset,
+    0px 4px 16px rgba(17, 17, 26, 0.05),
+    0px 8px 24px rgba(17, 17, 26, 0.05),
+    0px 16px 56px rgba(17, 17, 26, 0.05),
+    0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+    0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+    0px 16px 56px rgba(17, 17, 26, 0.05) inset;
 }
 
 .dock-icon {
