@@ -11,7 +11,13 @@ import {
 } from "react-icons/vsc";
 import Dock from "../animated_components/dock/Dock";
 
-const Navbar = ({ style, className, animate, initial }) => {
+const Navbar = ({
+  style,
+  className,
+  animate,
+  initial,
+  onAnimationComplete,
+}) => {
   const navigate = useNavigate();
 
   const items = [
@@ -60,7 +66,8 @@ const Navbar = ({ style, className, animate, initial }) => {
       initial={initial || false}
       animate={animate || style || defaultStyle}
       style={!animate ? style || defaultStyle : undefined}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      transition={{ type: "spring", stiffness: 120, damping: 20 }}
+      onAnimationComplete={onAnimationComplete}
       className={className}>
       <Dock
         items={items}

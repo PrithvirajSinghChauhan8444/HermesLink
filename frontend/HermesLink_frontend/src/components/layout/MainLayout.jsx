@@ -16,6 +16,8 @@ const MainLayout = ({ children }) => {
   // State to track if the intro transition has happened
   // If not root, we assume intro is done (e.g. refresh on inner page)
   const [introComplete, setIntroComplete] = useState(!isRoot);
+  // Track if navbar animation reached destination
+  const [barAnimationDone, setBarAnimationDone] = useState(!isRoot);
 
   // Handle interaction to trigger intro
   const handleInteraction = () => {
@@ -28,39 +30,42 @@ const MainLayout = ({ children }) => {
   useEffect(() => {
     if (!isRoot) {
       setIntroComplete(true);
+      setBarAnimationDone(false); // Reset animation state when leaving root
+    } else {
+      setBarAnimationDone(false); // Reset when returning to root (optional)
     }
   }, [isRoot]);
 
   // Animation States
-  // Animation States
   const hiddenState = {
     position: "fixed",
-    bottom: "35%",
+    bottom: "2rem", // Constant baseline
     top: "auto",
-    gap: "2rem",
     left: "50%",
-    transform: "translateX(-50%)",
+    x: "-50%",
+    y: "-35vh", // Move UP for center/hidden
     zIndex: 1000,
     opacity: 0,
   };
 
   const bottomState = {
     position: "fixed",
-    bottom: "2rem",
+    bottom: "2rem", // Constant baseline
     top: "auto",
     left: "50%",
-    transform: "translateX(-50%)",
+    x: "-50%",
+    y: "0px", // Stay at bottom
     zIndex: 1000,
     opacity: 1,
   };
 
   const centerState = {
     position: "fixed",
-    bottom: "35%",
+    bottom: "2rem", // Constant baseline
     top: "auto",
-    gap: "2rem", // This might not be used by motion but harmless
     left: "50%",
-    transform: "translateX(-50%)",
+    x: "-50%",
+    y: "-35vh", // Move UP (negative Y) to center
     zIndex: 1000,
     opacity: 1,
   };
@@ -136,7 +141,10 @@ const MainLayout = ({ children }) => {
       </div>
 
       {/* Navbar: Single instance, animated */}
-      <Navbar animate={targetState} />
+      <Navbar
+        animate={targetState}
+        onAnimationComplete={() => setBarAnimationDone(true)}
+      />
 
       {/* Main Content: Hidden in Intro, Visible below Nav in Active */}
       {/* Main Content / Background Layer */}
@@ -156,7 +164,7 @@ const MainLayout = ({ children }) => {
       ) : (
         // On App Pages, render content in flow
         <main
-          className={`layout-content ${introComplete ? "fade-in-delayed" : "hidden"}`}>
+          className={`layout-content ${introComplete && barAnimationDone ? "fade-in-delayed" : "hidden"}`}>
           {children}
         </main>
       )}
