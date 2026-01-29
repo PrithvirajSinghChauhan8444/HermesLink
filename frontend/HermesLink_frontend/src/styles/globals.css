@@ -1,23 +1,24 @@
 :root {
+  color-scheme: dark;
   /* =========================================
      Color Palette - Colorful Light Theme
      ========================================= */
 
-  /* Backgrounds: Clean warm whites and soft tints */
-  --color-bg-app: #f0f4f8; /* Very soft blue-grey */
-  --color-bg-sidebar: rgba(255, 255, 255, 0.65);
-  --color-bg-header: rgba(255, 255, 255, 0.65);
-  --color-bg-panel: rgba(255, 255, 255, 0.65);
-  --color-bg-card: rgba(248, 250, 252, 0.5);
+  /* Backgrounds: Deep, rich darks */
+  --color-bg-app: #000000; /* Pure Black */
+  --color-bg-sidebar: rgba(15, 23, 42, 0.85);
+  --color-bg-header: rgba(15, 23, 42, 0.85);
+  --color-bg-panel: rgba(30, 41, 59, 0.5); /* Slate 800 */
+  --color-bg-card: rgba(30, 41, 59, 0.5);
 
-  /* Borders: Soft but defined */
-  --color-border-subtle: #e2e8f0;
-  --color-border-default: #cbd5e1;
+  /* Borders: Subtle borders for dark mode */
+  --color-border-subtle: #1e293b; /* Slate 800 */
+  --color-border-default: #334155; /* Slate 700 */
 
-  /* Text: High contrast darks */
-  --color-text-primary: #665f5f; /* Slate 800 */
-  --color-text-secondary: #2e3238; /* Slate 500 */
-  --color-text-muted: #94a3b8; /* Slate 400 */
+  /* Text: High contrast lights */
+  --color-text-primary: #f1f5f9; /* Slate 100 */
+  --color-text-secondary: #94a3b8; /* Slate 400 */
+  --color-text-muted: #64748b; /* Slate 500 */
 
   /* Accents: Vibrant and punchy */
   --color-accent-primary: #3b82f6; /* Bright Blue */

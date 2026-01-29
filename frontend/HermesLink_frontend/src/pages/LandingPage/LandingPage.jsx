@@ -1,6 +1,6 @@
 import React from "react";
-import Prism from "../../components/animated_components/landing_page/landing_bg";
-import "./LandingPage.css";
+
+import ColorBends from "../../components/animated_components/color_bend/ColorBends";
 
 const LandingPage = () => {
   // The LandingPage content itself is minimal now,
@@ -12,16 +12,23 @@ const LandingPage = () => {
   return (
     <div className="landing-placeholder">
       <div style={{ width: "100%", height: "100vh", position: "relative" }}>
-        <Prism
-          animationType="3drotate"
-          timeScale={1.2}
-          height={3}
-          baseWidth={4}
-          scale={2}
-          hueShift={0}
-          colorFrequency={1}
-          noise={0}
-          glow={2}
+        <ColorBends
+          colors={[
+            "#ff453a", // Red
+            "#32d74b", // Green
+            "#0a84ff", // Blue
+          ]}
+          rotation={0}
+          speed={0.2}
+          scale={1}
+          frequency={1}
+          warpStrength={1}
+          mouseInfluence={1}
+          parallax={0.5}
+          noise={0.1}
+          transparent
+          autoRotate={1}
+          color=""
         />
       </div>
     </div>

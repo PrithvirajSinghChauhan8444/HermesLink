@@ -6,13 +6,13 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  /* Artistic Mesh Background (Aurora) */
-  background-color: #f0ebf8;
+  /* Artistic Mesh Background (Aurora - Dark Mode) */
+  background-color: #000000;
   background-image:
-    radial-gradient(at 10% 10%, rgba(255, 182, 193, 0.4) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, rgba(173, 216, 230, 0.5) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, rgba(255, 239, 213, 0.5) 0px, transparent 50%),
-    radial-gradient(at 10% 90%, rgba(221, 160, 221, 0.4) 0px, transparent 50%);
+    radial-gradient(at 10% 10%, rgba(29, 78, 216, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(192, 38, 211, 0.15) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
   background-size: 200% 200%;
   animation: auroraFlow 20s ease infinite;
 
@@ -130,7 +130,7 @@
 
 .nav-item:hover,
 .queue-item:hover {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
