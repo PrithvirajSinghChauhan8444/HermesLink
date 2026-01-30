@@ -58,6 +58,7 @@
 .app-title {
   font-size: 4rem; /* Big */
   font-weight: 700;
+
   color: var(--text-primary, #ffffff);
   margin: 0;
   transition: font-size 0.5s ease;
