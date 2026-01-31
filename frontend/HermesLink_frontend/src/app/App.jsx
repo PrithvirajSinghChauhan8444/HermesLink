@@ -25,9 +25,6 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/about" element={<About />} />
       </Routes>
-
-      {/* Global Navbar at the bottom of every page */}
-      <Navbar />
     </BrowserRouter>
   );
 }

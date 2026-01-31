@@ -4,6 +4,7 @@ import Navbar from "../../components/layout/Navbar";
 import GlassSurface from "../../components/animated_components/glass_surface/GlassSurface";
 import DecryptedText from "../../components/animated_components/title/DecryptedText";
 import "../../styles/dashboard.css"; // Ensure styles are available
+import { hiddenState, centerState } from "../../config/navbarStates";
 
 const LandingPage = () => {
   const [introComplete, setIntroComplete] = useState(false);
@@ -15,26 +16,7 @@ const LandingPage = () => {
     }
   };
 
-  // Animation States for Navbar
-  const hiddenState = {
-    position: "fixed",
-    bottom: "2rem",
-    left: "50%",
-    x: "-50%",
-    y: "-35vh", // Move UP for center/hidden
-    zIndex: 1000,
-    opacity: 0,
-  };
 
-  const centerState = {
-    position: "fixed",
-    bottom: "2rem",
-    left: "50%",
-    x: "-50%",
-    y: "-35vh", // Center position
-    zIndex: 1000,
-    opacity: 1,
-  };
 
   return (
     <div
@@ -107,6 +89,11 @@ const LandingPage = () => {
           </h1>
         </div>
       </div>
+      {/* Navbar - animated based on state */}
+      <Navbar
+        initial={hiddenState}
+        animate={introComplete ? centerState : hiddenState}
+      />
     </div>
   );
 };

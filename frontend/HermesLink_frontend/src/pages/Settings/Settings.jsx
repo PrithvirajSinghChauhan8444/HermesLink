@@ -1,4 +1,6 @@
 import React from "react";
+import Navbar from "../../components/layout/Navbar";
+import { bottomState } from "../../config/navbarStates";
 import "./Settings.css";
 
 const Settings = () => {
@@ -12,6 +14,7 @@ const Settings = () => {
           <p>Create and configure download queues.</p>
         </div>
       </div>
+      <Navbar animate={bottomState} />
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import React from "react";
+import Navbar from "../../components/layout/Navbar";
+import { bottomState } from "../../config/navbarStates";
 import "./QueueManagement.css";
 
 const QueueManagement = () => {
@@ -11,6 +13,7 @@ const QueueManagement = () => {
           Queue List Placeholder
         </div>
       </div>
+      <Navbar animate={bottomState} />
     </div>
   );
 };

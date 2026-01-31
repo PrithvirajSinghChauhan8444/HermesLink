@@ -1,4 +1,6 @@
 import React from "react";
+import Navbar from "../../components/layout/Navbar";
+import { bottomState } from "../../config/navbarStates";
 import "./About.css";
 
 const About = () => {
@@ -26,6 +28,7 @@ const About = () => {
           </ul>
         </div>
       </div>
+      <Navbar animate={bottomState} />
     </div>
   );
 };

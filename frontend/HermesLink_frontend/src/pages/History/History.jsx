@@ -1,4 +1,6 @@
 import React from "react";
+import Navbar from "../../components/layout/Navbar";
+import { bottomState } from "../../config/navbarStates";
 import "./History.css";
 
 const History = () => {
@@ -11,6 +13,7 @@ const History = () => {
           History Log Placeholder
         </div>
       </div>
+      <Navbar animate={bottomState} />
     </div>
   );
 };

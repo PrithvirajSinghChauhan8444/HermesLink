@@ -1,4 +1,6 @@
 import React from "react";
+import Navbar from "../../components/layout/Navbar";
+import { bottomState } from "../../config/navbarStates";
 import "./ActiveJobs.css";
 import Threads from "../../components/animated_components/threads/Threads";
 
@@ -25,6 +27,7 @@ const ActiveJobs = () => {
           Job Feed Placeholder
         </div>
       </div>
+      <Navbar animate={bottomState} />
     </div>
   );
 };
