@@ -61,7 +61,7 @@ const MainLayout = () => {
     top: "auto",
     left: "50%",
     x: "-50%",
-    y: "0px", // Stay at bottom
+    y: "0", // Stay at bottom
     zIndex: 1000,
     opacity: 1,
   };
@@ -111,31 +111,32 @@ const MainLayout = () => {
   return (
     <div
       className={`layout-container ${introComplete
-          ? isRoot
-            ? "layout-hub"
-            : "layout-active"
-          : "layout-intro"
+        ? isRoot
+          ? "layout-hub"
+          : "layout-active"
+        : "layout-intro"
         }`}
       onClick={handleInteraction}
       onWheel={handleInteraction}>
-      {/* Big Title: Centered in Intro, Top in Active */}
-      <div className="layout-header">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "2rem",
-          }}>
-          <h1
-            className="app-title"
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveTab("home");
-              setIntroComplete(false);
-            }}
-            style={{ cursor: "pointer" }}>
-            {isRoot ? (
+      {/* Big Title: Centered in Intro. Only visible on Landing Page (isRoot) */}
+      {isRoot && (
+        <div className="layout-header">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "2rem",
+            }}>
+            <h1
+              className="app-title"
+              onClick={(e) => {
+                e.stopPropagation();
+                // No navigation needed if we are already root, but good for resetting state
+                setActiveTab("home");
+                setIntroComplete(false);
+              }}
+              style={{ cursor: "pointer" }}>
               <GlassSurface
                 scale={1.2}
                 borderRadius={55}
@@ -158,14 +159,10 @@ const MainLayout = () => {
                   maxIterations={20}
                 />
               </GlassSurface>
-            ) : (
-              "HermesLink"
-            )}
-          </h1>
+            </h1>
+          </div>
         </div>
-      </div>
-
-      {/* Navbar: Single instance, animated */}
+      )}      {/* Navbar: Single instance, animated */}
       <Navbar
         animate={targetState}
         onAnimationComplete={() => setBarAnimationDone(true)}

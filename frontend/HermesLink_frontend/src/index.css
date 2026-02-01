@@ -14,16 +14,20 @@
 }
 
 .layout-container.layout-intro {
-  justify-content: center; /* Intro: Dead center */
+  justify-content: center;
+  /* Intro: Dead center */
 }
 
 .layout-container.layout-hub {
-  justify-content: center; /* Hub: Dead center (Title + Nav group) */
-  padding-bottom: 10vh; /* Visual offset to move "a little up" visually */
+  justify-content: center;
+  /* Hub: Dead center (Title + Nav group) */
+  padding-bottom: 10vh;
+  /* Visual offset to move "a little up" visually */
 }
 
 .layout-container.layout-active {
-  justify-content: flex-start; /* App: Top aligned */
+  justify-content: flex-start;
+  /* App: Top aligned */
 }
 
 /* Header/Title Container */
@@ -39,8 +43,9 @@
 }
 
 .layout-container.layout-active .layout-header {
-  /* Active State (App): Top area */
-  height: 150px;
+  /* Active State (App): Top area - REMOVED/UNUSED if header is hidden on active */
+  /* Keeping simpler rule just in case, but user wants it GONE on active */
+  display: none;
 }
 
 .layout-container.layout-hub {
@@ -51,18 +56,21 @@
 .layout-container.layout-hub .layout-header {
   /* Hub State: Header takes up substantial space but allows Nav below */
   height: auto;
-  margin-bottom: 2rem; /* Move title up a bit relative to nav */
+  margin-bottom: 2rem;
+  /* Move title up a bit relative to nav */
   flex: 0 0 auto;
 }
 
 .app-title {
-  font-size: 4rem; /* Big */
+  font-size: 4rem;
+  /* Big */
   font-weight: 700;
 
   color: var(--text-primary, #ffffff);
   margin: 0;
   transition: font-size 0.5s ease;
 }
+
 
 /* Navbar Container */
 .layout-nav {
@@ -76,12 +84,14 @@
 }
 
 .navbar-centered {
-  background: transparent; /* No bar background, just links? Or minimal pill? */
+  background: transparent;
+  /* No bar background, just links? Or minimal pill? */
   padding: 1rem 2rem;
   border-radius: 99px;
-  background-color: rgba(30, 41, 59, 0.8); /* Glassy pill */
+  background-color: rgba(30, 41, 59, 0.8);
+  /* Glassy pill */
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
 
 .navbar-links {
@@ -107,11 +117,10 @@
 /* Content Container */
 .layout-content {
   width: 100%;
-  max-width: 1200px;
   flex: 1;
-  padding: 0 2rem 2rem;
+  padding: 0;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(1.25rem);
   transition:
     opacity 0.8s ease 0.2s,
     transform 0.8s ease 0.2s;
