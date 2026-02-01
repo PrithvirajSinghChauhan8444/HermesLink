@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+
 import { motion } from "motion/react";
 import {
   VscHome,
@@ -17,39 +17,41 @@ const Navbar = ({
   animate,
   initial,
   onAnimationComplete,
+  activeTab,
+  onTabChange,
 }) => {
-  const navigate = useNavigate();
+
 
   const items = [
     {
       icon: <VscHome size={18} />,
       label: "Home",
-      onClick: () => navigate("/"),
+      onClick: () => onTabChange("home"),
     },
     {
       icon: <VscPlay size={18} />,
       label: "Active Jobs",
-      onClick: () => navigate("/active"),
+      onClick: () => onTabChange("active"),
     },
     {
       icon: <VscListOrdered size={18} />,
       label: "Queue",
-      onClick: () => navigate("/queue"),
+      onClick: () => onTabChange("queue"),
     },
     {
       icon: <VscHistory size={18} />,
       label: "History",
-      onClick: () => navigate("/history"),
+      onClick: () => onTabChange("history"),
     },
     {
       icon: <VscSettingsGear size={18} />,
       label: "Settings",
-      onClick: () => navigate("/settings"),
+      onClick: () => onTabChange("settings"),
     },
     {
       icon: <VscInfo size={18} />,
       label: "About",
-      onClick: () => navigate("/about"),
+      onClick: () => onTabChange("about"),
     },
   ];
 
