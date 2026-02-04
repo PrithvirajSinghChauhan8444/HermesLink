@@ -5,6 +5,7 @@ import "../../styles/dashboard.css";
 
 import DecryptedText from "../animated_components/title/DecryptedText";
 import GlassSurface from "../animated_components/glass_surface/GlassSurface";
+import ColorBends from "../animated_components/color_bend/ColorBends";
 
 // Page Imports
 import LandingPage from "../../pages/LandingPage/LandingPage";
@@ -118,6 +119,35 @@ const MainLayout = () => {
         }`}
       onClick={handleInteraction}
       onWheel={handleInteraction}>
+      {/* Global ColorBends Background */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: -10,
+        }}>
+        <ColorBends
+          colors={[
+            "#ff453a", // Red
+            "#32d74b", // Green
+            "#0a84ff", // Blue
+          ]}
+          rotation={0}
+          speed={0.2}
+          scale={1}
+          frequency={1}
+          warpStrength={1}
+          mouseInfluence={1}
+          parallax={0.5}
+          noise={0.1}
+          transparent
+          autoRotate={1}
+          color=""
+        />
+      </div>
       {/* Big Title: Centered in Intro. Only visible on Landing Page (isRoot) */}
       {isRoot && (
         <div className="layout-header">

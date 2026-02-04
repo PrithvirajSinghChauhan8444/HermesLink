@@ -1,7 +1,6 @@
 import React from "react";
 
 import "./ActiveJobs.css";
-import Threads from "../../components/animated_components/threads/Threads";
 
 const ActiveJobs = () => {
   return (
@@ -13,10 +12,6 @@ const ActiveJobs = () => {
         width: "100vw",
         overflow: "hidden",
       }}>
-      <div className="thread_bg" style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-        <Threads amplitude={1.7} distance={0} enableMouseInteraction={false} />
-      </div>
-
       <div
         className="dashboard-padding"
         style={{ position: "relative", zIndex: 1 }}>
@@ -26,7 +21,6 @@ const ActiveJobs = () => {
           Job Feed Placeholder
         </div>
       </div>
-
     </div>
   );
 };

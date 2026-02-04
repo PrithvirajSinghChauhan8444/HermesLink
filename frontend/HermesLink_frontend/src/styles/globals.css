@@ -5,26 +5,37 @@
      ========================================= */
 
   /* Backgrounds: Deep, rich darks */
-  --color-bg-app: #000000; /* Pure Black */
+  --color-bg-app: #000000;
+  /* Pure Black */
   --color-bg-sidebar: rgba(15, 23, 42, 0.85);
   --color-bg-header: rgba(15, 23, 42, 0.85);
-  --color-bg-panel: rgba(30, 41, 59, 0.5); /* Slate 800 */
+  --color-bg-panel: rgba(30, 41, 59, 0.5);
+  /* Slate 800 */
   --color-bg-card: rgba(30, 41, 59, 0.5);
 
   /* Borders: Subtle borders for dark mode */
-  --color-border-subtle: #1e293b; /* Slate 800 */
-  --color-border-default: #334155; /* Slate 700 */
+  --color-border-subtle: #1e293b;
+  /* Slate 800 */
+  --color-border-default: #334155;
+  /* Slate 700 */
 
   /* Text: High contrast lights */
-  --color-text-primary: #f1f5f9; /* Slate 100 */
-  --color-text-secondary: #94a3b8; /* Slate 400 */
-  --color-text-muted: #64748b; /* Slate 500 */
+  --color-text-primary: #f1f5f9;
+  /* Slate 100 */
+  --color-text-secondary: #94a3b8;
+  /* Slate 400 */
+  --color-text-muted: #64748b;
+  /* Slate 500 */
 
   /* Accents: Vibrant and punchy */
-  --color-accent-primary: #3b82f6; /* Bright Blue */
-  --color-accent-success: #10b981; /* Emerald */
-  --color-accent-warning: #f59e0b; /* Amber */
-  --color-accent-danger: #ef4444; /* Red */
+  --color-accent-primary: #3b82f6;
+  /* Bright Blue */
+  --color-accent-success: #10b981;
+  /* Emerald */
+  --color-accent-warning: #f59e0b;
+  /* Amber */
+  --color-accent-danger: #ef4444;
+  /* Red */
 
   /* Layout Dimensions */
   --width-sidebar: 260px;
@@ -77,15 +88,18 @@ body {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.4);
   border-radius: 99px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(148, 163, 184, 0.6);
 }
