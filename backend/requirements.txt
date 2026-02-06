@@ -1,3 +1,5 @@
 requests
 yt-dlp
 python-dotenv
+fastapi
+uvicorn[standard]
