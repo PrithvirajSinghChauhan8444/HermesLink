@@ -6,24 +6,36 @@
   background: transparent;
   transform: translateY(-5%);
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
 }
 
-.dashboard-padding {
+.history-page .dashboard-padding {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 1;
+  width: 100%;
+  max-width: 70rem;
+  padding: 2rem;
 }
 
-.dashboard-placeholder-card {
-  min-width: 70rem;
-  width: fit-content;
-  border-radius: 5rem;
+.history-page .dashboard-placeholder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 1;
+  width: 100%;
+  max-width: 70rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 2rem;
+  padding: 2rem;
 
   /* Glass Surface Styles */
-  background: rgba(255, 255, 255, 0);
+  background: rgba(26, 25, 25, 0.476);
   backdrop-filter: blur(5px) saturate(1.8) brightness(1.2);
   -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -41,6 +53,50 @@
     0px 16px 56px rgba(17, 17, 26, 0.05) inset;
 }
 
-.dashboard-title {
-  font-size: 3rem;
+/* Custom scrollbar for the card */
+.history-page .dashboard-placeholder-card::-webkit-scrollbar {
+  width: 8px;
+  transform: translateX(-1rem);
+
+}
+
+.history-page .dashboard-placeholder-card::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.history-page .dashboard-placeholder-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.history-page .dashboard-placeholder-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.history-page .dashboard-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.history-list {
+  width: 100%;
+}
+
+.history-item {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Skeleton animation */
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
 }
