@@ -1007,6 +1007,108 @@
       "updated_at": "2026-01-25T16:31:07.603949",
       "queue_id": "default",
       "thread_limit": 4
+    },
+    "91513b1b-2266-4a34-856a-7365e0306d58": {
+      "job_id": "91513b1b-2266-4a34-856a-7365e0306d58",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "progress": {},
+      "created_at": "2026-02-06T16:04:06.838347",
+      "updated_at": "2026-02-06T16:04:07.979725",
+      "queue_id": "abcd",
+      "thread_limit": 6
+    },
+    "f8fd9f35-056d-4f7a-8b3b-ed82ebc04737": {
+      "job_id": "f8fd9f35-056d-4f7a-8b3b-ed82ebc04737",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "direct",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "progress": {},
+      "created_at": "2026-02-06T16:06:00.997399",
+      "updated_at": "2026-02-06T16:06:02.326719",
+      "queue_id": "abcd",
+      "thread_limit": 6
+    },
+    "50fa85d8-fc84-47d9-b064-25244bd59080": {
+      "job_id": "50fa85d8-fc84-47d9-b064-25244bd59080",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "G:\\STUFF\\Watch\\hermeslink_test_download"
+      },
+      "error_reason": "Runner Start Error: name 'Any' is not defined",
+      "progress": {},
+      "created_at": "2026-02-06T16:07:45.334059",
+      "updated_at": "2026-02-06T16:07:46.312165",
+      "queue_id": "abcd",
+      "thread_limit": 6
+    },
+    "d328ccb4-4429-405e-b67e-8da329014a9e": {
+      "job_id": "d328ccb4-4429-405e-b67e-8da329014a9e",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": "Runner Start Error: name 'Any' is not defined",
+      "progress": {},
+      "created_at": "2026-02-06T16:08:37.432353",
+      "updated_at": "2026-02-06T16:08:38.325217",
+      "queue_id": "abcd",
+      "thread_limit": 6
+    },
+    "1ba4cb77-a13a-4f8b-a3f1-6d69cd6568cd": {
+      "job_id": "1ba4cb77-a13a-4f8b-a3f1-6d69cd6568cd",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
+        "total_length": "104857600",
+        "completed_length": "104857600",
+        "eta": "N/A"
+      },
+      "created_at": "2026-02-06T16:10:21.178380",
+      "updated_at": "2026-02-06T16:10:43.225960",
+      "queue_id": "try1",
+      "thread_limit": 4
+    },
+    "d6a4c447-4863-43bf-9aed-235803cf22ef": {
+      "job_id": "d6a4c447-4863-43bf-9aed-235803cf22ef",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://filesamples.com/samples/video/m4v/sample_1280x720_surfing_with_audio.m4v",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
+        "total_length": "23936787",
+        "completed_length": "23936787",
+        "eta": "N/A"
+      },
+      "created_at": "2026-02-06T16:16:54.776450",
+      "updated_at": "2026-02-06T16:16:59.675593",
+      "queue_id": "default",
+      "thread_limit": 4
     }
   },
   "queues": {
@@ -1016,6 +1118,10 @@
     },
     "try1": {
       "queue_id": "try1",
+      "job_ids": []
+    },
+    "abcd": {
+      "queue_id": "abcd",
       "job_ids": []
     }
   },
@@ -1031,6 +1137,13 @@
       "queue_id": "try1",
       "max_parallel_jobs": 1,
       "max_threads_per_job": 4,
+      "priority": 10,
+      "enabled": true
+    },
+    "abcd": {
+      "queue_id": "abcd",
+      "max_parallel_jobs": 2,
+      "max_threads_per_job": 6,
       "priority": 10,
       "enabled": true
     }

@@ -2,8 +2,15 @@ import os
 import sys
 import time
 import json
-import msvcrt
 from datetime import datetime
+
+# Cross-platform non-blocking input
+if os.name == 'nt':
+    import msvcrt
+else:
+    import select
+    import tty
+    import termios
 
 # Path Setup
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,11 +30,36 @@ class Dashboard:
         self.mode = "VIEW" # VIEW, MENU
         self.refresh_rate = 2
         self.last_refresh = 0
+        
+        # For Linux: save original terminal settings
+        if os.name != 'nt':
+            self.old_settings = termios.tcgetattr(sys.stdin)
 
     def get_input_non_blocking(self):
-        if msvcrt.kbhit():
-            return msvcrt.getch().decode('utf-8').lower()
-        return None
+        if os.name == 'nt':
+            if msvcrt.kbhit():
+                return msvcrt.getch().decode('utf-8').upper()
+            return None
+        else:
+            # Linux/Unix non-blocking input
+            fd = sys.stdin.fileno()
+            try:
+                # Set terminal to raw mode for immediate character input
+                tty.setraw(fd)
+                # Use select with a timeout to check for input
+                rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
+                if rlist:
+                    char = sys.stdin.read(1)
+                    # Return Enter key as special value, others as uppercase
+                    if char == '\r' or char == '\n':
+                        return 'ENTER'
+                    return char.upper() if char else None
+                return None
+            except Exception:
+                return None
+            finally:
+                # Always restore terminal to original settings
+                termios.tcsetattr(fd, termios.TCSADRAIN, self.old_settings)
 
     def draw_view(self):
         # Reload jobs
@@ -119,11 +151,15 @@ class Dashboard:
                 
                 # Check Input
                 key = self.get_input_non_blocking()
-                if key == 'm':
+                if key == 'M':
                     self.show_menu()
-                elif key == 'q':
+                elif key == 'Q':
                     print("Exiting...")
                     break
+                elif key == 'ENTER':
+                    # Refresh immediately on Enter
+                    self.draw_view()
+                    self.last_refresh = current_time
                 
                 # Refresh
                 if current_time - self.last_refresh > self.refresh_rate:

@@ -4,7 +4,6 @@ import sys
 import threading
 import time
 import random
-import msvcrt
 
 # Ensure src and project root are in python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -147,8 +146,8 @@ def add_new_download(job_manager):
         except ValueError:
              print("Invalid input. Using default queue.")
 
-    # Hardcoded for this step (consistent with previous version)
-    DOWNLOAD_DIR = r"G:\STUFF\Watch\hermeslink_test_download"
+    # Download directory - use home directory for cross-platform support
+    DOWNLOAD_DIR = os.path.expanduser("~/Downloads/hermeslink_downloads")
     if not os.path.exists(DOWNLOAD_DIR):
         os.makedirs(DOWNLOAD_DIR)
 
