@@ -1,5 +1,5 @@
 @import "./styles/globals.css";
-/* @import "./styles/tailwind.css"; */
+@import "./styles/tailwind.css";
 
 /* Layout Animations & Structure */
 .layout-container {
@@ -94,6 +94,13 @@
   border: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
 
+/* Light mode navbar */
+[data-theme="light"] .navbar-centered {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
 .navbar-links {
   display: flex;
   gap: 2rem;
@@ -150,6 +157,11 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: var(--bg-primary, #0f172a);
+}
+
+/* Light mode layout override */
+[data-theme="light"] .layout-vertical {
+  background-color: var(--color-bg-app);
 }
 
 .layout-content-full {

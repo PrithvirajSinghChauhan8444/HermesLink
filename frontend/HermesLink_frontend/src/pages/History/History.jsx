@@ -1,33 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import { useJobs, formatDate, extractFilename } from "../../hooks/useJobs";
+import Silk from "../../components/animated_components/silk_bg/Silk";
 
 import "./History.css";
+
+/**
+ * Queue filter categories
+ */
+const QUEUE_FILTERS = [
+  { id: "all", label: "All History", icon: "📋" },
+  { id: "download", label: "Download Queue", icon: "⬇️" },
+  { id: "processing", label: "Processing Queue", icon: "⚙️" },
+  { id: "completed", label: "Completed", icon: "✅" },
+  { id: "failed", label: "Failed", icon: "❌" },
+];
+
+/**
+ * Queue Navigation Sidebar
+ */
+const QueueNav = ({ activeFilter, onFilterChange, jobCounts }) => {
+  return (
+    <nav className="history-nav">
+      <h3 className="history-nav-title">Queues</h3>
+      <ul className="history-nav-list">
+        {QUEUE_FILTERS.map((filter) => (
+          <li key={filter.id}>
+            <button
+              className={`history-nav-item ${activeFilter === filter.id ? "active" : ""}`}
+              onClick={() => onFilterChange(filter.id)}
+            >
+              <span className="history-nav-icon">{filter.icon}</span>
+              <span className="history-nav-label">{filter.label}</span>
+              {jobCounts[filter.id] !== undefined && (
+                <span className="history-nav-count">{jobCounts[filter.id]}</span>
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
 
 /**
  * State badge component for history states
  */
 const StateBadge = ({ state }) => {
-  const stateColors = {
-    COMPLETED: { bg: "#d1fae5", color: "#065f46" },
-    FAILED: { bg: "#fee2e2", color: "#991b1b" },
-    STOPPED: { bg: "#e5e7eb", color: "#374151" },
+  const stateStyles = {
+    COMPLETED: "badge-success",
+    FAILED: "badge-danger",
+    STOPPED: "badge-muted",
   };
-  const style = stateColors[state] || { bg: "#e5e7eb", color: "#374151" };
 
   return (
-    <span
-      className="state-badge"
-      style={{
-        backgroundColor: style.bg,
-        color: style.color,
-        padding: "4px 10px",
-        borderRadius: "12px",
-        fontSize: "0.75rem",
-        fontWeight: "600",
-        textTransform: "uppercase",
-        flexShrink: 0,
-      }}
-    >
+    <span className={`state-badge ${stateStyles[state] || "badge-muted"}`}>
       {state}
     </span>
   );
@@ -40,39 +66,17 @@ const HistoryItem = ({ job }) => {
   const filename = extractFilename(job);
 
   return (
-    <div className="history-item" style={{
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      backdropFilter: "blur(10px)",
-      borderRadius: "12px",
-      padding: "16px",
-      marginBottom: "12px",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h4 style={{
-            margin: 0,
-            fontSize: "0.95rem",
-            fontWeight: "500",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            color: "#f9fafb",
-          }}>
-            {filename}
-          </h4>
-          <p style={{ margin: "6px 0 0", fontSize: "0.75rem", color: "#9ca3af" }}>
-            {job.engine_config?.type?.toUpperCase()} • {formatDate(job.updated_at)}
+    <div className="history-item">
+      <div className="history-item-content">
+        <div className="history-item-info">
+          <h4 className="history-filename">{filename}</h4>
+          <p className="history-meta">
+            <span className="history-queue">{job.engine_config?.type?.toUpperCase()}</span>
+            <span className="history-separator">•</span>
+            <span className="history-date">{formatDate(job.updated_at)}</span>
           </p>
           {job.error_reason && (
-            <p style={{
-              margin: "8px 0 0",
-              fontSize: "0.75rem",
-              color: "#f87171",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}>
+            <p className="history-error">
               ⚠️ {job.error_reason.substring(0, 80)}...
             </p>
           )}
@@ -87,18 +91,9 @@ const HistoryItem = ({ job }) => {
  * Loading skeleton
  */
 const LoadingSkeleton = () => (
-  <div>
+  <div className="history-skeleton-container">
     {[1, 2, 3, 4, 5].map((i) => (
-      <div
-        key={i}
-        style={{
-          height: "80px",
-          backgroundColor: "rgba(255, 255, 255, 0.05)",
-          borderRadius: "12px",
-          marginBottom: "12px",
-          animation: "pulse 1.5s infinite",
-        }}
-      />
+      <div key={i} className="history-skeleton" />
     ))}
   </div>
 );
@@ -107,23 +102,9 @@ const LoadingSkeleton = () => (
  * Error display
  */
 const ErrorDisplay = ({ error, onRetry }) => (
-  <div style={{
-    padding: "40px",
-    textAlign: "center",
-    color: "#f87171",
-  }}>
-    <p style={{ marginBottom: "16px" }}>⚠️ {error}</p>
-    <button
-      onClick={onRetry}
-      style={{
-        padding: "8px 16px",
-        backgroundColor: "#3b82f6",
-        color: "white",
-        border: "none",
-        borderRadius: "8px",
-        cursor: "pointer",
-      }}
-    >
+  <div className="history-error-display">
+    <p>⚠️ {error}</p>
+    <button onClick={onRetry} className="history-retry-btn">
       Retry
     </button>
   </div>
@@ -132,108 +113,128 @@ const ErrorDisplay = ({ error, onRetry }) => (
 /**
  * Empty state
  */
-const EmptyState = () => (
-  <div style={{
-    padding: "60px 20px",
-    textAlign: "center",
-    color: "#9ca3af",
-  }}>
-    <p style={{ fontSize: "2rem", marginBottom: "8px" }}>📝</p>
-    <p>No download history yet</p>
-    <p style={{ fontSize: "0.85rem", marginTop: "8px" }}>
-      Completed, failed, and stopped downloads will appear here
+const EmptyState = ({ filter }) => (
+  <div className="history-empty">
+    <p className="history-empty-icon">📝</p>
+    <p className="history-empty-title">No items found</p>
+    <p className="history-empty-subtitle">
+      {filter === "all"
+        ? "Completed, failed, and stopped downloads will appear here"
+        : `No items in ${filter} queue`}
     </p>
   </div>
 );
 
 /**
- * Stats summary component
+ * List Header with stats
  */
-const StatsSummary = ({ jobs }) => {
+const ListHeader = ({ jobs, onRefresh }) => {
   const completed = jobs.filter(j => j.state === "COMPLETED").length;
   const failed = jobs.filter(j => j.state === "FAILED").length;
-  const stopped = jobs.filter(j => j.state === "STOPPED").length;
+  const total = jobs.length;
 
   return (
-    <div style={{
-      display: "flex",
-      gap: "12px",
-      marginBottom: "16px",
-      scale: "1.2",
-      flexWrap: "wrap",
-    }}>
-      <div style={{
-        padding: "10px 16px",
-        backgroundColor: "rgba(16, 185, 129, 0.1)",
-        borderRadius: "10px",
-        border: "1px solid rgba(16, 185, 129, 0.2)",
-      }}>
-        <span style={{ color: "#10b981", fontWeight: "600" }}>{completed}</span>
-        <span style={{ color: "#9ca3af", marginLeft: "8px", fontSize: "0.8rem" }}>Completed</span>
+    <div className="history-list-header">
+      <div className="history-stats">
+        <span className="history-stat">
+          <strong>{total}</strong> Total
+        </span>
+        <span className="history-stat success">
+          <strong>{completed}</strong> Completed
+        </span>
+        <span className="history-stat danger">
+          <strong>{failed}</strong> Failed
+        </span>
       </div>
-      <div style={{
-        padding: "10px 16px",
-        backgroundColor: "rgba(248, 113, 113, 0.1)",
-        borderRadius: "10px",
-        border: "1px solid rgba(248, 113, 113, 0.2)",
-      }}>
-        <span style={{ color: "#f87171", fontWeight: "600" }}>{failed}</span>
-        <span style={{ color: "#9ca3af", marginLeft: "8px", fontSize: "0.8rem" }}>Failed</span>
-      </div>
-      <div style={{
-        padding: "10px 16px",
-        backgroundColor: "rgba(156, 163, 175, 0.1)",
-        borderRadius: "10px",
-        border: "1px solid rgba(156, 163, 175, 0.2)",
-      }}>
-        <span style={{ color: "#9ca3af", fontWeight: "600" }}>{stopped}</span>
-        <span style={{ color: "#9ca3af", marginLeft: "8px", fontSize: "0.8rem" }}>Stopped</span>
-      </div>
+      <button onClick={onRefresh} className="history-refresh-btn">
+        🔄 Refresh
+      </button>
     </div>
   );
 };
 
+/**
+ * Main History Component
+ */
 const History = () => {
   const { jobs, loading, error, refresh } = useJobs('history');
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  // Filter jobs based on active filter
+  const filteredJobs = jobs.filter(job => {
+    switch (activeFilter) {
+      case "completed":
+        return job.state === "COMPLETED";
+      case "failed":
+        return job.state === "FAILED";
+      case "download":
+        return job.engine_config?.type === "download";
+      case "processing":
+        return job.engine_config?.type === "processing";
+      default:
+        return true;
+    }
+  });
+
+  // Calculate job counts for nav badges
+  const jobCounts = {
+    all: jobs.length,
+    completed: jobs.filter(j => j.state === "COMPLETED").length,
+    failed: jobs.filter(j => j.state === "FAILED").length,
+    download: jobs.filter(j => j.engine_config?.type === "download").length,
+    processing: jobs.filter(j => j.engine_config?.type === "processing").length,
+  };
 
   return (
     <div className="history-page">
-      <div className="dashboard-padding">
-        <h2 className="dashboard-title">Process History</h2>
-        <div className="dashboard-placeholder-card">
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
-            <button
-              onClick={refresh}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                color: "#f9fafb",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "0.85rem",
-              }}
-            >
-              🔄 Refresh
-            </button>
-          </div>
+      {/* Silk Background */}
+      <div className="history-silk-bg">
+        <Silk
+          speed={3}
+          scale={1}
+          color="#939393ff"
+          noiseIntensity={1.5}
+          rotation={0}
+        />
+      </div>
 
-          {loading && jobs.length === 0 && <LoadingSkeleton />}
+      <div className="history-container">
+        <h2 className="history-title">Process History</h2>
 
-          {error && <ErrorDisplay error={error} onRetry={refresh} />}
+        <div className="history-split-container">
+          {/* Left Column - Queue Navigation (25%) */}
+          <aside className="history-sidebar">
+            <QueueNav
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+              jobCounts={jobCounts}
+            />
+          </aside>
 
-          {!loading && !error && jobs.length === 0 && <EmptyState />}
+          {/* Right Column - History List (75%) */}
+          <main className="history-main">
+            {/* Header with stats and refresh */}
+            <ListHeader jobs={filteredJobs} onRefresh={refresh} />
 
-          {jobs.length > 0 && (
-            <>
-              <StatsSummary jobs={jobs} />
-              <div className="history-list">
-                {jobs.map((job) => (
-                  <HistoryItem key={job.job_id} job={job} />
-                ))}
-              </div>
-            </>
-          )}
+            {/* Content area */}
+            <div className="history-content">
+              {loading && jobs.length === 0 && <LoadingSkeleton />}
+
+              {error && <ErrorDisplay error={error} onRetry={refresh} />}
+
+              {!loading && !error && filteredJobs.length === 0 && (
+                <EmptyState filter={activeFilter} />
+              )}
+
+              {filteredJobs.length > 0 && (
+                <div className="history-list">
+                  {filteredJobs.map((job) => (
+                    <HistoryItem key={job.job_id} job={job} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </main>
         </div>
       </div>
     </div>

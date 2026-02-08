@@ -6,6 +6,8 @@ import "../../styles/dashboard.css";
 import DecryptedText from "../animated_components/title/DecryptedText";
 import GlassSurface from "../animated_components/glass_surface/GlassSurface";
 import ColorBends from "../animated_components/color_bend/ColorBends";
+import { useTheme } from "../../hooks/ThemeContext";
+import ThemeToggle from "../common/ThemeToggle";
 
 // Page Imports
 import LandingPage from "../../pages/LandingPage/LandingPage";
@@ -16,6 +18,9 @@ import Settings from "../../pages/Settings/Settings";
 import About from "../../pages/About/About";
 
 const MainLayout = () => {
+  // Theme state
+  const { theme } = useTheme();
+
   // State to track the active view
   const [activeTab, setActiveTab] = useState("home");
 
@@ -26,6 +31,11 @@ const MainLayout = () => {
   const [introComplete, setIntroComplete] = useState(!isRoot);
   // Track if navbar animation reached destination
   const [barAnimationDone, setBarAnimationDone] = useState(!isRoot);
+
+  // Theme-aware ColorBends colors
+  const colorBendsColors = theme === "dark"
+    ? ["#ff453a", "#32d74b", "#0a84ff"] // Dark: vibrant red, green, blue
+    : ["#3b82f6", "#8b5cf6", "#ec4899"]; // Light: blue, purple, pink
 
   // Handle interaction to trigger intro
   const handleInteraction = () => {
@@ -130,11 +140,7 @@ const MainLayout = () => {
           zIndex: -10,
         }}>
         <ColorBends
-          colors={[
-            "#ff453a", // Red
-            "#32d74b", // Green
-            "#0a84ff", // Blue
-          ]}
+          colors={colorBendsColors}
           rotation={0}
           speed={0.2}
           scale={1}
@@ -148,6 +154,9 @@ const MainLayout = () => {
           color=""
         />
       </div>
+
+      {/* Theme Toggle - Fixed top right */}
+      <ThemeToggle />
       {/* Big Title: Centered in Intro. Only visible on Landing Page (isRoot) */}
       {isRoot && (
         <div className="layout-header">
