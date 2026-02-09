@@ -9,20 +9,9 @@
   justify-content: center;
   z-index: 1;
   background: transparent;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   padding: 2rem;
-}
-
-/* Silk Background */
-.history-silk-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
 }
 
 .history-container {
@@ -42,53 +31,30 @@
 }
 
 /* =========================================
-   Split Container - 25% / 75% with Liquid Glass
+   Split Container - 25% / 75%
    ========================================= */
 
 .history-split-container {
   display: flex;
   gap: 1.5rem;
   height: 65vh;
-
-  /* Liquid Glass Effect - matching navbar/GlassSurface */
-  background: rgba(0, 0, 0, 0.479);
-  backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border-default);
   border-radius: 2rem;
   padding: 1.5rem;
-
-  /* Liquid glass shadows */
-  box-shadow:
-    0 0 2px 1px light-dark(color-mix(in oklch, black, transparent 85%), color-mix(in oklch, white, transparent 65%)) inset,
-    0 0 10px 4px light-dark(color-mix(in oklch, black, transparent 90%), color-mix(in oklch, white, transparent 85%)) inset,
-    0px 4px 16px rgba(17, 17, 26, 0.05),
-    0px 8px 24px rgba(17, 17, 26, 0.05),
-    0px 16px 56px rgba(17, 17, 26, 0.05),
-    0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-    0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-    0px 16px 56px rgba(17, 17, 26, 0.05) inset;
 }
 
 /* =========================================
-   Left Sidebar - Queue Navigation (25%) with Liquid Glass
+   Left Sidebar - Queue Navigation (25%)
    ========================================= */
 
 .history-sidebar {
   flex: 0 0 25%;
   min-width: 200px;
   overflow: hidden;
-
-  /* Liquid Glass Effect */
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(8px) saturate(1.6) brightness(1.15);
-  -webkit-backdrop-filter: blur(8px) saturate(1.6) brightness(1.15);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
   border-radius: 1.25rem;
-
-  box-shadow:
-    0 0 2px 1px light-dark(color-mix(in oklch, black, transparent 85%), color-mix(in oklch, white, transparent 70%)) inset,
-    0 0 8px 3px light-dark(color-mix(in oklch, black, transparent 90%), color-mix(in oklch, white, transparent 85%)) inset;
 }
 
 .history-nav {
@@ -136,7 +102,6 @@
 
 .history-nav-item:hover {
   background: rgba(59, 130, 246, 0.1);
-  scale: 1.2;
   color: var(--color-text-primary);
 }
 
@@ -186,16 +151,8 @@
   align-items: center;
   padding: 0.75rem 1rem;
   border-radius: 1rem;
-
-  /* Liquid Glass Effect */
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(8px) saturate(1.6) brightness(1.15);
-  -webkit-backdrop-filter: blur(8px) saturate(1.6) brightness(1.15);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-
-  box-shadow:
-    0 0 2px 1px light-dark(color-mix(in oklch, black, transparent 85%), color-mix(in oklch, white, transparent 70%)) inset,
-    0 0 8px 3px light-dark(color-mix(in oklch, black, transparent 90%), color-mix(in oklch, white, transparent 85%)) inset;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .history-stats {
@@ -257,30 +214,20 @@
 }
 
 /* =========================================
-   History Item with Liquid Glass
+   History Item
    ========================================= */
 
 .history-item {
   padding: 1rem 1.25rem;
   border-radius: 1rem;
   transition: all 0.2s ease;
-
-  /* Liquid Glass Effect */
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(6px) saturate(1.5) brightness(1.1);
-  -webkit-backdrop-filter: blur(6px) saturate(1.5) brightness(1.1);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-
-  box-shadow:
-    0 0 2px 1px light-dark(color-mix(in oklch, black, transparent 88%), color-mix(in oklch, white, transparent 75%)) inset;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .history-item:hover {
   background: rgba(59, 130, 246, 0.08);
   border-color: rgba(59, 130, 246, 0.3);
-  box-shadow:
-    0 0 2px 1px light-dark(color-mix(in oklch, black, transparent 85%), color-mix(in oklch, white, transparent 65%)) inset,
-    0 4px 16px rgba(59, 130, 246, 0.1);
 }
 
 .history-item-content {
@@ -470,32 +417,23 @@
    ========================================= */
 
 [data-theme="light"] .history-split-container {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px) saturate(1.4) brightness(1.05);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4) brightness(1.05);
+  background: rgba(255, 255, 255, 0.8);
   border-color: rgba(0, 0, 0, 0.08);
-  box-shadow:
-    var(--shadow-glass),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="light"] .history-sidebar {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="light"] .history-list-header {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="light"] .history-item {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.8);
   border-color: rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.03);
 }
 
 [data-theme="light"] .history-nav-item:hover {

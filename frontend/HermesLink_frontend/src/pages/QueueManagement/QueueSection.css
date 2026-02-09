@@ -1,0 +1,105 @@
+/* =========================================
+   Queue Section
+   ========================================= */
+.queue-section {
+    padding-bottom: 6rem;
+}
+
+.queues-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+/* Queue Card */
+.queue-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    cursor: pointer;
+}
+
+.queue-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+}
+
+.queue-icon {
+    font-size: 1.75rem;
+}
+
+.queue-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.queue-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.queue-description {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.queue-stats {
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.queue-count {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+}
+
+.queue-label {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Actions */
+.queue-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.queue-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .queues-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .queue-card {
+        flex-wrap: wrap;
+    }
+
+    .queue-stats {
+        width: 100%;
+        margin-top: 1rem;
+    }
+}

@@ -1,249 +1,151 @@
-import React, { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import React from "react";
 import Navbar from "./Navbar";
 import "../../styles/dashboard.css";
-
-import DecryptedText from "../animated_components/title/DecryptedText";
-import GlassSurface from "../animated_components/glass_surface/GlassSurface";
-import ColorBends from "../animated_components/color_bend/ColorBends";
 import { useTheme } from "../../hooks/ThemeContext";
 import ThemeToggle from "../common/ThemeToggle";
+import { useScrollNavigation } from "../../hooks/useScrollNavigation";
+import { motion } from "motion/react";
 
 // Page Imports
-import LandingPage from "../../pages/LandingPage/LandingPage";
-import ActiveJobs from "../../pages/ActiveJobs/ActiveJobs";
-import QueueManagement from "../../pages/QueueManagement/QueueManagement";
-import History from "../../pages/History/History";
-import Settings from "../../pages/Settings/Settings";
-import About from "../../pages/About/About";
+import LandingSection from "../../pages/LandingPage/LandingSection";
+import ActiveJobsSection from "../../pages/ActiveJobs/ActiveJobsSection";
+import QueueSection from "../../pages/QueueManagement/QueueSection";
+import HistorySection from "../../pages/History/HistorySection";
+import SettingsSection from "../../pages/Settings/SettingsSection";
+import AboutSection from "../../pages/About/AboutSection";
+
+// Section IDs for navigation
+const SECTION_IDS = ["home", "active", "queue", "history", "settings", "about"];
 
 const MainLayout = () => {
-  // Theme state
   const { theme } = useTheme();
+  const {
+    activeSection,
+    scrollToSection,
+    scrollContainerRef,
+    setSectionRef,
+  } = useScrollNavigation(SECTION_IDS);
 
-  // State to track the active view
-  const [activeTab, setActiveTab] = useState("home");
-
-  // Check if we are on the landing page
-  const isRoot = activeTab === "home";
-
-  // State to track if the intro transition has happened
-  const [introComplete, setIntroComplete] = useState(!isRoot);
-  // Track if navbar animation reached destination
-  const [barAnimationDone, setBarAnimationDone] = useState(!isRoot);
-
-  // Theme-aware ColorBends colors
-  const colorBendsColors = theme === "dark"
-    ? ["#ff453a", "#32d74b", "#0a84ff"] // Dark: vibrant red, green, blue
-    : ["#3b82f6", "#8b5cf6", "#ec4899"]; // Light: blue, purple, pink
-
-  // Handle interaction to trigger intro
-  const handleInteraction = () => {
-    if (!introComplete) {
-      setIntroComplete(true);
-    }
-  };
-
-  // If we navigate away from root, ensure intro is marked complete
-  useEffect(() => {
-    if (!isRoot) {
-      setIntroComplete(true);
-      setBarAnimationDone(false); // Reset animation state when leaving root
-    } else {
-      setBarAnimationDone(false); // Reset when returning to root
-    }
-  }, [isRoot]);
-
-  // Animation States for Navbar
-  const hiddenState = {
+  // Navbar style - always at bottom
+  const navbarStyle = {
     position: "fixed",
-    bottom: "2rem", // Constant baseline
-    top: "auto",
+    bottom: "2rem",
     left: "50%",
-    x: "-50%",
-    y: "-35vh", // Move UP for center/hidden
+    transform: "translateX(-50%)",
     zIndex: 1000,
-    opacity: 0,
-  };
-
-  const bottomState = {
-    position: "fixed",
-    bottom: "2rem", // Constant baseline
-    top: "auto",
-    left: "50%",
-    x: "-50%",
-    y: "0", // Stay at bottom
-    zIndex: 1000,
-    opacity: 1,
-  };
-
-  const centerState = {
-    position: "fixed",
-    bottom: "2rem", // Constant baseline
-    top: "auto",
-    left: "50%",
-    x: "-50%",
-    y: "-35vh", // Move UP (negative Y) to center
-    zIndex: 1000,
-    opacity: 1,
-  };
-
-  // Determine target state for Navbar
-  let targetState;
-  if (isRoot) {
-    if (introComplete) {
-      targetState = centerState;
-    } else {
-      targetState = hiddenState;
-    }
-  } else {
-    targetState = bottomState;
-  }
-
-  // Render the valid component based on activeTab
-  const renderContent = () => {
-    switch (activeTab) {
-      case "active":
-        return <ActiveJobs />;
-      case "queue":
-        return <QueueManagement />;
-      case "history":
-        return <History />;
-      case "settings":
-        return <Settings />;
-      case "about":
-        return <About />;
-      case "home":
-      default:
-        return <LandingPage />;
-    }
   };
 
   return (
-    <div
-      className={`layout-container ${introComplete
-        ? isRoot
-          ? "layout-hub"
-          : "layout-active"
-        : "layout-intro"
-        }`}
-      onClick={handleInteraction}
-      onWheel={handleInteraction}>
-      {/* Global ColorBends Background */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          zIndex: -10,
-        }}>
-        <ColorBends
-          colors={colorBendsColors}
-          rotation={0}
-          speed={0.2}
-          scale={1}
-          frequency={1}
-          warpStrength={1}
-          mouseInfluence={1}
-          parallax={0.5}
-          noise={0.1}
-          transparent
-          autoRotate={1}
-          color=""
+    <div className="main-layout">
+      {/* Animated mesh background */}
+      <div className="mesh-background" />
+
+      {/* Floating orbs for visual depth */}
+      <div className="floating-orbs">
+        <motion.div
+          className="orb orb-1"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="orb orb-2"
+          animate={{
+            x: [0, -80, 0],
+            y: [0, 80, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="orb orb-3"
+          animate={{
+            x: [0, 60, 0],
+            y: [0, 40, 0],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
       </div>
 
-      {/* Theme Toggle - Fixed top right */}
+      {/* Theme Toggle */}
       <ThemeToggle />
-      {/* Big Title: Centered in Intro. Only visible on Landing Page (isRoot) */}
-      {isRoot && (
-        <div className="layout-header">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "2rem",
-            }}>
-            <h1
-              className="app-title"
-              onClick={(e) => {
-                e.stopPropagation();
-                // No navigation needed if we are already root, but good for resetting state
-                setActiveTab("home");
-                setIntroComplete(false);
-              }}
-              style={{ cursor: "pointer" }}>
-              <GlassSurface
-                scale={1.2}
-                borderRadius={55}
-                width="fit-content"
-                height="fit-content"
-                displace={0.5}
-                distortionScale={-180}
-                redOffset={0}
-                greenOffset={10}
-                blueOffset={20}
-                brightness={50}
-                opacity={0.93}
-                mixBlendMode="screen">
-                <DecryptedText
-                  text="HermesLink"
-                  animateOn="view"
-                  revealDirection="center"
-                  sequential={true}
-                  speed={120}
-                  maxIterations={20}
-                />
-              </GlassSurface>
-            </h1>
-          </div>
-        </div>
-      )}      {/* Navbar: Single instance, animated */}
-      <Navbar
-        animate={targetState}
-        onAnimationComplete={() => setBarAnimationDone(true)}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
 
-      {/* Main Content Area */}
-      {/* We use AnimatePresence to handle transitions between tabs */}
-      {isRoot ? (
-        // Landing Page is special, it acts as background
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: -1,
-          }}>
-          {renderContent()}
-        </div>
-      ) : (
-        // Other pages rendered in flow with transitions
-        <main
-          className={`layout-content ${introComplete && barAnimationDone ? "fade-in-delayed" : "hidden"}`}
-          style={{ position: "relative", width: "100%", height: "100%" }}
+      {/* Scroll Container */}
+      <div className="scroll-container" ref={scrollContainerRef}>
+        {/* Landing Section */}
+        <section
+          id="home"
+          ref={setSectionRef("home")}
+          className="scroll-section"
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              style={{ width: "100%", height: "100%" }}
-            >
-              {renderContent()}
-            </motion.div>
-          </AnimatePresence>
-        </main>
-      )}
+          <LandingSection onNavigate={scrollToSection} />
+        </section>
+
+        {/* Active Jobs Section */}
+        <section
+          id="active"
+          ref={setSectionRef("active")}
+          className="scroll-section"
+        >
+          <ActiveJobsSection />
+        </section>
+
+        {/* Queue Management Section */}
+        <section
+          id="queue"
+          ref={setSectionRef("queue")}
+          className="scroll-section"
+        >
+          <QueueSection />
+        </section>
+
+        {/* History Section */}
+        <section
+          id="history"
+          ref={setSectionRef("history")}
+          className="scroll-section"
+        >
+          <HistorySection />
+        </section>
+
+        {/* Settings Section */}
+        <section
+          id="settings"
+          ref={setSectionRef("settings")}
+          className="scroll-section"
+        >
+          <SettingsSection />
+        </section>
+
+        {/* About Section */}
+        <section
+          id="about"
+          ref={setSectionRef("about")}
+          className="scroll-section"
+        >
+          <AboutSection />
+        </section>
+      </div>
+
+      {/* Navbar */}
+      <Navbar
+        style={navbarStyle}
+        activeSection={activeSection}
+        onNavigate={scrollToSection}
+      />
     </div>
   );
 };

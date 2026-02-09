@@ -3,15 +3,9 @@ import "../../styles/dashboard.css";
 
 const LandingPage = () => {
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        // Background is now handled globally by MainLayout
-      }}>
+    <div className="landing-page-content">
+      {/* Landing page is now a section container - 
+          The title and main content are handled by MainLayout */}
     </div>
   );
 };

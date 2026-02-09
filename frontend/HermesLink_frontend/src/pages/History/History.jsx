@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useJobs, formatDate, extractFilename } from "../../hooks/useJobs";
-import Silk from "../../components/animated_components/silk_bg/Silk";
 
 import "./History.css";
 
@@ -187,17 +186,6 @@ const History = () => {
 
   return (
     <div className="history-page">
-      {/* Silk Background */}
-      <div className="history-silk-bg">
-        <Silk
-          speed={3}
-          scale={1}
-          color="#939393ff"
-          noiseIntensity={1.5}
-          rotation={0}
-        />
-      </div>
-
       <div className="history-container">
         <h2 className="history-title">Process History</h2>
 

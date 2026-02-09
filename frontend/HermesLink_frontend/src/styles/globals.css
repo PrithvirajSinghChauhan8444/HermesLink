@@ -20,112 +20,155 @@
   /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
-
-  /* Accents: Vibrant and punchy (shared) */
-  --color-accent-primary: #3b82f6;
-  --color-accent-success: #10b981;
-  --color-accent-warning: #f59e0b;
-  --color-accent-danger: #ef4444;
 }
 
 /* =========================================
-   Dark Theme (Default)
+   DARK THEME - Cyber Aurora
+   Deep space with electric neon accents
    ========================================= */
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* Backgrounds: Deep, rich darks */
-  --color-bg-app: #000000;
-  --color-bg-sidebar: rgba(15, 23, 42, 0.85);
-  --color-bg-header: rgba(15, 23, 42, 0.85);
-  --color-bg-panel: rgba(30, 41, 59, 0.5);
-  --color-bg-card: rgba(30, 41, 59, 0.5);
+  /* Core Colors */
+  --color-bg-app: #0a0a0f;
+  --color-bg-secondary: #12121a;
+  --color-bg-tertiary: #1a1a25;
+  --color-bg-sidebar: rgba(18, 18, 26, 0.9);
+  --color-bg-header: rgba(18, 18, 26, 0.9);
+  --color-bg-panel: rgba(26, 26, 37, 0.8);
+  --color-bg-card: rgba(30, 30, 45, 0.6);
+  --color-bg-card-hover: rgba(40, 40, 60, 0.8);
+
+  /* Gradient Backgrounds */
+  --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #7c3aed 50%, #f472b6 100%);
+  --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --gradient-warm: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  --gradient-mesh:
+    radial-gradient(at 20% 20%, rgba(124, 58, 237, 0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(6, 182, 212, 0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(244, 114, 182, 0.2) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, rgba(16, 185, 129, 0.2) 0px, transparent 50%);
 
   /* Borders */
-  --color-border-subtle: #1e293b;
-  /* Slate 800 */
-  --color-border-default: #334155;
-  /* Slate 700 */
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-accent: rgba(124, 58, 237, 0.5);
+  --color-border-glow: rgba(6, 182, 212, 0.4);
 
   /* Text */
-  --color-text-primary: #f1f5f9;
-  /* Slate 100 */
-  --color-text-secondary: #94a3b8;
-  /* Slate 400 */
-  --color-text-muted: #64748b;
-  /* Slate 500 */
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-text-accent: #22d3ee;
 
-  /* Accents */
-  --color-accent-primary: #3b82f6;
-  /* Blue 500 */
+  /* Accent Colors - Electric Neon */
+  --color-accent-primary: #7c3aed;
+  --color-accent-secondary: #06b6d4;
+  --color-accent-tertiary: #f472b6;
   --color-accent-success: #10b981;
-  /* Emerald 500 */
   --color-accent-warning: #f59e0b;
-  /* Amber 500 */
   --color-accent-danger: #ef4444;
-  /* Red 500 */
 
-  /* Shadows & Overlays */
-  --shadow-elevation: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
-  --shadow-border: 0 0 0 1px var(--color-border-subtle);
-  --shadow-glass: none;
-  --overlay-dim: rgba(0, 0, 0, 0.5);
+  /* Glow Effects */
+  --glow-primary: 0 0 30px rgba(124, 58, 237, 0.4);
+  --glow-secondary: 0 0 30px rgba(6, 182, 212, 0.4);
+  --glow-accent: 0 0 40px rgba(244, 114, 182, 0.3);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.6);
+  --shadow-elevation: 0 20px 60px -15px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-glow: 0 0 60px -10px rgba(124, 58, 237, 0.5);
+
+  --overlay-dim: rgba(0, 0, 0, 0.7);
 }
 
 /* =========================================
-   Light Theme
+   LIGHT THEME - Crystal Dawn
+   Soft pastels with vibrant accents
    ========================================= */
 [data-theme="light"] {
   color-scheme: light;
 
-  /* Backgrounds: Soft, airy lights */
-  --color-bg-app: #f8fafc;
-  /* Slate 50 */
-  --color-bg-sidebar: rgba(255, 255, 255, 0.85);
-  --color-bg-header: rgba(255, 255, 255, 0.85);
-  --color-bg-panel: rgba(255, 255, 255, 0.75);
-  /* Higher opacity for light mode */
-  --color-bg-card: rgba(255, 255, 255, 0.5);
+  /* Core Colors */
+  --color-bg-app: #fafbff;
+  --color-bg-secondary: #f1f5f9;
+  --color-bg-tertiary: #e2e8f0;
+  --color-bg-sidebar: rgba(255, 255, 255, 0.9);
+  --color-bg-header: rgba(255, 255, 255, 0.9);
+  --color-bg-panel: rgba(255, 255, 255, 0.85);
+  --color-bg-card: rgba(255, 255, 255, 0.9);
+  --color-bg-card-hover: rgba(255, 255, 255, 1);
+
+  /* Gradient Backgrounds */
+  --gradient-hero: linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #c084fc 100%);
+  --gradient-primary: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #ec4899 100%);
+  --gradient-accent: linear-gradient(135deg, #0ea5e9 0%, #a855f7 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --gradient-warm: linear-gradient(135deg, #fb923c 0%, #f43f5e 100%);
+  --gradient-mesh:
+    radial-gradient(at 20% 20%, rgba(167, 139, 250, 0.2) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(14, 165, 233, 0.2) 0px, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, rgba(16, 185, 129, 0.15) 0px, transparent 50%);
 
   /* Borders */
-  --color-border-subtle: #e2e8f0;
-  /* Slate 200 */
-  --color-border-default: #cbd5e1;
-  /* Slate 300 */
+  --color-border-subtle: rgba(0, 0, 0, 0.05);
+  --color-border-default: rgba(0, 0, 0, 0.1);
+  --color-border-accent: rgba(139, 92, 246, 0.3);
+  --color-border-glow: rgba(14, 165, 233, 0.3);
 
   /* Text */
   --color-text-primary: #0f172a;
-  /* Slate 900 */
   --color-text-secondary: #475569;
-  /* Slate 600 */
   --color-text-muted: #94a3b8;
-  /* Slate 400 */
+  --color-text-accent: #7c3aed;
 
-  /* Accents - slightly darker for light mode contrast */
-  --color-accent-primary: #2563eb;
-  /* Blue 600 */
+  /* Accent Colors - Vivid but softer */
+  --color-accent-primary: #7c3aed;
+  --color-accent-secondary: #0ea5e9;
+  --color-accent-tertiary: #ec4899;
   --color-accent-success: #059669;
-  /* Emerald 600 */
   --color-accent-warning: #d97706;
-  /* Amber 600 */
   --color-accent-danger: #dc2626;
-  /* Red 600 */
 
-  /* Shadows & Overlays - crucial for light mode depth */
-  --shadow-elevation: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-  --shadow-border: 0 0 0 1px var(--color-border-subtle);
-  --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
-  --overlay-dim: rgba(255, 255, 255, 0.5);
+  /* Glow Effects - Softer for light mode */
+  --glow-primary: 0 0 40px rgba(139, 92, 246, 0.25);
+  --glow-secondary: 0 0 40px rgba(14, 165, 233, 0.25);
+  --glow-accent: 0 0 40px rgba(236, 72, 153, 0.2);
+
+  /* Shadows - Softer, more diffuse */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.12);
+  --shadow-elevation: 0 20px 60px -15px rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --shadow-glow: 0 0 80px -10px rgba(139, 92, 246, 0.3);
+
+  --overlay-dim: rgba(255, 255, 255, 0.7);
 }
 
-/* Reset & Base */
+/* =========================================
+   Base Styles & Reset
+   ========================================= */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -133,15 +176,31 @@ body {
   font-family: var(--font-family-sans);
   background-color: var(--color-bg-app);
   color: var(--color-text-primary);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Custom Scrollbars */
+/* Add mesh gradient to body */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-mesh);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* =========================================
+   Custom Scrollbars
+   ========================================= */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -149,47 +208,94 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
-  border-radius: 99px;
+  background: var(--gradient-accent);
+  border-radius: var(--radius-full);
   border: 2px solid transparent;
-  background-clip: content-box;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(148, 163, 184, 0.6);
+  background: var(--gradient-primary);
+  background-clip: padding-box;
 }
 
-/* Light Mode Scrollbars */
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+/* =========================================
+   Selection Styles
+   ========================================= */
+::selection {
+  background: var(--color-accent-primary);
+  color: white;
 }
 
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.35);
-}
-
-/* Utility Utilities */
+/* =========================================
+   Utility Classes
+   ========================================= */
 .text-mono {
   font-family: var(--font-family-mono);
 }
 
-.text-sm {
-  font-size: var(--font-size-sm);
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.text-secondary {
-  color: var(--color-text-secondary);
+.text-glow {
+  text-shadow: 0 0 20px var(--color-accent-primary);
 }
 
+.bg-gradient {
+  background: var(--gradient-primary);
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
+    var(--gradient-accent) border-box;
+}
+
+.glow-effect {
+  box-shadow: var(--glow-primary);
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl), var(--glow-primary);
+  border-color: var(--color-border-accent);
+}
+
+/* Flex utilities */
 .flex {
   display: flex;
 }
 
 .flex-col {
-  display: flex;
   flex-direction: column;
 }
 
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+/* Size utilities */
 .h-full {
   height: 100%;
 }

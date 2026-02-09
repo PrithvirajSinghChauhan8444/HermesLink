@@ -1,6 +1,4 @@
 import React from "react";
-
-import { motion } from "motion/react";
 import {
   VscHome,
   VscPlay,
@@ -11,47 +9,43 @@ import {
 } from "react-icons/vsc";
 import Dock from "../animated_components/dock/Dock";
 
-const Navbar = ({
-  style,
-  className,
-  animate,
-  initial,
-  onAnimationComplete,
-  activeTab,
-  onTabChange,
-}) => {
-
-
+const Navbar = ({ style, className, activeSection, onNavigate }) => {
   const items = [
     {
       icon: <VscHome size={18} />,
       label: "Home",
-      onClick: () => onTabChange("home"),
+      onClick: () => onNavigate("home"),
+      isActive: activeSection === "home",
     },
     {
       icon: <VscPlay size={18} />,
       label: "Active Jobs",
-      onClick: () => onTabChange("active"),
+      onClick: () => onNavigate("active"),
+      isActive: activeSection === "active",
     },
     {
       icon: <VscListOrdered size={18} />,
       label: "Queue",
-      onClick: () => onTabChange("queue"),
+      onClick: () => onNavigate("queue"),
+      isActive: activeSection === "queue",
     },
     {
       icon: <VscHistory size={18} />,
       label: "History",
-      onClick: () => onTabChange("history"),
+      onClick: () => onNavigate("history"),
+      isActive: activeSection === "history",
     },
     {
       icon: <VscSettingsGear size={18} />,
       label: "Settings",
-      onClick: () => onTabChange("settings"),
+      onClick: () => onNavigate("settings"),
+      isActive: activeSection === "settings",
     },
     {
       icon: <VscInfo size={18} />,
       label: "About",
-      onClick: () => onTabChange("about"),
+      onClick: () => onNavigate("about"),
+      isActive: activeSection === "about",
     },
   ];
 
@@ -64,20 +58,14 @@ const Navbar = ({
   };
 
   return (
-    <motion.div
-      initial={initial || false}
-      animate={animate || style || defaultStyle}
-      style={!animate ? style || defaultStyle : undefined}
-      transition={{ type: "spring", stiffness: 120, damping: 20 }}
-      onAnimationComplete={onAnimationComplete}
-      className={className}>
+    <div style={style || defaultStyle} className={className}>
       <Dock
         items={items}
         panelHeight={68}
         baseItemSize={50}
         magnification={80}
       />
-    </motion.div>
+    </div>
   );
 };
 
