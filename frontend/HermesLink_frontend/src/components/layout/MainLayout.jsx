@@ -86,7 +86,7 @@ export default function MainLayout() {
 
             <div className="fixed inset-0 -z-10 opacity-60">
                 <Squares
-                    speed={0.2}
+                    speed={0.01}
                     squareSize={50}
                     direction="diagonal"
                     borderColor="#79787820"
