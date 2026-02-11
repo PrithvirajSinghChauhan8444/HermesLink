@@ -15,6 +15,7 @@ export const endpoints = {
         active: () => api.get('/jobs/active'),
         history: () => api.get('/jobs/history'),
         get: (id) => api.get(`/jobs/${id}`),
+        create: (data) => api.post('/jobs', data),
     },
     queues: {
         list: () => api.get('/queues'),

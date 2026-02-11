@@ -3,7 +3,7 @@
 }
 
 .header-container {
-    @apply w-full max-w-5xl flex justify-between items-end mb-12 border-b border-gray-200 pb-4;
+    @apply w-full max-w-5xl flex justify-between items-center mb-12 border-b border-gray-200 pb-4;
 }
 
 .title-large {

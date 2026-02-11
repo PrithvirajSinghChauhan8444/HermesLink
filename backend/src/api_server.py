@@ -96,6 +96,15 @@ def job_to_model(job) -> JobModel:
         thread_limit=job_dict.get("thread_limit", 4)
     )
 
+
+# --- Request Models ---
+
+class CreateJobRequest(BaseModel):
+    url: str
+    type: str = "aria2"
+    queue_id: str = "default"
+    destination: Optional[str] = None
+
 # --- API Endpoints ---
 
 @app.get("/")
@@ -112,6 +121,27 @@ def get_all_jobs():
         jobs=[job_to_model(job) for job in jobs],
         total=len(jobs)
     )
+
+
+@app.post("/api/jobs", response_model=JobModel, status_code=201)
+def create_job(request: CreateJobRequest):
+    """Create a new download job."""
+    try:
+        engine_config = {
+            "url": request.url,
+            "type": request.type,
+            "destination": request.destination
+        }
+        # Validate queue existence
+        if request.queue_id not in job_manager.queues:
+             raise HTTPException(status_code=400, detail=f"Queue '{request.queue_id}' does not exist.")
+
+        job = job_manager.create_job(config=engine_config, queue_id=request.queue_id)
+        return job_to_model(job)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/jobs/active", response_model=JobListResponse)

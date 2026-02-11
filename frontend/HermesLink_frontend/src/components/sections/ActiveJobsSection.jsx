@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { endpoints } from '../../services/api';
 import { formatBytes } from '../../utils/format';
+import NewJobModal from '../features/NewJobModal';
 
 import './ActiveJobsSection.css';
 
@@ -9,6 +10,7 @@ export default function ActiveJobsSection() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalSpeed, setTotalSpeed] = useState("0 B/s");
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const containerRef = useRef(null);
 
     const fetchJobs = async () => {
@@ -47,6 +49,16 @@ export default function ActiveJobsSection() {
                     <h2 className="title-large">Active Operations</h2>
                     <p className="subtitle-gray">Real-time download monitoring</p>
                 </div>
+                <button
+                    className="new-download-btn"
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Download
+                </button>
                 <div className="stats-container">
                     <span className="stat-number-large">{jobs.length}</span>
                     <span className="stat-label-small">Running Tasks</span>
@@ -94,6 +106,12 @@ export default function ActiveJobsSection() {
                     ))
                 )}
             </div>
-        </div>
+
+            <NewJobModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onJobCreated={fetchJobs}
+            />
+        </div >
     );
 }
