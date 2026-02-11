@@ -3,6 +3,8 @@ import gsap from 'gsap';
 import { endpoints } from '../../services/api';
 import { formatBytes } from '../../utils/format';
 
+import './ActiveJobsSection.css';
+
 export default function ActiveJobsSection() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -39,54 +41,54 @@ export default function ActiveJobsSection() {
     }, [loading]);
 
     return (
-        <div className="h-screen w-full flex flex-col items-center justify-center p-8 text-black">
-            <div className="w-full max-w-5xl flex justify-between items-end mb-12 border-b border-gray-200 pb-4">
+        <div className="active-jobs-container">
+            <div className="header-container">
                 <div>
-                    <h2 className="text-5xl font-light tracking-tighter text-black">Active Operations</h2>
-                    <p className="text-gray-400 mt-2 font-light">Real-time download monitoring</p>
+                    <h2 className="title-large">Active Operations</h2>
+                    <p className="subtitle-gray">Real-time download monitoring</p>
                 </div>
-                <div className="text-right hidden md:block">
-                    <span className="text-4xl font-light block">{jobs.length}</span>
-                    <span className="text-xs uppercase tracking-wider text-gray-400">Running Tasks</span>
+                <div className="stats-container">
+                    <span className="stat-number-large">{jobs.length}</span>
+                    <span className="stat-label-small">Running Tasks</span>
                 </div>
             </div>
 
-            <div ref={containerRef} className="w-full max-w-5xl space-y-4 h-[60vh] overflow-y-auto no-scrollbar pr-2">
+            <div ref={containerRef} className="jobs-grid-container">
                 {loading ? (
-                    <div className="text-center font-light animate-pulse text-gray-400">Syncing...</div>
+                    <div className="loading-text">Syncing...</div>
                 ) : jobs.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full border-2 border-dashed border-gray-200 rounded-xl text-gray-400">
-                        <span className="text-2xl font-light mb-2">System Idle</span>
-                        <span className="text-sm">No active downloads</span>
+                    <div className="empty-state-container">
+                        <span className="empty-title">System Idle</span>
+                        <span className="empty-subtitle">No active downloads</span>
                     </div>
                 ) : (
                     jobs.map((job) => (
-                        <div key={job.job_id} className="bg-white/95 p-6 rounded-xl border border-white/60 depth-shadow hover:shadow-gray-300/60 transition-all duration-300 group relative overflow-hidden">
-                            <div className="flex justify-between items-start mb-4 relative z-10">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-2 h-2 rounded-full ${job.state === 'RUNNING' ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'}`} />
-                                    <h3 className="text-lg font-medium truncate max-w-[400px] text-gray-800">{job.progress.filename || job.job_id}</h3>
+                        <div key={job.job_id} className="job-card group">
+                            <div className="job-header">
+                                <div className="job-title-container">
+                                    <div className={`status-indicator ${job.state === 'RUNNING' ? 'status-running' : 'status-paused'}`} />
+                                    <h3 className="job-filename">{job.progress.filename || job.job_id}</h3>
                                 </div>
-                                <span className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                                <span className="job-type-badge">
                                     {job.engine_config.type}
                                 </span>
                             </div>
 
-                            <div className="w-full bg-gray-100 h-1.5 rounded-full mb-4 overflow-hidden relative z-10">
+                            <div className="progress-bar-container">
                                 <div
-                                    className="bg-black h-full rounded-full transition-all duration-500 ease-out relative"
+                                    className="progress-bar-fill"
                                     style={{ width: `${job.progress.percent || 0}%` }}
                                 >
-                                    <div className="absolute right-0 top-0 bottom-0 w-[50px] bg-gradient-to-l from-white/30 to-transparent" />
+                                    <div className="progress-bar-glow" />
                                 </div>
                             </div>
 
-                            <div className="flex justify-between items-center text-xs text-gray-500 font-mono relative z-10">
-                                <div className="flex gap-4">
-                                    <span className="bg-gray-50 px-2 py-1 rounded">{formatBytes(job.progress.completed_length)} / {formatBytes(job.progress.total_length)}</span>
-                                    <span className="bg-gray-50 px-2 py-1 rounded">{job.progress.speed || "0 B/s"}</span>
+                            <div className="job-footer">
+                                <div className="job-stats-group">
+                                    <span className="stat-pill">{formatBytes(job.progress.completed_length)} / {formatBytes(job.progress.total_length)}</span>
+                                    <span className="stat-pill">{job.progress.speed || "0 B/s"}</span>
                                 </div>
-                                <span className="text-gray-400">ETA: <span className="text-black font-semibold">{job.progress.eta || "--:--:--"}</span></span>
+                                <span className="eta-text">ETA: <span className="eta-value">{job.progress.eta || "--:--:--"}</span></span>
                             </div>
                         </div>
                     ))

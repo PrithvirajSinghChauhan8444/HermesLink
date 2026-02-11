@@ -1,4 +1,5 @@
 import React from 'react';
+import './RightNavbar.css';
 
 const sections = [
     { id: 'landing', label: 'Home' },
@@ -13,17 +14,24 @@ export default function RightNavbar({ activeSection, onNavigate }) {
     const isDarkSection = activeSection === 'history' || activeSection === 'settings';
 
     return (
-        <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-4 items-end">
+        <div className="right-navbar-container">
             {sections.map((section) => {
                 const isActive = activeSection === section.id;
+
+                let colorClass = '';
+                if (isDarkSection) {
+                    colorClass = isActive ? 'theme-dark-active' : 'theme-dark-inactive';
+                } else {
+                    colorClass = isActive ? 'theme-light-active' : 'theme-light-inactive';
+                }
+
+                const stateClass = isActive ? 'nav-item-active' : 'nav-item-inactive';
+
                 return (
                     <button
                         key={section.id}
                         onClick={() => onNavigate(section.id)}
-                        className={`transition-all duration-300 ease-out text-right ${isDarkSection
-                            ? (isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200')
-                            : (isActive ? 'text-black' : 'text-gray-400 hover:text-gray-600')
-                            } ${isActive ? 'font-bold text-2xl opacity-100 scale-110' : 'font-medium text-sm opacity-60'}`}
+                        className={`nav-item ${colorClass} ${stateClass}`}
                     >
                         {section.label}
                     </button>

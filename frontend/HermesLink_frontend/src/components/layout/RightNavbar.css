@@ -1,0 +1,33 @@
+.right-navbar-container {
+    @apply fixed right-8 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-4 items-end;
+}
+
+.nav-item {
+    @apply transition-all duration-300 ease-out text-right;
+}
+
+.nav-item-active {
+    @apply font-bold text-2xl opacity-100 scale-110;
+}
+
+.nav-item-inactive {
+    @apply font-medium text-sm opacity-60;
+}
+
+/* Dark Theme (History, Settings) */
+.theme-dark-active {
+    @apply text-white;
+}
+
+.theme-dark-inactive {
+    @apply text-gray-400 hover:text-gray-200;
+}
+
+/* Light Theme (Landing, Jobs, Queue) */
+.theme-light-active {
+    @apply text-black;
+}
+
+.theme-light-inactive {
+    @apply text-gray-400 hover:text-gray-600;
+}

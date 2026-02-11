@@ -1,0 +1,111 @@
+.active-jobs-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-black;
+}
+
+.header-container {
+    @apply w-full max-w-5xl flex justify-between items-end mb-12 border-b border-gray-200 pb-4;
+}
+
+.title-large {
+    @apply text-5xl font-light tracking-tighter text-black;
+}
+
+.subtitle-gray {
+    @apply text-gray-400 mt-2 font-light;
+}
+
+.stats-container {
+    @apply text-right hidden md:block;
+}
+
+.stat-number-large {
+    @apply text-4xl font-light block;
+}
+
+.stat-label-small {
+    @apply text-xs uppercase tracking-wider text-gray-400;
+}
+
+.jobs-grid-container {
+    @apply w-full max-w-5xl space-y-4 h-[60vh] overflow-y-auto no-scrollbar pr-2;
+}
+
+.loading-text {
+    @apply text-center font-light animate-pulse text-gray-400;
+}
+
+.empty-state-container {
+    @apply flex flex-col items-center justify-center h-full border-2 border-dashed border-gray-200 rounded-xl text-gray-400;
+}
+
+.empty-title {
+    @apply text-2xl font-light mb-2;
+}
+
+.empty-subtitle {
+    @apply text-sm;
+}
+
+.job-card {
+    @apply bg-white/95 p-6 rounded-xl border border-white/60 depth-shadow hover:shadow-gray-300/60 transition-all duration-300 relative overflow-hidden;
+}
+
+.job-header {
+    @apply flex justify-between items-start mb-4 relative z-10;
+}
+
+.job-title-container {
+    @apply flex items-center gap-4;
+}
+
+.status-indicator {
+    @apply w-2 h-2 rounded-full;
+}
+
+.status-running {
+    @apply bg-green-500 animate-pulse;
+}
+
+.status-paused {
+    @apply bg-yellow-500;
+}
+
+.job-filename {
+    @apply text-lg font-medium truncate max-w-[400px] text-gray-800;
+}
+
+.job-type-badge {
+    @apply text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100;
+}
+
+.progress-bar-container {
+    @apply w-full bg-gray-100 h-1.5 rounded-full mb-4 overflow-hidden relative z-10;
+}
+
+.progress-bar-fill {
+    @apply bg-black h-full rounded-full transition-all duration-500 ease-out relative;
+}
+
+.progress-bar-glow {
+    @apply absolute right-0 top-0 bottom-0 w-[50px] bg-gradient-to-l from-white/30 to-transparent;
+}
+
+.job-footer {
+    @apply flex justify-between items-center text-xs text-gray-500 font-mono relative z-10;
+}
+
+.job-stats-group {
+    @apply flex gap-4;
+}
+
+.stat-pill {
+    @apply bg-gray-50 px-2 py-1 rounded;
+}
+
+.eta-text {
+    @apply text-gray-400;
+}
+
+.eta-value {
+    @apply text-black font-semibold;
+}

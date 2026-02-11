@@ -1,9 +1,10 @@
 import React from 'react';
 import MainLayout from './components/layout/MainLayout';
+import './App.css';
 
 function App() {
     return (
-        <div className="w-full min-h-screen overflow-x-hidden">
+        <div className="app-container">
             <MainLayout />
         </div>
     );

@@ -1,0 +1,111 @@
+.history-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-white relative;
+}
+
+.history-wrapper {
+    @apply w-full max-w-6xl z-10;
+}
+
+.history-header {
+    @apply flex justify-between items-end mb-8;
+}
+
+.history-title {
+    @apply text-5xl font-light tracking-tighter;
+}
+
+.history-filters {
+    @apply flex gap-2 text-xs;
+}
+
+.filter-pill-all {
+    @apply px-3 py-1 bg-white/10 rounded-full border border-white/5 hover:bg-white/20 cursor-pointer transition-colors;
+}
+
+.filter-pill-completed {
+    @apply px-3 py-1 bg-transparent rounded-full border border-white/5 hover:bg-white/10 cursor-pointer transition-colors text-green-500;
+}
+
+.filter-pill-failed {
+    @apply px-3 py-1 bg-transparent rounded-full border border-white/5 hover:bg-white/10 cursor-pointer transition-colors text-red-500;
+}
+
+.history-table-container {
+    @apply border border-white/10 rounded-2xl overflow-hidden bg-[#111111]/90 depth-shadow;
+}
+
+.history-table-header {
+    @apply grid grid-cols-12 bg-white/5 p-4 text-xs font-mono text-gray-400 uppercase tracking-wider border-b border-white/5;
+}
+
+.col-date {
+    @apply col-span-1;
+}
+
+.col-filename {
+    @apply col-span-5;
+}
+
+.col-size {
+    @apply col-span-2 text-right;
+}
+
+.col-status {
+    @apply col-span-2 text-center;
+}
+
+.col-engine {
+    @apply col-span-2 text-right;
+}
+
+.history-list-container {
+    @apply h-[55vh] overflow-y-auto no-scrollbar;
+}
+
+.history-loading {
+    @apply p-8 text-center text-gray-500 font-light;
+}
+
+.history-empty {
+    @apply p-12 text-center text-gray-600 font-light;
+}
+
+.history-row {
+    @apply grid grid-cols-12 p-4 text-sm items-center border-b border-white/5 hover:bg-white/5 transition-colors;
+}
+
+.row-date {
+    @apply col-span-1 text-xs text-gray-500 font-mono;
+}
+
+.row-filename {
+    @apply col-span-5 truncate text-gray-300 group-hover:text-white transition-colors;
+}
+
+.row-size {
+    @apply col-span-2 text-right font-mono text-gray-400;
+}
+
+.row-status {
+    @apply col-span-2 flex justify-center;
+}
+
+.status-badge {
+    @apply text-[10px] uppercase tracking-wider px-2 py-1 rounded-full border;
+}
+
+.status-completed {
+    @apply bg-green-500/10 border-green-500/20 text-green-500;
+}
+
+.status-failed {
+    @apply bg-red-500/10 border-red-500/20 text-red-500;
+}
+
+.status-default {
+    @apply bg-gray-500/10 border-gray-500/20 text-gray-500;
+}
+
+.row-engine {
+    @apply col-span-2 text-right text-xs text-gray-500 group-hover:text-gray-300;
+}

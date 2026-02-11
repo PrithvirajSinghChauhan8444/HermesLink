@@ -1,0 +1,35 @@
+.settings-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-white relative;
+}
+
+.settings-title {
+    @apply text-5xl font-light mb-12 tracking-tighter z-10;
+}
+
+.settings-grid {
+    @apply max-w-2xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 z-10;
+}
+
+.settings-card {
+    @apply border border-white/10 p-6 rounded-xl hover:bg-white/5 transition-colors cursor-pointer;
+}
+
+.settings-card-active {
+    @apply bg-[#111111]/90 p-8 rounded-2xl border border-white/10 depth-shadow;
+}
+
+.card-title {
+    @apply text-xl font-light mb-2 group-hover:text-white text-gray-300;
+}
+
+.card-title-active {
+    @apply text-xl font-light mb-6 border-b border-white/10 pb-2;
+}
+
+.card-desc {
+    @apply text-sm text-gray-600 group-hover:text-gray-500;
+}
+
+.footer-info {
+    @apply mt-16 text-xs font-mono text-gray-700 z-10;
+}

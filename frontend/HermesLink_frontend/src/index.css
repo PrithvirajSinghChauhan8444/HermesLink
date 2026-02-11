@@ -40,26 +40,26 @@
       0 10px 10px -5px rgba(0, 0, 0, 0.1),
       0 0 40px -10px rgba(0, 0, 0, 0.3);
   }
-}
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
-}
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
 
-/* Scroll Snapping */
-.snap-y-mandatory {
-  scroll-snap-type: y mandatory;
-}
+  /* Scroll Snapping */
+  .snap-y-mandatory {
+    scroll-snap-type: y mandatory;
+  }
 
-.snap-start {
-  scroll-snap-align: start;
+  .snap-start {
+    scroll-snap-align: start;
+  }
 }

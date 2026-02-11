@@ -10,6 +10,8 @@ import HistorySection from '../sections/HistorySection';
 import SettingsSection from '../sections/SettingsSection';
 import Squares from '../animated_components/Minimal_background/Squares';
 
+import './MainLayout.css';
+
 gsap.registerPlugin(ScrollToPlugin);
 
 export default function MainLayout() {
@@ -81,10 +83,10 @@ export default function MainLayout() {
     }, [activeSection]);
 
     return (
-        <div ref={containerRef} className="relative min-h-screen h-screen overflow-y-scroll snap-y-mandatory no-scrollbar scroll-smooth">
-            <div id="global-bg" className="fixed inset-0 -z-20 bg-gray-50" />
+        <div ref={containerRef} className="main-layout-container">
+            <div id="global-bg" className="global-bg" />
 
-            <div className="fixed inset-0 -z-10 opacity-60">
+            <div className="squares-container">
                 <Squares
                     speed={0.01}
                     squareSize={50}
@@ -98,7 +100,7 @@ export default function MainLayout() {
 
             <main>
                 {sections.map(({ id, Component }) => (
-                    <section key={id} id={id} className="min-h-screen w-full relative snap-start">
+                    <section key={id} id={id} className="section-container">
                         <Component />
                     </section>
                 ))}

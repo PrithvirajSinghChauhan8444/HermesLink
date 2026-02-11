@@ -1,0 +1,15 @@
+.main-layout-container {
+    @apply relative min-h-screen h-screen overflow-y-scroll snap-y-mandatory no-scrollbar scroll-smooth;
+}
+
+.global-bg {
+    @apply fixed inset-0 -z-20 bg-gray-50;
+}
+
+.squares-container {
+    @apply fixed inset-0 -z-10 opacity-60;
+}
+
+.section-container {
+    @apply min-h-screen w-full relative snap-start;
+}
