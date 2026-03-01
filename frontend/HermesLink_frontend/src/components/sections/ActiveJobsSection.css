@@ -35,7 +35,7 @@
 }
 
 .empty-state-container {
-    @apply flex flex-col items-center justify-center h-full border-2 border-dashed border-gray-200 rounded-xl text-gray-400;
+    @apply flex flex-col items-center justify-center h-full border-2 border-dashed border-black rounded-xl text-gray-400;
 }
 
 .empty-title {

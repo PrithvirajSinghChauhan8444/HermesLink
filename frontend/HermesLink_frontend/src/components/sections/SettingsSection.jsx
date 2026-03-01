@@ -6,9 +6,9 @@ export default function SettingsSection() {
             <h2 className="settings-title">Configuration</h2>
 
             <div className="settings-grid">
-                {['General', 'Network', 'Engines', 'Storage'].map((item, index) => (
-                    <div key={item} className={index === 1 ? "settings-card-active" : "settings-card group"}>
-                        <h3 className={index === 1 ? "card-title-active" : "card-title"}>{item}</h3>
+                {['General', 'Network', 'Engines', 'Storage'].map((item) => (
+                    <div key={item} className="settings-card group">
+                        <h3 className="card-title">{item}</h3>
                         <p className="card-desc">Manage {item.toLowerCase()} settings</p>
                     </div>
                 ))}

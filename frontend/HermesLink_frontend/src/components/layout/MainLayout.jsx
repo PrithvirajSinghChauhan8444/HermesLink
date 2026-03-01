@@ -51,6 +51,39 @@ export default function MainLayout() {
         return () => observer.disconnect();
     }, []);
 
+    const isScrolling = useRef(false);
+
+    // Intercept mouse wheel and use GSAP for smooth section-to-section scrolling
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const handleWheel = (e) => {
+            e.preventDefault();
+            if (isScrolling.current) return;
+
+            const currentIndex = sections.findIndex(s => s.id === activeSection);
+            const nextIndex = e.deltaY > 0
+                ? Math.min(currentIndex + 1, sections.length - 1)
+                : Math.max(currentIndex - 1, 0);
+
+            if (nextIndex === currentIndex) return;
+
+            isScrolling.current = true;
+            gsap.to(container, {
+                duration: 1,
+                scrollTo: { y: `#${sections[nextIndex].id}`, autoKill: false },
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    isScrolling.current = false;
+                }
+            });
+        };
+
+        container.addEventListener('wheel', handleWheel, { passive: false });
+        return () => container.removeEventListener('wheel', handleWheel);
+    }, [activeSection]);
+
     const handleNavigate = (id) => {
         gsap.to(containerRef.current, {
             duration: 1,

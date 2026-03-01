@@ -1142,37 +1142,43 @@
     },
     "7da7dd5c-56bd-41b0-a1c7-2fd3d68de21e": {
       "job_id": "7da7dd5c-56bd-41b0-a1c7-2fd3d68de21e",
-      "state": "RUNNING",
+      "state": "FAILED",
       "engine_config": {
         "url": "https://ash-speed.hetzner.com/1GB.bin",
         "type": "aria2",
         "destination": null
       },
-      "error_reason": null,
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
       "progress": {},
       "created_at": "2026-02-12T00:41:50.283526",
-      "updated_at": "2026-02-12T00:41:50.285060",
+      "updated_at": "2026-02-13T12:35:51.664506",
       "queue_id": "default",
       "thread_limit": 4
     },
     "080392c2-7911-43a5-9dd4-96889e37875e": {
       "job_id": "080392c2-7911-43a5-9dd4-96889e37875e",
-      "state": "PENDING",
+      "state": "STOPPED",
       "engine_config": {
         "url": "https://ash-speed.hetzner.com/1GB.bin",
         "type": "aria2",
         "destination": null
       },
       "error_reason": null,
-      "progress": {},
+      "progress": {
+        "percent": 22.98126220703125,
+        "speed": "10.65 MB/s",
+        "total_length": "1073741824",
+        "completed_length": "246759424",
+        "eta": "N/A"
+      },
       "created_at": "2026-02-12T00:42:44.750743",
-      "updated_at": "2026-02-12T00:42:44.750755",
+      "updated_at": "2026-02-13T13:55:33.179584",
       "queue_id": "default",
       "thread_limit": 4
     },
     "346ca755-f52f-435e-82b7-df774a98f639": {
       "job_id": "346ca755-f52f-435e-82b7-df774a98f639",
-      "state": "PENDING",
+      "state": "STOPPED",
       "engine_config": {
         "url": "https://ash-speed.hetzner.com/1GB.bin",
         "type": "aria2",
@@ -1181,13 +1187,13 @@
       "error_reason": null,
       "progress": {},
       "created_at": "2026-02-12T00:47:35.636220",
-      "updated_at": "2026-02-12T00:47:35.636235",
+      "updated_at": "2026-02-13T13:55:33.182571",
       "queue_id": "default",
       "thread_limit": 4
     },
     "1850eacd-3a66-4481-aed4-ef6b46890582": {
       "job_id": "1850eacd-3a66-4481-aed4-ef6b46890582",
-      "state": "PENDING",
+      "state": "STOPPED",
       "engine_config": {
         "url": "asdasdsdaasdasd",
         "type": "aria2",
@@ -1196,13 +1202,13 @@
       "error_reason": null,
       "progress": {},
       "created_at": "2026-02-12T00:48:07.233364",
-      "updated_at": "2026-02-12T00:48:07.233376",
+      "updated_at": "2026-02-13T13:55:33.185151",
       "queue_id": "default",
       "thread_limit": 4
     },
     "c7413f66-20cb-464b-8188-d186ab43e953": {
       "job_id": "c7413f66-20cb-464b-8188-d186ab43e953",
-      "state": "PENDING",
+      "state": "STOPPED",
       "engine_config": {
         "url": "ASAASASAAA",
         "type": "p2p",
@@ -1211,21 +1217,36 @@
       "error_reason": null,
       "progress": {},
       "created_at": "2026-02-12T00:48:57.532748",
-      "updated_at": "2026-02-12T00:48:57.532761",
+      "updated_at": "2026-02-13T13:55:33.187932",
       "queue_id": "default",
       "thread_limit": 4
+    },
+    "90b3b03d-1dc2-4456-bcb5-67a3943b1607": {
+      "job_id": "90b3b03d-1dc2-4456-bcb5-67a3943b1607",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://video-downloads.googleusercontent.com/ADGPM2lWdZU-rQw1ag3xuVfNRSydSeF9OJixigCDjlLBI__0dG72ZwYplfuhGnXw2uNWbNWYnqd-nPMb-SzD7v-iOidbilHK3SDJcQYbQ79t_oENDCI9fRqynblgqJsvCusE8teWxDo1Tp0wkFa7Eqsejcja_OXmBtALODSw0Br9ixV-qO4lnuuG4JR_TYmtxfnHAeKSHyO2olGimDvkk1d_AAatq6Vb5dj_fR6C80iMHJWysmRW-Mv2UOyv5ewmkChwk8MtF8dw7QONRN5v2N0d4Sqn9gtnb1LAFFOIWXLGQYYNsj6yzE6ceb1foGOB7Ix-RHui--lht434hzxXwk4MzaQCAOQtO_wheuClRQxZLbg2MfiEf1692vYsZ6vepL0zAZEgGVM4ISHjsw4MwN4zMGztdR_xNmUi1XTBxPddlKiZQ96xg29VVHnwbFjcAd3qeX4CCL2vj3AQcS06QsA_pFek6hufA4MRU2uWH_KEUnHh2No5R6If3Y_f7mHUkwPDt6dcviNJXF4OqvPyYRi8ztkyfUHu37pZXrigokm8qvkWeC7_Apl-8ElGBU1Pv97gRKRV4FTA8Mn7AzTBKPW0ZvWHutNtTdEHjAmiJxpniXOD-crY90OTItPksgdgPY4G2m_uj46UaAknCZEH3T49I34Xyf20SwHPiYjrLPVf80h6jgM9m-YVcaANNqeL9-KyKpsRxCij99UxjbDKLasWhgcYsYM23LeFF6vOahHGmE5-j0XQD7V5d7YbRqNgou1lK6ZSWI5N2BypQvNbftOrdvqEpRHA4kr09g0XoRIdiJO8bTeslI28k85tuYhkv9ONfMiWotF2z7FlClwVePHeKgx6aTrIPp3ixF_NPuw53QGdQMTF3PhUJQ9v40qHW-1cOuzY_E4mAepdaMCijJtRs5BAXatDJXgJAL86sYGwH2R7Ci2TROC0J10GJQs1SS9HeRrT22MeOQWKd6YcdkOb4o_Ch7ai-_bAC4YgfStvwg-PRh0mRJlncWnYm7uJLuom8VSUsZpeVXGkWfG2cprbCbZAQvUpCB66Zv9xYu8yFMbuYX71wTxdvjGRb_39ZTjh8FnweOJE",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
+        "total_length": "30903075994",
+        "completed_length": "30903075994",
+        "eta": "N/A"
+      },
+      "created_at": "2026-02-13T13:05:43.421147",
+      "updated_at": "2026-02-13T13:55:00.769312",
+      "queue_id": "abcd",
+      "thread_limit": 6
     }
   },
   "queues": {
     "default": {
       "queue_id": "default",
-      "job_ids": [
-        "7da7dd5c-56bd-41b0-a1c7-2fd3d68de21e",
-        "080392c2-7911-43a5-9dd4-96889e37875e",
-        "346ca755-f52f-435e-82b7-df774a98f639",
-        "1850eacd-3a66-4481-aed4-ef6b46890582",
-        "c7413f66-20cb-464b-8188-d186ab43e953"
-      ]
+      "job_ids": []
     },
     "try1": {
       "queue_id": "try1",

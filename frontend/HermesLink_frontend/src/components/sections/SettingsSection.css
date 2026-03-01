@@ -11,23 +11,15 @@
 }
 
 .settings-card {
-    @apply border border-white/10 p-6 rounded-xl hover:bg-white/5 transition-colors cursor-pointer;
-}
-
-.settings-card-active {
-    @apply bg-[#111111]/90 p-8 rounded-2xl border border-white/10 depth-shadow;
+    @apply border border-white/10 p-6 rounded-xl hover:bg-white hover:border-white transition-colors duration-500 ease-in-out cursor-pointer;
 }
 
 .card-title {
-    @apply text-xl font-light mb-2 group-hover:text-white text-gray-300;
-}
-
-.card-title-active {
-    @apply text-xl font-light mb-6 border-b border-white/10 pb-2;
+    @apply text-xl font-light mb-2 text-gray-300 group-hover:text-black transition-colors duration-500 ease-in-out;
 }
 
 .card-desc {
-    @apply text-sm text-gray-600 group-hover:text-gray-500;
+    @apply text-sm text-gray-600 group-hover:text-gray-500 transition-colors duration-500 ease-in-out;
 }
 
 .footer-info {

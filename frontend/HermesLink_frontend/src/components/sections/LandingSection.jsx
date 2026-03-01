@@ -86,11 +86,11 @@ export default function LandingSection() {
 
             <div className="scroll-indicator">
                 <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
+                    width="50"
+                    height="50"
+                    viewBox="0 0 50 50"
                     fill="none"
-                    stroke="currentColor"
+                    stroke="#000000"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"

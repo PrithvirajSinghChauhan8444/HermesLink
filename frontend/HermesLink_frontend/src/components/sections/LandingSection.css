@@ -48,4 +48,5 @@
 
 .scroll-indicator {
     @apply absolute bottom-12 animate-bounce text-black/20;
+    scale: 1.5;
 }
