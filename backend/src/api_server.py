@@ -7,8 +7,9 @@ Exposes job and queue data over HTTP for the frontend.
 import os
 import sys
 from typing import List, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 # Ensure src is in python path
@@ -68,12 +69,28 @@ app = FastAPI(
 )
 
 # CORS for frontend dev server
+ORIGINS = ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],
+    allow_origins=ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# Ensure CORS headers are present even on error responses (Starlette omits them
+# for non-routed responses such as 405 Method Not Allowed).
+@app.exception_handler(405)
+async def method_not_allowed_handler(request: Request, exc):
+    origin = request.headers.get("origin", "")
+    headers = {}
+    if origin in ORIGINS:
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
+    return JSONResponse(
+        status_code=405,
+        content={"detail": "Method Not Allowed"},
+        headers=headers,
 )
 
 # Initialize JobManager (read-only access to jobs.json)
@@ -179,11 +196,11 @@ def get_job(job_id: str):
     return job_to_model(job)
 
 
-@app.get("/api/queues", response_model=QueueListResponse)
+@app.api_route("/api/queues", methods=["GET", "HEAD"], response_model=QueueListResponse)
 def get_queues():
     """Get all queue configurations."""
     queues = []
-    for queue_id, config in job_manager.queue_configs.items():
+    for queue_id, config in job_manager.configs.items():
         queues.append(QueueConfigModel(
             queue_id=config.queue_id,
             max_parallel_jobs=config.max_parallel_jobs,

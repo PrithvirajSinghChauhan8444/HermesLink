@@ -55,8 +55,10 @@ export default function HistorySection() {
                                     <div className="row-date">
                                         {new Date(job.updated_at).toLocaleDateString()}
                                     </div>
-                                    <div className="row-filename" title={job.progress.filename}>
-                                        {job.progress.filename || job.job_id}
+                                    <div className="row-filename" title={job.engine_config.url}>
+                                        {job.progress.filename
+                                            || job.engine_config.url?.split('/').filter(Boolean).pop()
+                                            || job.job_id}
                                     </div>
                                     <div className="row-size">
                                         {formatBytes(job.progress.total_length)}

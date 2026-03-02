@@ -1241,12 +1241,50 @@
       "updated_at": "2026-02-13T13:55:00.769312",
       "queue_id": "abcd",
       "thread_limit": 6
+    },
+    "795b5db8-4362-4b2f-b85c-0c803683d3af": {
+      "job_id": "795b5db8-4362-4b2f-b85c-0c803683d3af",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": null
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {},
+      "created_at": "2026-03-02T17:21:47.165310",
+      "updated_at": "2026-03-02T17:22:02.333140",
+      "queue_id": "try1",
+      "thread_limit": 4
+    },
+    "e7f4811f-411b-49dd-9b08-da3fdd0c667b": {
+      "job_id": "e7f4811f-411b-49dd-9b08-da3fdd0c667b",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
+        "total_length": "104857600",
+        "completed_length": "104857600",
+        "eta": "N/A"
+      },
+      "created_at": "2026-03-02T17:25:04.461237",
+      "updated_at": "2026-03-02T17:25:28.628697",
+      "queue_id": "default",
+      "thread_limit": 4
     }
   },
   "queues": {
     "default": {
       "queue_id": "default",
-      "job_ids": []
+      "job_ids": [
+        "e7f4811f-411b-49dd-9b08-da3fdd0c667b"
+      ]
     },
     "try1": {
       "queue_id": "try1",
