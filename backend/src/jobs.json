@@ -1277,14 +1277,78 @@
       "updated_at": "2026-03-02T17:25:28.628697",
       "queue_id": "default",
       "thread_limit": 4
+    },
+    "cf37ae08-9cff-4040-8dbb-0330f03ba553": {
+      "job_id": "cf37ae08-9cff-4040-8dbb-0330f03ba553",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/1GB.bin",
+        "type": "aria2",
+        "destination": null
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {},
+      "created_at": "2026-03-02T20:18:00.584088",
+      "updated_at": "2026-03-02T20:20:50.631766",
+      "queue_id": "try1",
+      "thread_limit": 4
+    },
+    "29e41bc9-fdf5-4b4c-b5dc-46bec593e124": {
+      "job_id": "29e41bc9-fdf5-4b4c-b5dc-46bec593e124",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/1GB.bin",
+        "type": "aria2",
+        "destination": null
+      },
+      "error_reason": null,
+      "progress": {},
+      "created_at": "2026-03-02T20:19:19.106726",
+      "updated_at": "2026-03-02T20:21:03.555129",
+      "queue_id": "abcd",
+      "thread_limit": 6
+    },
+    "de948386-4f5f-431c-816c-8951e12f50f2": {
+      "job_id": "de948386-4f5f-431c-816c-8951e12f50f2",
+      "state": "STOPPED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": null
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {},
+      "created_at": "2026-03-02T20:29:15.185535",
+      "updated_at": "2026-03-02T20:31:19.228135",
+      "queue_id": "try1",
+      "thread_limit": 4
+    },
+    "1e3c02df-5582-4014-adb2-5c954251882f": {
+      "job_id": "1e3c02df-5582-4014-adb2-5c954251882f",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
+        "total_length": "104857600",
+        "completed_length": "104857600",
+        "eta": "N/A"
+      },
+      "created_at": "2026-03-02T20:32:27.288467",
+      "updated_at": "2026-03-02T20:32:46.817867",
+      "queue_id": "yayayay",
+      "thread_limit": 9
     }
   },
   "queues": {
     "default": {
       "queue_id": "default",
-      "job_ids": [
-        "e7f4811f-411b-49dd-9b08-da3fdd0c667b"
-      ]
+      "job_ids": []
     },
     "try1": {
       "queue_id": "try1",
@@ -1292,6 +1356,10 @@
     },
     "abcd": {
       "queue_id": "abcd",
+      "job_ids": []
+    },
+    "yayayay": {
+      "queue_id": "yayayay",
       "job_ids": []
     }
   },
@@ -1315,6 +1383,13 @@
       "max_parallel_jobs": 2,
       "max_threads_per_job": 6,
       "priority": 10,
+      "enabled": true
+    },
+    "yayayay": {
+      "queue_id": "yayayay",
+      "max_parallel_jobs": 3,
+      "max_threads_per_job": 9,
+      "priority": 0,
       "enabled": true
     }
   }

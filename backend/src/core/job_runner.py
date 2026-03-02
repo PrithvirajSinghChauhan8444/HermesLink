@@ -106,10 +106,20 @@ class JobRunner:
                 def run_blocking():
                     try:
                         engine.start(job.job_id, url, destination, self.job_manager)
+                        # Mark job as completed when engine returns cleanly
+                        print(f"[JobRunner] Job {job.job_id} finished. Marking COMPLETED.")
+                        self.job_manager.transition_job(job.job_id, JobState.COMPLETED)
                     except Exception as e:
                         print(f"[JobRunner] Error in blocking engine thread: {e}")
                         # Ensure job is marked failed if engine crashed
-                        self.job_manager.transition_job(job.job_id, JobState.FAILED, str(e))
+                        try:
+                            self.job_manager.transition_job(job.job_id, JobState.FAILED, str(e))
+                        except Exception:
+                            pass
+                    finally:
+                        # Always clear tracker so the runner loop doesn't hold a dead reference
+                        self.current_engine = None
+                        self.current_job_id = None
 
                 t = threading.Thread(target=run_blocking, daemon=True, name=f"Engine-{job.job_id}")
                 t.start()
