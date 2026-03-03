@@ -26,7 +26,7 @@ class DirectEngine(BaseEngine):
         return os.path.basename(unquote(parsed_url.path)) or "downloaded_file"
 
     def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> str:
-        from src.core.models import JobState
+        from core.models import JobState
         print(f"[DirectEngine] Starting download for Job {job_id} | URL: {url}")
         
         self.is_cancelled = False

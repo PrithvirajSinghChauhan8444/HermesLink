@@ -107,7 +107,7 @@ class Aria2Engine(BaseEngine):
         self.current_output_path = output_path
         self.is_downgraded = False 
         
-        from src.core.models import JobState
+        from core.models import JobState
         
         if not self.ensure_daemon_running():
             logger.error("Could not verify or start Aria2 daemon. Aborting.")
@@ -159,7 +159,7 @@ class Aria2Engine(BaseEngine):
 
     def sync_state(self, job_id: str, job_manager: Any):
         """Syncs Aria2 status to JobManager."""
-        from src.core.models import JobState
+        from core.models import JobState
         
         if not self.gid:
             return

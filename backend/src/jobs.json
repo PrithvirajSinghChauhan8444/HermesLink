@@ -1343,6 +1343,123 @@
       "updated_at": "2026-03-02T20:32:46.817867",
       "queue_id": "yayayay",
       "thread_limit": 9
+    },
+    "46147ecf-21cf-4bcb-aa2e-567597abf139": {
+      "job_id": "46147ecf-21cf-4bcb-aa2e-567597abf139",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": null
+      },
+      "error_reason": "System Restarted Unexpectedly (Crash Recovery)",
+      "progress": {},
+      "created_at": "2026-03-03T23:20:36.427157",
+      "updated_at": "2026-03-03T23:21:00.163432",
+      "queue_id": "try1",
+      "thread_limit": 4
+    },
+    "74ce9306-7cd3-4a1a-b2cc-3208b5a01044": {
+      "job_id": "74ce9306-7cd3-4a1a-b2cc-3208b5a01044",
+      "state": "COMPLETED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
+        "total_length": "104857600",
+        "completed_length": "104857600",
+        "eta": "N/A"
+      },
+      "created_at": "2026-03-03T23:22:09.363535",
+      "updated_at": "2026-03-03T23:23:26.491384",
+      "queue_id": "try1",
+      "thread_limit": 4
+    },
+    "dbc1b410-f53a-467e-9b2f-890b55fc3bcf": {
+      "job_id": "dbc1b410-f53a-467e-9b2f-890b55fc3bcf",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": "Runner Start Error: No module named 'src'",
+      "progress": {},
+      "created_at": "2026-03-03T23:28:32.300376",
+      "updated_at": "2026-03-03T23:28:33.256730",
+      "queue_id": "yayayay",
+      "thread_limit": 9
+    },
+    "d76b1c09-c500-49c4-a797-c48fdc3c3248": {
+      "job_id": "d76b1c09-c500-49c4-a797-c48fdc3c3248",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/100MB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": "Runner Start Error: No module named 'src'",
+      "progress": {},
+      "created_at": "2026-03-03T23:31:38.262613",
+      "updated_at": "2026-03-03T23:31:38.652140",
+      "queue_id": "yayayay",
+      "thread_limit": 9
+    },
+    "4ca4ae13-239b-4c56-b4e6-1984ac699265": {
+      "job_id": "4ca4ae13-239b-4c56-b4e6-1984ac699265",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/1GB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": "Runner Start Error: No module named 'src'",
+      "progress": {},
+      "created_at": "2026-03-03T23:32:05.495999",
+      "updated_at": "2026-03-03T23:32:05.659763",
+      "queue_id": "yayayay",
+      "thread_limit": 9
+    },
+    "7b50ad18-8b75-4f13-a4ce-c806f4f05ad0": {
+      "job_id": "7b50ad18-8b75-4f13-a4ce-c806f4f05ad0",
+      "state": "FAILED",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/1GB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": "Runner Start Error: No module named 'src'",
+      "progress": {},
+      "created_at": "2026-03-03T23:33:10.236160",
+      "updated_at": "2026-03-03T23:33:11.129590",
+      "queue_id": "abcd",
+      "thread_limit": 6
+    },
+    "11666c84-b56c-42e7-857c-228e72269cf9": {
+      "job_id": "11666c84-b56c-42e7-857c-228e72269cf9",
+      "state": "RUNNING",
+      "engine_config": {
+        "url": "https://ash-speed.hetzner.com/1GB.bin",
+        "type": "aria2",
+        "destination": "/home/prit/Downloads/hermeslink_downloads"
+      },
+      "error_reason": null,
+      "progress": {
+        "percent": 89.5294189453125,
+        "speed": "1.76 MB/s",
+        "total_length": "1073741824",
+        "completed_length": "961314816",
+        "eta": "N/A"
+      },
+      "created_at": "2026-03-03T23:34:52.664752",
+      "updated_at": "2026-03-03T23:41:44.729727",
+      "queue_id": "abcd",
+      "thread_limit": 6
     }
   },
   "queues": {
@@ -1356,7 +1473,9 @@
     },
     "abcd": {
       "queue_id": "abcd",
-      "job_ids": []
+      "job_ids": [
+        "11666c84-b56c-42e7-857c-228e72269cf9"
+      ]
     },
     "yayayay": {
       "queue_id": "yayayay",

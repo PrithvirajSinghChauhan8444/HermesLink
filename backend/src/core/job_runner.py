@@ -77,13 +77,13 @@ class JobRunner:
             
     def _create_engine(self, engine_type: str):
         if engine_type == "media":
-            from src.engines.media import MediaEngine
+            from engines.media import MediaEngine
             return MediaEngine()
         elif engine_type == "direct":
-            from src.engines.direct import DirectEngine
+            from engines.direct import DirectEngine
             return DirectEngine()
         elif engine_type == "aria2":
-            from src.engines.aria2 import Aria2Engine
+            from engines.aria2 import Aria2Engine
             return Aria2Engine()
         else:
             raise ValueError(f"Unknown engine type: {engine_type}")

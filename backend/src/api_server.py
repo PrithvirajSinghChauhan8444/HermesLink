@@ -2,10 +2,13 @@
 HermesLink REST API Server
 
 Exposes job and queue data over HTTP for the frontend.
+Runs a JobRunner in the background so web-submitted downloads are
+actually executed (same as the CLI controller.py does).
 """
 
 import os
 import sys
+from contextlib import asynccontextmanager
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,6 +22,11 @@ if current_dir not in sys.path:
 
 from core.job_manager import JobManager
 from core.models import JobState
+from core.job_runner import JobRunner
+from core.job_controller import JobController
+
+# Default download directory (same as controller.py)
+DEFAULT_DOWNLOAD_DIR = os.path.expanduser("~/Downloads/hermeslink_downloads")
 
 # --- Pydantic Models for API responses ---
 
@@ -60,12 +68,33 @@ class QueueConfigModel(BaseModel):
 class QueueListResponse(BaseModel):
     queues: List[QueueConfigModel]
 
+# --- Shared state ---
+
+job_manager = JobManager()
+job_runner = JobRunner(job_manager)
+job_controller = JobController(job_manager)
+
+# --- Lifespan: start/stop the runner with the server ---
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Ensure the default download directory exists at startup
+    os.makedirs(DEFAULT_DOWNLOAD_DIR, exist_ok=True)
+    # Start the background runner thread
+    job_runner.start()
+    print(f"[API] JobRunner started. Downloads will be saved to: {DEFAULT_DOWNLOAD_DIR}")
+    yield
+    # Cleanly stop the runner when the server shuts down
+    job_runner.stop()
+    print("[API] JobRunner stopped.")
+
 # --- App Setup ---
 
 app = FastAPI(
     title="HermesLink API",
     description="REST API for HermesLink Download Manager",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 # CORS for frontend dev server
@@ -91,10 +120,7 @@ async def method_not_allowed_handler(request: Request, exc):
         status_code=405,
         content={"detail": "Method Not Allowed"},
         headers=headers,
-)
-
-# Initialize JobManager (read-only access to jobs.json)
-job_manager = JobManager()
+    )
 
 # --- Helper Functions ---
 
@@ -122,6 +148,9 @@ class CreateJobRequest(BaseModel):
     queue_id: str = "default"
     destination: Optional[str] = None
 
+class JobActionRequest(BaseModel):
+    action: str  # PAUSE | RESUME | STOP | RETRY | RESTART
+
 # --- API Endpoints ---
 
 @app.get("/")
@@ -142,19 +171,27 @@ def get_all_jobs():
 
 @app.post("/api/jobs", response_model=JobModel, status_code=201)
 def create_job(request: CreateJobRequest):
-    """Create a new download job."""
+    """Create a new download job and queue it for execution."""
     try:
+        # Default destination when the client doesn't specify one
+        destination = request.destination or DEFAULT_DOWNLOAD_DIR
+
         engine_config = {
             "url": request.url,
             "type": request.type,
-            "destination": request.destination
+            "destination": destination,
         }
         # Validate queue existence
         if request.queue_id not in job_manager.queues:
-             raise HTTPException(status_code=400, detail=f"Queue '{request.queue_id}' does not exist.")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Queue '{request.queue_id}' does not exist.",
+            )
 
         job = job_manager.create_job(config=engine_config, queue_id=request.queue_id)
         return job_to_model(job)
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -194,6 +231,18 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
     return job_to_model(job)
+
+
+@app.post("/api/jobs/{job_id}/action")
+def job_action(job_id: str, request: JobActionRequest):
+    """
+    Send a control action to a job.
+    Supported actions: PAUSE, RESUME, STOP, RETRY, RESTART
+    """
+    result = job_controller.handle_command(job_id, request.action)
+    if result["status"] == "error":
+        raise HTTPException(status_code=400, detail=result["message"])
+    return result
 
 
 @app.api_route("/api/queues", methods=["GET", "HEAD"], response_model=QueueListResponse)

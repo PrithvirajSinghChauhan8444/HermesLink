@@ -6,10 +6,28 @@ import NewJobModal from '../features/NewJobModal';
 
 import './ActiveJobsSection.css';
 
+// Icons as tiny inline SVGs
+const PauseIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="6" y="4" width="4" height="16" rx="1" />
+        <rect x="14" y="4" width="4" height="16" rx="1" />
+    </svg>
+);
+const ResumeIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5,3 19,12 5,21" />
+    </svg>
+);
+const StopIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+    </svg>
+);
+
 export default function ActiveJobsSection() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [totalSpeed, setTotalSpeed] = useState("0 B/s");
+    const [actionLoading, setActionLoading] = useState({}); // { job_id: true/false }
     const [isModalOpen, setIsModalOpen] = useState(false);
     const containerRef = useRef(null);
 
@@ -17,13 +35,23 @@ export default function ActiveJobsSection() {
         try {
             const response = await endpoints.jobs.active();
             setJobs(response.data.jobs);
-
-            // Calculate total speed if possible (mock for now as backend sends formatted strings)
-            // Ideally backend sends raw bytes, but we'll just show active count
             setLoading(false);
         } catch (error) {
             console.error("Error fetching active jobs:", error);
             setLoading(false);
+        }
+    };
+
+    const handleAction = async (jobId, action) => {
+        setActionLoading(prev => ({ ...prev, [jobId]: action }));
+        try {
+            await endpoints.jobs.action(jobId, action);
+            // Immediately refresh so the UI reflects the new state
+            await fetchJobs();
+        } catch (error) {
+            console.error(`Error sending ${action} for job ${jobId}:`, error);
+        } finally {
+            setActionLoading(prev => ({ ...prev, [jobId]: null }));
         }
     };
 
@@ -74,36 +102,88 @@ export default function ActiveJobsSection() {
                         <span className="empty-subtitle">No active downloads</span>
                     </div>
                 ) : (
-                    jobs.map((job) => (
-                        <div key={job.job_id} className="job-card group">
-                            <div className="job-header">
-                                <div className="job-title-container">
-                                    <div className={`status-indicator ${job.state === 'RUNNING' ? 'status-running' : 'status-paused'}`} />
-                                    <h3 className="job-filename">{job.progress.filename || job.job_id}</h3>
-                                </div>
-                                <span className="job-type-badge">
-                                    {job.engine_config.type}
-                                </span>
-                            </div>
+                    jobs.map((job) => {
+                        const isRunning = job.state === 'RUNNING';
+                        const isPaused = job.state === 'PAUSED';
+                        const isPending = job.state === 'PENDING';
+                        const busy = actionLoading[job.job_id];
 
-                            <div className="progress-bar-container">
-                                <div
-                                    className="progress-bar-fill"
-                                    style={{ width: `${job.progress.percent || 0}%` }}
-                                >
-                                    <div className="progress-bar-glow" />
+                        return (
+                            <div key={job.job_id} className="job-card group">
+                                <div className="job-header">
+                                    <div className="job-title-container">
+                                        <div className={`status-indicator ${isRunning ? 'status-running' : isPaused ? 'status-paused' : 'status-pending'}`} />
+                                        <h3 className="job-filename">{job.progress.filename || job.engine_config.url || job.job_id}</h3>
+                                    </div>
+                                    <span className="job-type-badge">
+                                        {job.engine_config.type}
+                                    </span>
                                 </div>
-                            </div>
 
-                            <div className="job-footer">
-                                <div className="job-stats-group">
-                                    <span className="stat-pill">{formatBytes(job.progress.completed_length)} / {formatBytes(job.progress.total_length)}</span>
-                                    <span className="stat-pill">{job.progress.speed || "0 B/s"}</span>
+                                <div className="progress-bar-container">
+                                    <div
+                                        className="progress-bar-fill"
+                                        style={{ width: `${job.progress.percent || 0}%` }}
+                                    >
+                                        <div className="progress-bar-glow" />
+                                    </div>
                                 </div>
-                                <span className="eta-text">ETA: <span className="eta-value">{job.progress.eta || "--:--:--"}</span></span>
+
+                                <div className="job-footer">
+                                    <div className="job-stats-group">
+                                        <span className="stat-pill">{formatBytes(job.progress.completed_length)} / {formatBytes(job.progress.total_length)}</span>
+                                        <span className="stat-pill">{job.progress.speed || "0 B/s"}</span>
+                                    </div>
+                                    <span className="eta-text">ETA: <span className="eta-value">{job.progress.eta || "--:--:--"}</span></span>
+                                </div>
+
+                                {/* ── Control Buttons ── */}
+                                <div className="job-controls">
+                                    {/* PAUSE — only when running */}
+                                    {isRunning && (
+                                        <button
+                                            id={`btn-pause-${job.job_id}`}
+                                            className="ctrl-btn ctrl-pause"
+                                            disabled={!!busy}
+                                            onClick={() => handleAction(job.job_id, 'PAUSE')}
+                                            title="Pause"
+                                        >
+                                            <PauseIcon />
+                                            <span>{busy === 'PAUSE' ? '…' : 'Pause'}</span>
+                                        </button>
+                                    )}
+
+                                    {/* RESUME — only when paused */}
+                                    {isPaused && (
+                                        <button
+                                            id={`btn-resume-${job.job_id}`}
+                                            className="ctrl-btn ctrl-resume"
+                                            disabled={!!busy}
+                                            onClick={() => handleAction(job.job_id, 'RESUME')}
+                                            title="Resume"
+                                        >
+                                            <ResumeIcon />
+                                            <span>{busy === 'RESUME' ? '…' : 'Resume'}</span>
+                                        </button>
+                                    )}
+
+                                    {/* STOP — always available for active jobs */}
+                                    {(isRunning || isPaused || isPending) && (
+                                        <button
+                                            id={`btn-stop-${job.job_id}`}
+                                            className="ctrl-btn ctrl-stop"
+                                            disabled={!!busy}
+                                            onClick={() => handleAction(job.job_id, 'STOP')}
+                                            title="Stop"
+                                        >
+                                            <StopIcon />
+                                            <span>{busy === 'STOP' ? '…' : 'Stop'}</span>
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 )}
             </div>
 
@@ -112,6 +192,6 @@ export default function ActiveJobsSection() {
                 onClose={() => setIsModalOpen(false)}
                 onJobCreated={fetchJobs}
             />
-        </div >
+        </div>
     );
 }

@@ -109,3 +109,28 @@
 .eta-value {
     @apply text-black font-semibold;
 }
+
+/* ── Job Control Buttons ── */
+.job-controls {
+    @apply flex items-center gap-2 mt-3 pt-3 border-t border-gray-100 relative z-10;
+}
+
+.ctrl-btn {
+    @apply flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed select-none;
+}
+
+.ctrl-pause {
+    @apply bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:border-amber-300 active:scale-95;
+}
+
+.ctrl-resume {
+    @apply bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:border-green-300 active:scale-95;
+}
+
+.ctrl-stop {
+    @apply bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:border-red-300 active:scale-95 ml-auto;
+}
+
+.status-pending {
+    @apply bg-gray-400 animate-pulse;
+}
