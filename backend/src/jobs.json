@@ -1442,7 +1442,7 @@
     },
     "11666c84-b56c-42e7-857c-228e72269cf9": {
       "job_id": "11666c84-b56c-42e7-857c-228e72269cf9",
-      "state": "RUNNING",
+      "state": "COMPLETED",
       "engine_config": {
         "url": "https://ash-speed.hetzner.com/1GB.bin",
         "type": "aria2",
@@ -1450,14 +1450,14 @@
       },
       "error_reason": null,
       "progress": {
-        "percent": 89.5294189453125,
-        "speed": "1.76 MB/s",
+        "percent": 100.0,
+        "speed": "0.00 MB/s",
         "total_length": "1073741824",
-        "completed_length": "961314816",
+        "completed_length": "1073741824",
         "eta": "N/A"
       },
       "created_at": "2026-03-03T23:34:52.664752",
-      "updated_at": "2026-03-03T23:41:44.729727",
+      "updated_at": "2026-03-03T23:43:20.087392",
       "queue_id": "abcd",
       "thread_limit": 6
     }
