@@ -1,9 +1,10 @@
 .history-container {
     @apply h-screen w-full flex flex-col items-center justify-center p-8 text-white relative;
+    overflow: hidden;
 }
 
 .history-wrapper {
-    @apply w-full max-w-6xl z-10;
+    @apply w-full max-w-6xl z-10 relative;
 }
 
 .history-header {
@@ -12,6 +13,55 @@
 
 .history-title {
     @apply text-5xl font-light tracking-tighter;
+}
+
+/* Floating Decor Styles relying on `.floating-svg` from LandingSection, but redefined/encapsulated for stability */
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-history {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.2;
+}
+
+.history-svg-1 {
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    transform: translate(-50%, -50%);
+    /* Center it behind the table */
+    animation: float-center 8s ease-in-out infinite;
+    opacity: 0.1;
+}
+
+.history-svg-2 {
+    top: 15%;
+    left: 10%;
+    width: 120px;
+    animation-delay: 1s;
+}
+
+.history-svg-3 {
+    bottom: 15%;
+    right: 10%;
+    width: 150px;
+    animation-delay: 3s;
+}
+
+@keyframes float-center {
+    0% {
+        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translateY(-20px) rotate(2deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+    }
 }
 
 .history-filters {

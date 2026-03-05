@@ -3,11 +3,52 @@
 }
 
 .queue-title {
-    @apply text-5xl font-light mb-12 tracking-tighter;
+    @apply text-5xl font-light mb-12 tracking-tighter z-10;
 }
 
 .queue-grid {
-    @apply w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+    @apply w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10;
+}
+
+/* Floating Decor Styles relying on LandingSection's .floating-svg or defining it similarly */
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-queue {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.1;
+}
+
+.queue-svg-1 {
+    top: 25%;
+    left: 15%;
+    width: 100px;
+    animation-delay: 1s;
+}
+
+.queue-svg-2 {
+    bottom: 25%;
+    right: 15%;
+    width: 140px;
+    animation-delay: 3s;
+}
+
+.queue-svg-3 {
+    top: 60%;
+    left: 10%;
+    width: 80px;
+    animation-delay: 2s;
+    opacity: 0.15;
+}
+
+.queue-svg-4 {
+    top: 15%;
+    right: 25%;
+    width: 120px;
+    animation-delay: 0.5s;
+    opacity: 0.15;
 }
 
 .queue-loading {

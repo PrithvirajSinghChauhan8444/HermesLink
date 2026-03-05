@@ -2,6 +2,10 @@ import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { endpoints } from '../../services/api';
 
+import cloudSvg from '../../assets/her1/Layer 1.svg';
+import browserSvg from '../../assets/her2 (2)/Layer 1.svg';
+import portalSvg from '../../assets/her2 (2)/Layer 5.svg';
+
 import './LandingSection.css';
 
 export default function LandingSection() {
@@ -56,6 +60,11 @@ export default function LandingSection() {
             <div className="bg-decor-container">
                 <div className="orb-1" />
                 <div className="orb-2" />
+                <div className="floating-decor-container">
+                    <img src={cloudSvg} alt="Cloud Decor" className="floating-svg floating-svg-landing floating-svg-dark landing-svg-1" />
+                    <img src={browserSvg} alt="Browser Decor" className="floating-svg floating-svg-landing floating-svg-dark landing-svg-2" />
+                    <img src={portalSvg} alt="Portal Decor" className="floating-svg floating-svg-landing floating-svg-dark landing-svg-3" />
+                </div>
             </div>
 
             <div className="content-container">

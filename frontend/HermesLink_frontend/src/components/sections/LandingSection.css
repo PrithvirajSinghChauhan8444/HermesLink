@@ -14,6 +14,52 @@
     @apply absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tl from-gray-300 to-transparent blur-3xl;
 }
 
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-landing {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 1;
+}
+
+.landing-svg-1 {
+    top: 15%;
+    left: 10%;
+    width: 120px;
+    animation-delay: 0s;
+}
+
+.landing-svg-2 {
+    bottom: 20%;
+    right: 15%;
+    width: 150px;
+    animation-delay: 2s;
+}
+
+.landing-svg-3 {
+    top: 30%;
+    right: 25%;
+    width: 80px;
+    animation-delay: 4s;
+}
+
+/* Global floating keyframe typically put in index.css but added here for encapsulation if needed, though better in index.css. Defined here for completeness if index.css lacks it. */
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+}
+
 .content-container {
     @apply z-10 flex flex-col items-center gap-8;
 }

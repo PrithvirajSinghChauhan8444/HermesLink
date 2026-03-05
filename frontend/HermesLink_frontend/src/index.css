@@ -62,4 +62,13 @@
   .snap-start {
     scroll-snap-align: start;
   }
+
+  /* Utility classes for floating SVG decorations */
+  .floating-svg-dark {
+    filter: invert(0);
+  }
+
+  .floating-svg-light {
+    filter: invert(1);
+  }
 }

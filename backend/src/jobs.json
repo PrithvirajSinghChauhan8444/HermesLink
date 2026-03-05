@@ -1473,9 +1473,7 @@
     },
     "abcd": {
       "queue_id": "abcd",
-      "job_ids": [
-        "11666c84-b56c-42e7-857c-228e72269cf9"
-      ]
+      "job_ids": []
     },
     "yayayay": {
       "queue_id": "yayayay",

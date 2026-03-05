@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { endpoints } from '../../services/api';
 
+import singleDocSvg from '../../assets/her1/Layer 3.svg';
+import batchDocSvg from '../../assets/her2 (2)/Layer 4.svg';
+import gearSvg from '../../assets/her1/Layer 5.svg';
+import portalSvg from '../../assets/her2 (2)/Layer 5.svg';
+
 import './QueueSection.css';
 
 export default function QueueSection() {
@@ -34,6 +39,14 @@ export default function QueueSection() {
 
     return (
         <div className="queue-container">
+            {/* Background Decor */}
+            <div className="floating-decor-container">
+                <img src={singleDocSvg} alt="Single Doc Decor" className="floating-svg floating-svg-queue floating-svg-dark queue-svg-1" />
+                <img src={batchDocSvg} alt="Batch Doc Decor" className="floating-svg floating-svg-queue floating-svg-dark queue-svg-2" />
+                <img src={gearSvg} alt="Gear Decor" className="floating-svg floating-svg-queue floating-svg-dark queue-svg-3" />
+                <img src={portalSvg} alt="Portal Decor" className="floating-svg floating-svg-queue floating-svg-dark queue-svg-4" />
+            </div>
+
             <h2 className="queue-title">Queue Management</h2>
 
             <div ref={containerRef} className="queue-grid">
