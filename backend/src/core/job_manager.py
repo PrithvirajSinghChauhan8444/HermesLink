@@ -179,91 +179,70 @@ class JobManager:
             self.save_jobs()
 
     def save_jobs(self):
-        """Persist all jobs, queues, and configs to disk using atomic write."""
-        data = {
-            "jobs": {jid: job.to_dict() for jid, job in self.jobs.items()},
-            "queues": {qid: q.to_dict() for qid, q in self.queues.items()},
-            "configs": {cid: c.to_dict() for cid, c in self.configs.items()}
-        }
-        temp_file = self.persistence_file + ".tmp"
+        """Persist all jobs, queues, and configs to Firestore."""
         try:
-            with open(temp_file, 'w') as f:
-                json.dump(data, f, indent=2)
+            from core.firebase_config import get_db
+            db = get_db()
             
-            max_retries = 5
-            for attempt in range(max_retries):
-                try:
-                    os.replace(temp_file, self.persistence_file)
-                    break
-                except PermissionError:
-                    if attempt < max_retries - 1:
-                        time.sleep(0.1)
-                    else:
-                        raise
-                        
+            # Using a single document for the admin state to keep logic simple
+            # and matching the original local JSON save structure.
+            admin_doc_ref = db.collection('app_state').document('admin_data')
+            
+            data = {
+                "jobs": {jid: job.to_dict() for jid, job in self.jobs.items()},
+                "queues": {qid: q.to_dict() for qid, q in self.queues.items()},
+                "configs": {cid: c.to_dict() for cid, c in self.configs.items()},
+                "updated_at": firestore.SERVER_TIMESTAMP
+            }
+            
+            admin_doc_ref.set(data)
         except Exception as e:
-            print(f"[JobManager] Error saving jobs: {e}")
-            if os.path.exists(temp_file):
-                try:
-                    os.remove(temp_file)
-                except OSError:
-                    pass
+            print(f"[JobManager] Error saving jobs to Firestore: {e}")
 
     def load_jobs(self):
-        """Load jobs and queue from disk."""
-        if not os.path.exists(self.persistence_file):
-            return
-
+        """Load jobs and queue from Firestore."""
         try:
-            with open(self.persistence_file, 'r') as f:
-                data = json.load(f)
-                
-                new_jobs = {}
-                self.queues = {}
-                self.configs = {}
+            from core.firebase_config import get_db
+            db = get_db()
+            
+            admin_doc_ref = db.collection('app_state').document('admin_data')
+            doc = admin_doc_ref.get()
+            
+            if not doc.exists:
+                print("[JobManager] No existing Firestore state found. Starting fresh.")
+                return
 
-                # Migration Logic
-                # Case 1: Old Format (root dict of jobs OR root 'jobs' dict + 'queue' list)
-                # Case 2: New Format (root 'jobs', 'queues', 'configs')
-                
-                if "queues" in data:
-                    # New Format
-                    raw_jobs = data.get("jobs", {})
-                    raw_queues = data.get("queues", {})
-                    raw_configs = data.get("configs", {})
-                    
-                    for qid, qdata in raw_queues.items():
-                        self.queues[qid] = QueueState.from_dict(qdata)
-                    for cid, cdata in raw_configs.items():
-                        self.configs[cid] = QueueConfig.from_dict(cdata)
-                
-                else:
-                    # Old Format Migration
-                    print("[JobManager] Detected legacy jobs file. Migrating to Multi-Queue format...")
-                    
-                    if "jobs" in data and isinstance(data["jobs"], dict):
-                        raw_jobs = data["jobs"]
-                        old_queue = data.get("queue", [])
-                    else:
-                        raw_jobs = data # Very old format, root is jobs dict
-                        old_queue = [] # Queue lost or implied
-                    
-                    # Create Default Queue
-                    self.queues["default"] = QueueState(queue_id="default", job_ids=old_queue)
-                    self.configs["default"] = QueueConfig(queue_id="default")
-                
-                # Load Jobs
-                for job_id, job_data in raw_jobs.items():
-                    job = Job.from_dict(job_data)
-                    # Ensure queue_id valid, fallback to default if missing from migration
-                    if not job.queue_id or job.queue_id not in self.queues:
-                        job.queue_id = "default" 
-                    new_jobs[job_id] = job
-                
-                self.jobs = new_jobs
+            data = doc.to_dict()
+            
+            new_jobs = {}
+            self.queues = {}
+            self.configs = {}
 
-        except (json.JSONDecodeError, IOError) as e:
-            print(f"[JobManager] Error loading jobs (keeping cached state): {e}")
+            if "queues" in data:
+                raw_jobs = data.get("jobs", {})
+                raw_queues = data.get("queues", {})
+                raw_configs = data.get("configs", {})
+                
+                for qid, qdata in raw_queues.items():
+                    self.queues[qid] = QueueState.from_dict(qdata)
+                for cid, cdata in raw_configs.items():
+                    self.configs[cid] = QueueConfig.from_dict(cdata)
+            
+            else:
+                raw_jobs = data.get("jobs", data)
+                self.queues["default"] = QueueState(queue_id="default", job_ids=[])
+                self.configs["default"] = QueueConfig(queue_id="default")
+            
+            for job_id, job_data in raw_jobs.items():
+                job = Job.from_dict(job_data)
+                if not job.queue_id or job.queue_id not in self.queues:
+                    job.queue_id = "default" 
+                new_jobs[job_id] = job
+            
+            self.jobs = new_jobs
+
+        except Exception as e:
+            print(f"[JobManager] Error loading jobs from Firestore (keeping cached state): {e}")
 
     # --- Queue Operations ---
 

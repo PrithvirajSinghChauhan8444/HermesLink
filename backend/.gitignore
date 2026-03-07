@@ -46,3 +46,9 @@ test_downloads/
 src/engines/__pycache__/base.cpython-314.pyc
 src/engines/__pycache__/media.cpython-314.pyc
 src/engines/__pycache__/direct.cpython-314.pyc
+
+# Firebase Admin
+serviceAccountKey.json
+*.json
+!package.json
+!tsconfig.json

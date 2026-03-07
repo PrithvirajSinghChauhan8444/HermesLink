@@ -10,7 +10,7 @@ import os
 import sys
 from contextlib import asynccontextmanager
 from typing import List, Optional
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -24,6 +24,7 @@ from core.job_manager import JobManager
 from core.models import JobState
 from core.job_runner import JobRunner
 from core.job_controller import JobController
+from core.firebase_config import initialize_firebase
 
 # Default download directory (same as controller.py)
 DEFAULT_DOWNLOAD_DIR = os.path.expanduser("~/Downloads/hermeslink_downloads")
@@ -69,6 +70,13 @@ class QueueListResponse(BaseModel):
     queues: List[QueueConfigModel]
 
 # --- Shared state ---
+
+# Initialize Firebase BEFORE JobManager so it can load data from Firestore on init
+try:
+    initialize_firebase()
+    print("[API] Firebase initialized successfully.")
+except Exception as e:
+    print(f"[API] Error initializing Firebase: {e}")
 
 job_manager = JobManager()
 job_runner = JobRunner(job_manager)
@@ -151,6 +159,26 @@ class CreateJobRequest(BaseModel):
 class JobActionRequest(BaseModel):
     action: str  # PAUSE | RESUME | STOP | RETRY | RESTART
 
+# --- Auth Helper ---
+
+def get_current_user(request: Request):
+    """
+    Dependency to extract and verify the Firebase ID token from the Authorization header.
+    For this application, any valid Firebase token is accepted as the 'admin' user.
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+    
+    token = auth_header.split(" ")[1]
+    try:
+        from core.firebase_config import get_auth
+        decoded_token = get_auth().verify_id_token(token)
+        return decoded_token
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+
+
 # --- API Endpoints ---
 
 @app.get("/")
@@ -160,7 +188,7 @@ def root():
 
 
 @app.get("/api/jobs", response_model=JobListResponse)
-def get_all_jobs():
+def get_all_jobs(user: dict = Depends(get_current_user)):
     """Get all jobs."""
     jobs = job_manager.list_jobs()
     return JobListResponse(
@@ -169,19 +197,17 @@ def get_all_jobs():
     )
 
 
+
 @app.post("/api/jobs", response_model=JobModel, status_code=201)
-def create_job(request: CreateJobRequest):
+def create_job(request: CreateJobRequest, user: dict = Depends(get_current_user)):
     """Create a new download job and queue it for execution."""
     try:
-        # Default destination when the client doesn't specify one
         destination = request.destination or DEFAULT_DOWNLOAD_DIR
-
         engine_config = {
             "url": request.url,
             "type": request.type,
             "destination": destination,
         }
-        # Validate queue existence
         if request.queue_id not in job_manager.queues:
             raise HTTPException(
                 status_code=400,
@@ -199,33 +225,25 @@ def create_job(request: CreateJobRequest):
 
 
 @app.get("/api/jobs/active", response_model=JobListResponse)
-def get_active_jobs():
+def get_active_jobs(user: dict = Depends(get_current_user)):
     """Get active jobs (PENDING, RUNNING, PAUSED)."""
     active_states = {JobState.PENDING, JobState.RUNNING, JobState.PAUSED}
     jobs = [job for job in job_manager.list_jobs() if job.state in active_states]
-    # Sort by created_at descending (newest first)
     jobs.sort(key=lambda j: j.created_at, reverse=True)
-    return JobListResponse(
-        jobs=[job_to_model(job) for job in jobs],
-        total=len(jobs)
-    )
+    return JobListResponse(jobs=[job_to_model(job) for job in jobs], total=len(jobs))
 
 
 @app.get("/api/jobs/history", response_model=JobListResponse)
-def get_job_history():
+def get_job_history(user: dict = Depends(get_current_user)):
     """Get completed/failed/stopped jobs (history)."""
     history_states = {JobState.COMPLETED, JobState.FAILED, JobState.STOPPED}
     jobs = [job for job in job_manager.list_jobs() if job.state in history_states]
-    # Sort by updated_at descending (most recent first)
     jobs.sort(key=lambda j: j.updated_at, reverse=True)
-    return JobListResponse(
-        jobs=[job_to_model(job) for job in jobs],
-        total=len(jobs)
-    )
+    return JobListResponse(jobs=[job_to_model(job) for job in jobs], total=len(jobs))
 
 
 @app.get("/api/jobs/{job_id}", response_model=JobModel)
-def get_job(job_id: str):
+def get_job(job_id: str, user: dict = Depends(get_current_user)):
     """Get a single job by ID."""
     job = job_manager.get_job(job_id)
     if not job:
@@ -234,7 +252,7 @@ def get_job(job_id: str):
 
 
 @app.post("/api/jobs/{job_id}/action")
-def job_action(job_id: str, request: JobActionRequest):
+def job_action(job_id: str, request: JobActionRequest, user: dict = Depends(get_current_user)):
     """
     Send a control action to a job.
     Supported actions: PAUSE, RESUME, STOP, RETRY, RESTART
@@ -246,7 +264,7 @@ def job_action(job_id: str, request: JobActionRequest):
 
 
 @app.api_route("/api/queues", methods=["GET", "HEAD"], response_model=QueueListResponse)
-def get_queues():
+def get_queues(user: dict = Depends(get_current_user)):
     """Get all queue configurations."""
     queues = []
     for queue_id, config in job_manager.configs.items():
@@ -261,7 +279,7 @@ def get_queues():
 
 
 @app.post("/api/jobs/reload")
-def reload_jobs():
+def reload_jobs(user: dict = Depends(get_current_user)):
     """Reload jobs from disk (useful after external changes)."""
     job_manager.load_jobs()
     return {"status": "reloaded", "total_jobs": len(job_manager.list_jobs())}

@@ -6,18 +6,19 @@ from firebase_admin import credentials, firestore, auth
 def initialize_firebase():
     """
     Initializes the Firebase Admin SDK.
-    You can use a service account JSON file, or load variables from environment.
     """
-    # For a service account key provided as a JSON file:
-    # cred = credentials.Certificate('path/to/serviceAccountKey.json')
-    # firebase_admin.initialize_app(cred)
+    if not firebase_admin._apps:
+        # Load from GOOGLE_APPLICATION_CREDENTIALS if set, or check current env.
+        # Ensure your backend .env or system environment has the necessary creds.
+        try:
+            cred = credentials.Certificate(os.getenv("FIREBASE_PRIVATE_KEY_PATH", "serviceAccountKey.json"))
+            firebase_admin.initialize_app(cred)
+        except Exception as e:
+            # Fallback for environments with google cloud default credentials
+            print(f"[Firebase] Could not load explicit service account key, trying default app credentials. Error: {e}")
+            firebase_admin.initialize_app()
     
-    # Or rely on GOOGLE_APPLICATION_CREDENTIALS environment variable
-    # if not firebase_admin._apps:
-    #    credentials.ApplicationDefault()
-    #    firebase_admin.initialize_app()
-    
-    print("Firebase initialization logic goes here. Set up service account or env variables.")
+    print("[Firebase] Admin SDK Initialized.")
 
 def get_db():
     """Returns the Firestore database client."""
@@ -26,3 +27,4 @@ def get_db():
 def get_auth():
     """Returns the Firebase Auth client."""
     return auth
+

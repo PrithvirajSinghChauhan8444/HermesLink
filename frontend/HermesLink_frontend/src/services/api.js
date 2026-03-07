@@ -2,11 +2,25 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/api';
 
+import { auth } from '../config/firebase';
+
 export const api = axios.create({
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
+});
+
+// Interceptor to inject Firebase Auth Token into headers
+api.interceptors.request.use(async (config) => {
+    const user = auth.currentUser;
+    if (user) {
+        const token = await user.getIdToken();
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
 });
 
 export const endpoints = {
