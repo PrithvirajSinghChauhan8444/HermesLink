@@ -4,9 +4,7 @@ import { endpoints } from '../../services/api';
 import { formatBytes } from '../../utils/format';
 import NewJobModal from '../features/NewJobModal';
 
-import gearSpeedSvg from '../../assets/her2 (2)/Layer 6.svg';
-import cloudFolderSvg from '../../assets/her2 (2)/Layer 2.svg';
-import progressArrowSvg from '../../assets/her2 (2)/Layer 3.svg';
+
 
 import './ActiveJobsSection.css';
 
@@ -76,12 +74,7 @@ export default function ActiveJobsSection() {
 
     return (
         <div className="active-jobs-container">
-            {/* Background Decor */}
-            <div className="floating-decor-container">
-                <img src={gearSpeedSvg} alt="Gear Speed Decor" className="floating-svg floating-svg-active floating-svg-dark active-svg-1" />
-                <img src={cloudFolderSvg} alt="Cloud Folder Decor" className="floating-svg floating-svg-active floating-svg-dark active-svg-2" />
-                <img src={progressArrowSvg} alt="Progress Arrow Decor" className="floating-svg floating-svg-active floating-svg-dark active-svg-3" />
-            </div>
+
 
             <div className="header-container">
                 <div>

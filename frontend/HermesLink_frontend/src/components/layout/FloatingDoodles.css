@@ -1,0 +1,78 @@
+.global-floating-decor-container {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+    /* Behind main content but above background */
+    opacity: 0.8;
+}
+
+.dark-section .float-wrapper {
+    filter: invert(1);
+    opacity: 0.6;
+}
+
+.float-wrapper {
+    position: absolute;
+    animation: global-float 6s ease-in-out infinite;
+    filter: invert(0);
+    transition: filter 0.5s ease, opacity 0.5s ease;
+}
+
+.ferris-wheel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* translate(-50%, -50%) and rotation applied inline */
+    transform-origin: center center;
+    transition: transform 0.5s ease-out;
+    /* Smooth the rotation */
+}
+
+.wheel-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    /* translate(-50%, -50%) and rotation applied inline */
+    transform-origin: center center;
+    transition: transform 0.5s ease-out;
+    /* Smooth the rotation */
+}
+
+.random-doodle-wrapper {
+    position: absolute;
+    /* top/left applied inline */
+}
+
+.car-content {
+    /* Counter-rotation is applied inline to keep doodles upright */
+    will-change: transform;
+    transition: transform 0.5s ease-out;
+    /* Smooth the counter-rotation */
+}
+
+/* Float keyframes (up and down motion) */
+@keyframes global-float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-30px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.global-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}

@@ -9,6 +9,7 @@ import QueueSection from '../sections/QueueSection';
 import HistorySection from '../sections/HistorySection';
 import SettingsSection from '../sections/SettingsSection';
 import Squares from '../animated_components/Minimal_background/Squares';
+import FloatingDoodles from './FloatingDoodles';
 
 import './MainLayout.css';
 
@@ -128,6 +129,8 @@ export default function MainLayout() {
                     hoverFillColor="#000000ff"
                 />
             </div>
+
+            <FloatingDoodles containerRef={containerRef} activeSection={activeSection} />
 
             <RightNavbar activeSection={activeSection} onNavigate={handleNavigate} />
 

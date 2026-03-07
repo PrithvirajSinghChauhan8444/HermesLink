@@ -2,9 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { endpoints } from '../../services/api';
 import { formatBytes } from '../../utils/format';
 
-import monitorSvg from '../../assets/her1/Layer 2.svg';
-import docArrowSvg from '../../assets/her1/Layer 3.svg';
-import stackDocSvg from '../../assets/her2 (2)/Layer 4.svg';
+
 
 import './HistorySection.css';
 
@@ -28,12 +26,7 @@ export default function HistorySection() {
 
     return (
         <div className="history-container">
-            {/* Background Decor */}
-            <div className="floating-decor-container">
-                <img src={monitorSvg} alt="Monitor Decor" className="floating-svg floating-svg-history floating-svg-light history-svg-1" />
-                <img src={docArrowSvg} alt="Doc Arrow Decor" className="floating-svg floating-svg-history floating-svg-light history-svg-2" />
-                <img src={stackDocSvg} alt="Stack Doc Decor" className="floating-svg floating-svg-history floating-svg-light history-svg-3" />
-            </div>
+
 
             <div className="history-wrapper">
                 <div className="history-header">
