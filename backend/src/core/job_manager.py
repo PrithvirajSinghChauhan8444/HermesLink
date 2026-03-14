@@ -169,7 +169,6 @@ class JobManager:
             # Ensure it is in queue if not already
             if job_id not in self.queues[job.queue_id].job_ids:
                  self.enqueue(job_id, job.queue_id)
-            pass
 
     def update_progress(self, job_id: str, progress_data: Dict):
         job = self.jobs.get(job_id)
@@ -182,6 +181,7 @@ class JobManager:
         """Persist all jobs, queues, and configs to Firestore."""
         try:
             from core.firebase_config import get_db
+            from firebase_admin import firestore
             db = get_db()
             
             # Using a single document for the admin state to keep logic simple
