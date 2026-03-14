@@ -60,6 +60,24 @@ export default function MainLayout() {
         if (!container) return;
 
         const handleWheel = (e) => {
+            // Check if we are inside a scrollable container that needs native scrolling
+            const scrollContainer = e.target.closest('.history-table-container');
+            if (scrollContainer) {
+                const isScrollingDown = e.deltaY > 0;
+                const isScrollingUp = e.deltaY < 0;
+                
+                // Allow a small 1px margin of error for sub-pixel calculations
+                const canScrollDown = scrollContainer.scrollHeight > scrollContainer.clientHeight && 
+                    Math.ceil(scrollContainer.scrollTop + scrollContainer.clientHeight) < scrollContainer.scrollHeight;
+                const canScrollUp = scrollContainer.scrollTop > 0;
+
+                if ((isScrollingDown && canScrollDown) || (isScrollingUp && canScrollUp)) {
+                    // Stop event from triggering GSAP page scroll, and allow native scroll
+                    e.stopPropagation();
+                    return;
+                }
+            }
+
             e.preventDefault();
             if (isScrolling.current) return;
 
