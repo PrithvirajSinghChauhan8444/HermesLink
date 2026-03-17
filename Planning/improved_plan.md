@@ -18,9 +18,11 @@ One user → Multiple devices → Remote downloads using **Event-Driven Architec
 **🎯 Goal:** Make Firebase aware of devices instantly and cheaply.
 
 ### 📁 Architecture: Firebase Realtime Database (RTDB) for Presence
+
 Firestore is too expensive for high-frequency heartbeats. We use RTDB to track online/offline status with zero write costs for maintaining the connection.
 
 **Structure (RTDB):**
+
 ```text
 presence/
   device_id/
@@ -72,6 +74,7 @@ New Job Event Received!
 ```
 
 **⚠️ The Golden Rule:**
+
 - **DO NOT POLL.** Use Firestore's `onSnapshot` (or Python equivalent `on_snapshot`). The agent only wakes up when Firebase pushes a document to it.
 
 **✅ Outcome:** Device becomes a highly efficient worker node.
@@ -100,23 +103,24 @@ jobs/
 ### ⚙️ What to implement:
 
 1. **Website → Create Job**
+
    - User selects: URL, Device
    - 👉 Store job in Firestore `jobs` collection.
-
 2. **Agent → Instant Job Reception**
+
    - The `onSnapshot` listener triggers instantly because a new `pending` job matched its `device_id`.
-
 3. **Agent → Lock Job**
+
    - Update: `status = 'running'`, `updated_at = now()`.
-
 4. **Execute Download**
-   - Call your controller. Monitor for `cancelling` status changes (via the same listener).
 
+   - Call your controller. Monitor for `cancelling` status changes (via the same listener).
 5. **Update Progress (THROTTLED)**
+
    - To save write costs, only update Firestore `progress` every 10% or 10 seconds. Do not update it on every byte.
    - Alternatively, write continuous progress to RTDB, and only final status to Firestore.
-
 6. **Completion**
+
    - Set: `status = 'completed'`.
 
 **✅ Outcome:** Remote download works instantly and cost-effectively 🎯
@@ -130,12 +134,13 @@ jobs/
 ### ⚙️ Add UI:
 
 1. **Device List**
+
    - Listen to RTDB `presence` node. Show Device name, Online/Offline (instant updates).
-
 2. **Device Selector**
-   - While downloading: `[ Select Device ▼ ]`
 
+   - While downloading: `[ Select Device ▼ ]`
 3. **Job Dashboard**
+
    - Listen to Firestore `jobs`. Show: Job status, Progress, Device name. Add a "Cancel" button.
 
 **✅ Outcome:** User controls where download runs and can manage them.
@@ -191,6 +196,7 @@ jobs/
 
 **You are building:**
 An Event-Driven distributed system with:
+
 - Central coordination (Firebase)
 - Instant, cost-free idle listener connections (WebSockets)
 - Multiple highly-efficient workers (Agents)
