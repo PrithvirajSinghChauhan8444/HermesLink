@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { useDevices } from '../../hooks/useDevices';
 import { endpoints } from '../../services/api';
 import './NewJobModal.css';
 
@@ -10,18 +13,29 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [queues, setQueues] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedDevice, setSelectedDevice] = useState(null);
+
+    const { devices } = useDevices();
+    const onlineDevices = devices.filter(d => d.status === 'online');
 
     useEffect(() => {
         if (isOpen) {
             fetchQueues();
-            // Reset form
             setUrl('');
             setType('aria2');
             setQueueId('default');
             setDestination('');
             setError(null);
+            setSelectedDevice(null);
         }
     }, [isOpen]);
+
+    // Auto-select the first online device when devices load
+    useEffect(() => {
+        if (isOpen && onlineDevices.length > 0 && !selectedDevice) {
+            setSelectedDevice(onlineDevices[0]);
+        }
+    }, [onlineDevices, isOpen]);
 
     const fetchQueues = async () => {
         try {
@@ -29,28 +43,40 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setQueues(response.data.queues);
         } catch (err) {
             console.error("Error fetching queues:", err);
-            // Fallback to default if fetch fails
             setQueues([{ queue_id: 'default', priority: 10 }]);
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!selectedDevice) {
+            setError('Please select a device to run the download.');
+            return;
+        }
         setLoading(true);
         setError(null);
 
         try {
-            await endpoints.jobs.create({
-                url,
-                type,
-                queue_id: queueId,
-                destination: destination || undefined
+            // Write directly to Firestore `jobs` collection so agent listener fires instantly
+            await addDoc(collection(db, 'jobs'), {
+                device_id: selectedDevice.device_id,
+                state: 'PENDING',
+                engine_config: {
+                    url,
+                    type,
+                    destination: destination || null,
+                    queue_id: queueId,
+                },
+                progress: {},
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
             });
-            onJobCreated();
+
+            onJobCreated?.();
             onClose();
         } catch (err) {
             console.error("Error creating job:", err);
-            setError(err.response?.data?.detail || "Failed to create job");
+            setError(err.message || "Failed to create job");
         } finally {
             setLoading(false);
         }
@@ -72,6 +98,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="modal-form">
+                    {/* URL */}
                     <div className="form-group">
                         <label className="form-label">URL</label>
                         <input
@@ -115,6 +142,33 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         </div>
                     </div>
 
+                    {/* Device Selector */}
+                    <div className="form-group">
+                        <label className="form-label">Device</label>
+                        {onlineDevices.length === 0 ? (
+                            <div className="device-selector-empty">
+                                <span>⚠️ No devices online. Start the HermesLink agent on a device.</span>
+                            </div>
+                        ) : (
+                            <select
+                                value={selectedDevice?.device_id || ''}
+                                onChange={(e) => {
+                                    const dev = onlineDevices.find(d => d.device_id === e.target.value);
+                                    setSelectedDevice(dev || null);
+                                }}
+                                className="form-select"
+                                required
+                            >
+                                <option value="" disabled>Select a device...</option>
+                                {onlineDevices.map(device => (
+                                    <option key={device.device_id} value={device.device_id}>
+                                        🟢 {device.name} ({device.platform})
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
                     <div className="form-group">
                         <label className="form-label">Destination Folder (Optional)</label>
                         <input
@@ -136,7 +190,11 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         <button type="button" onClick={onClose} className="cancel-button">
                             Cancel
                         </button>
-                        <button type="submit" disabled={loading} className="submit-button">
+                        <button
+                            type="submit"
+                            disabled={loading || onlineDevices.length === 0}
+                            className="submit-button"
+                        >
                             {loading ? 'Creating...' : 'Start Download'}
                         </button>
                     </div>

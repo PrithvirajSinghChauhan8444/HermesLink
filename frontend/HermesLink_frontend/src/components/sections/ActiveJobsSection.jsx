@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { ref, set } from 'firebase/database';
 import gsap from 'gsap';
-import { endpoints } from '../../services/api';
+import { db, rtdb } from '../../config/firebase';
+import { useJobs } from '../../hooks/useJobs';
+import { useDevices } from '../../hooks/useDevices';
 import { formatBytes } from '../../utils/format';
 import NewJobModal from '../features/NewJobModal';
-
-
+import { useJobProgress } from '../../hooks/useJobProgress';
 
 import './ActiveJobsSection.css';
 
@@ -26,43 +29,114 @@ const StopIcon = () => (
     </svg>
 );
 
+const ActiveJobCard = ({ job, actionLoading, handleAction, deviceMap }) => {
+    const isRunning = job.state === 'RUNNING';
+    const isPending = job.state === 'PENDING';
+    const busy = actionLoading[job.job_id || job.id];
+    const device = deviceMap[job.device_id];
+    const jobKey = job.job_id || job.id;
+
+    const liveProgress = useJobProgress(jobKey);
+    const mergedProgress = liveProgress || job.progress || {};
+
+    return (
+        <div className="job-card group">
+            <div className="job-header">
+                <div className="job-title-container">
+                    <div className={`status-indicator ${isRunning ? 'status-running' : 'status-pending'}`} />
+                    <h3 className="job-filename">
+                        {mergedProgress.filename || job.engine_config?.url || jobKey}
+                    </h3>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    {/* Device badge */}
+                    {device && (
+                        <span className="job-type-badge" style={{ background: 'rgba(99,250,140,0.08)', borderColor: 'rgba(99,250,140,0.2)', color: '#63fa8c' }}>
+                            {device.status === 'online' ? '🟢' : '🔴'} {device.name}
+                        </span>
+                    )}
+                    <span className="job-type-badge">
+                        {job.engine_config?.type || 'job'}
+                    </span>
+                </div>
+            </div>
+
+            <div className="progress-bar-container">
+                <div
+                    className="progress-bar-fill"
+                    style={{ width: `${mergedProgress.percent || 0}%` }}
+                >
+                    <div className="progress-bar-glow" />
+                </div>
+            </div>
+
+            <div className="job-footer">
+                <div className="job-stats-group">
+                    <span className="stat-pill">
+                        {formatBytes(mergedProgress.completed_length)} / {formatBytes(mergedProgress.total_length)}
+                    </span>
+                    <span className="stat-pill">{mergedProgress.speed || "0 B/s"}</span>
+                </div>
+                <span className="eta-text">ETA: <span className="eta-value">{mergedProgress.eta || "--:--:--"}</span></span>
+            </div>
+
+            {/* Control Buttons */}
+            <div className="job-controls">
+                {/* Pause — available when active */}
+                {(isRunning || isPending) && (
+                    <button
+                        className="ctrl-btn ctrl-pause"
+                        disabled={!!busy}
+                        onClick={() => handleAction(jobKey, 'PAUSE')}
+                        title="Pause"
+                    >
+                        <PauseIcon />
+                        <span>{busy === 'PAUSE' ? '…' : 'Pause'}</span>
+                    </button>
+                )}
+                {/* Resume — available when paused */}
+                {job.state === 'PAUSED' && (
+                    <button
+                        className="ctrl-btn ctrl-resume"
+                        disabled={!!busy}
+                        onClick={() => handleAction(jobKey, 'RESUME')}
+                        title="Resume"
+                    >
+                        <ResumeIcon />
+                        <span>{busy === 'RESUME' ? '…' : 'Resume'}</span>
+                    </button>
+                )}
+                {/* Cancel — always available for active/paused jobs */}
+                {(isRunning || isPending || job.state === 'PAUSED') && (
+                    <button
+                        id={`btn-cancel-${jobKey}`}
+                        className="ctrl-btn ctrl-stop"
+                        disabled={!!busy}
+                        onClick={() => handleAction(jobKey, 'CANCEL')}
+                        title="Cancel"
+                    >
+                        <StopIcon />
+                        <span>{busy === 'CANCEL' ? '…' : 'Cancel'}</span>
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 export default function ActiveJobsSection() {
-    const [jobs, setJobs] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState({}); // { job_id: true/false }
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [actionLoading, setActionLoading] = useState({}); // { job_id: action }
     const containerRef = useRef(null);
 
-    const fetchJobs = async () => {
-        try {
-            const response = await endpoints.jobs.active();
-            setJobs(response.data.jobs);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching active jobs:", error);
-            setLoading(false);
-        }
-    };
+    // Real-time Firestore listener — no more polling!
+    const { jobs, loading } = useJobs({ states: ['PENDING', 'RUNNING', 'PAUSED'] });
 
-    const handleAction = async (jobId, action) => {
-        setActionLoading(prev => ({ ...prev, [jobId]: action }));
-        try {
-            await endpoints.jobs.action(jobId, action);
-            // Immediately refresh so the UI reflects the new state
-            await fetchJobs();
-        } catch (error) {
-            console.error(`Error sending ${action} for job ${jobId}:`, error);
-        } finally {
-            setActionLoading(prev => ({ ...prev, [jobId]: null }));
-        }
-    };
+    // Live device presence — to show device name on each job card
+    const { devices } = useDevices();
+    const deviceMap = Object.fromEntries(devices.map(d => [d.device_id, d]));
 
-    useEffect(() => {
-        fetchJobs();
-        const interval = setInterval(fetchJobs, 1000);
-        return () => clearInterval(interval);
-    }, []);
-
+    // Animate job cards on first load
     useEffect(() => {
         if (!loading && containerRef.current && jobs.length > 0) {
             gsap.fromTo(containerRef.current.children,
@@ -72,10 +146,21 @@ export default function ActiveJobsSection() {
         }
     }, [loading]);
 
+    const handleAction = async (jobId, action) => {
+        setActionLoading(prev => ({ ...prev, [jobId]: action }));
+        try {
+            // Write control action to RTDB for the agent to pick up
+            const actionRef = ref(rtdb, `jobs/${jobId}/action`);
+            await set(actionRef, action);
+        } catch (error) {
+            console.error(`Error sending ${action} for job ${jobId}:`, error);
+        } finally {
+            setActionLoading(prev => ({ ...prev, [jobId]: null }));
+        }
+    };
+
     return (
         <div className="active-jobs-container">
-
-
             <div className="header-container">
                 <div>
                     <h2 className="title-large">Active Operations</h2>
@@ -106,95 +191,22 @@ export default function ActiveJobsSection() {
                         <span className="empty-subtitle">No active downloads</span>
                     </div>
                 ) : (
-                    jobs.map((job) => {
-                        const isRunning = job.state === 'RUNNING';
-                        const isPaused = job.state === 'PAUSED';
-                        const isPending = job.state === 'PENDING';
-                        const busy = actionLoading[job.job_id];
-
-                        return (
-                            <div key={job.job_id} className="job-card group">
-                                <div className="job-header">
-                                    <div className="job-title-container">
-                                        <div className={`status-indicator ${isRunning ? 'status-running' : isPaused ? 'status-paused' : 'status-pending'}`} />
-                                        <h3 className="job-filename">{job.progress.filename || job.engine_config.url || job.job_id}</h3>
-                                    </div>
-                                    <span className="job-type-badge">
-                                        {job.engine_config.type}
-                                    </span>
-                                </div>
-
-                                <div className="progress-bar-container">
-                                    <div
-                                        className="progress-bar-fill"
-                                        style={{ width: `${job.progress.percent || 0}%` }}
-                                    >
-                                        <div className="progress-bar-glow" />
-                                    </div>
-                                </div>
-
-                                <div className="job-footer">
-                                    <div className="job-stats-group">
-                                        <span className="stat-pill">{formatBytes(job.progress.completed_length)} / {formatBytes(job.progress.total_length)}</span>
-                                        <span className="stat-pill">{job.progress.speed || "0 B/s"}</span>
-                                    </div>
-                                    <span className="eta-text">ETA: <span className="eta-value">{job.progress.eta || "--:--:--"}</span></span>
-                                </div>
-
-                                {/* ── Control Buttons ── */}
-                                <div className="job-controls">
-                                    {/* PAUSE — only when running */}
-                                    {isRunning && (
-                                        <button
-                                            id={`btn-pause-${job.job_id}`}
-                                            className="ctrl-btn ctrl-pause"
-                                            disabled={!!busy}
-                                            onClick={() => handleAction(job.job_id, 'PAUSE')}
-                                            title="Pause"
-                                        >
-                                            <PauseIcon />
-                                            <span>{busy === 'PAUSE' ? '…' : 'Pause'}</span>
-                                        </button>
-                                    )}
-
-                                    {/* RESUME — only when paused */}
-                                    {isPaused && (
-                                        <button
-                                            id={`btn-resume-${job.job_id}`}
-                                            className="ctrl-btn ctrl-resume"
-                                            disabled={!!busy}
-                                            onClick={() => handleAction(job.job_id, 'RESUME')}
-                                            title="Resume"
-                                        >
-                                            <ResumeIcon />
-                                            <span>{busy === 'RESUME' ? '…' : 'Resume'}</span>
-                                        </button>
-                                    )}
-
-                                    {/* STOP — always available for active jobs */}
-                                    {(isRunning || isPaused || isPending) && (
-                                        <button
-                                            id={`btn-stop-${job.job_id}`}
-                                            className="ctrl-btn ctrl-stop"
-                                            disabled={!!busy}
-                                            onClick={() => handleAction(job.job_id, 'STOP')}
-                                            title="Stop"
-                                        >
-                                            <StopIcon />
-                                            <span>{busy === 'STOP' ? '…' : 'Stop'}</span>
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })
+                    jobs.map((job) => (
+                        <ActiveJobCard
+                            key={job.job_id || job.id}
+                            job={job}
+                            actionLoading={actionLoading}
+                            handleAction={handleAction}
+                            deviceMap={deviceMap}
+                        />
+                    ))
                 )}
             </div>
 
             <NewJobModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onJobCreated={fetchJobs}
+                onJobCreated={() => {}} // useJobs updates automatically — no manual refresh needed
             />
         </div>
     );

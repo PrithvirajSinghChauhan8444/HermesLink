@@ -91,31 +91,33 @@ class JobManager:
         if updates_needed:
             self.save_jobs()
 
-    def create_job(self, config: Dict, queue_id: str = "default") -> Job:
-        """Creates a new job in PENDING state and enqueues it."""
+    def create_job(self, config: Dict, device_id: str, queue_id: str = "default") -> Job:
+        """Creates a new job in PENDING state directly in the Firestore jobs collection."""
         if queue_id not in self.queues:
-            # Auto-create queue with default config or raise error? 
-            # Let's raise error for now, or fallback to default. User Plan said "create_queue" API exists.
-            # But for flexibility, let's allow assigning to default if missing, or error.
-            # Let's simple use default if invalid? No, better strict.
             if queue_id == "default":
-                self._ensure_default_queue() # Should exist
+                self._ensure_default_queue()
             else:
                  raise ValueError(f"Queue '{queue_id}' does not exist.")
 
-        # Resolve thread limit from queue config
         queue_cfg = self.configs.get(queue_id)
         thread_limit = queue_cfg.max_threads_per_job if queue_cfg else 4
 
         job = Job(
             engine_config=config, 
+            device_id=device_id,
             queue_id=queue_id,
             thread_limit=thread_limit
         )
-        self.jobs[job.job_id] = job
-        self.enqueue(job.job_id, queue_id)
-        self.save_jobs()
-        self.process_queues() # Try to start scheduler
+        
+        # Distributed Firestore manager approach: insert directly into jobs collection
+        try:
+            from core.firebase_config import get_db
+            db = get_db()
+            db.collection('jobs').document(job.job_id).set(job.to_dict())
+            print(f"[JobManager] Created job {job.job_id} directly in Firestore 'jobs' collection.")
+        except Exception as e:
+            print(f"[JobManager] Error creating job in Firestore: {e}")
+
         return job
 
     def get_job(self, job_id: str) -> Optional[Job]:

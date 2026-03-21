@@ -1,0 +1,128 @@
+.device-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.device-list-loading {
+    color: #888;
+    font-size: 0.85rem;
+    padding: 8px 0;
+}
+
+.device-list-empty {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.device-list-empty-hint {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.device-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.device-card:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+.device-card--selected {
+    background: rgba(99, 250, 140, 0.08) !important;
+    border-color: rgba(99, 250, 140, 0.35) !important;
+}
+
+.device-card--offline {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.device-card-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.device-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dot--online {
+    background: #63fa8c;
+    box-shadow: 0 0 6px #63fa8c;
+    animation: pulse-dot 2s infinite;
+}
+
+.dot--offline {
+    background: #555;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.platform-icon {
+    font-size: 1rem;
+}
+
+.device-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.device-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #e8e8e8;
+}
+
+.device-id {
+    font-size: 0.72rem;
+    color: #666;
+    font-family: monospace;
+}
+
+.device-status-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    flex-shrink: 0;
+}
+
+.label--online {
+    color: #63fa8c;
+    background: rgba(99, 250, 140, 0.1);
+    border: 1px solid rgba(99, 250, 140, 0.2);
+}
+
+.label--offline {
+    color: #666;
+    background: rgba(100, 100, 100, 0.1);
+    border: 1px solid rgba(100, 100, 100, 0.15);
+}

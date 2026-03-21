@@ -60,6 +60,7 @@ class QueueState:
 @dataclass
 class Job:
     job_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    device_id: Optional[str] = None
     state: JobState = JobState.PENDING
     engine_config: Dict[str, Any] = field(default_factory=dict)
     error_reason: Optional[str] = None
@@ -72,6 +73,7 @@ class Job:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "job_id": self.job_id,
+            "device_id": self.device_id,
             "state": self.state.value,
             "engine_config": self.engine_config,
             "error_reason": self.error_reason,
@@ -86,6 +88,7 @@ class Job:
     def from_dict(cls, data: Dict[str, Any]) -> 'Job':
         job = cls(
             job_id=data.get("job_id"),
+            device_id=data.get("device_id"),
             engine_config=data.get("engine_config", {}),
             error_reason=data.get("error_reason"),
             progress=data.get("progress", {}),
