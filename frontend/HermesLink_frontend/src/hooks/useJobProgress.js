@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, off } from 'firebase/database';
 import { rtdb } from '../config/firebase';
+import { getCookie, setCookie } from '../utils/cookieUtils';
 
 /**
  * Real-time hook that listens to the RTDB `jobs/${jobId}/progress` path.
@@ -10,7 +11,8 @@ import { rtdb } from '../config/firebase';
  * @returns {Object|null} The current progress dictionary or null
  */
 export function useJobProgress(jobId) {
-    const [progress, setProgress] = useState(null);
+    const cacheKey = jobId ? `hl_prog_${jobId}` : null;
+    const [progress, setProgress] = useState(() => getCookie(cacheKey));
 
     useEffect(() => {
         if (!jobId) return;
@@ -19,9 +21,12 @@ export function useJobProgress(jobId) {
         
         const unsubscribe = onValue(progressRef, (snapshot) => {
             if (snapshot.exists()) {
-                setProgress(snapshot.val());
+                const val = snapshot.val();
+                setProgress(val);
+                setCookie(cacheKey, val, 1);
             } else {
                 setProgress(null);
+                setCookie(cacheKey, null, 1);
             }
         }, (error) => {
             console.error(`[useJobProgress] RTDB listener error for ${jobId}:`, error);
@@ -31,7 +36,7 @@ export function useJobProgress(jobId) {
         return () => {
             off(progressRef, 'value', unsubscribe);
         };
-    }, [jobId]);
+    }, [jobId, cacheKey]);
 
     return progress;
 }

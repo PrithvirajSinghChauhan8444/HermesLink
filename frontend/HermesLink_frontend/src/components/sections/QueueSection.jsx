@@ -1,21 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { endpoints } from '../../services/api';
+import { getCookie, setCookie } from '../../utils/cookieUtils';
 
 
 
 import './QueueSection.css';
 
 export default function QueueSection() {
-    const [queues, setQueues] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const cacheKey = 'hl_queues';
+    const [queues, setQueues] = useState(() => {
+        const cached = getCookie(cacheKey);
+        return cached || [];
+    });
+    const [loading, setLoading] = useState(() => {
+        const cached = getCookie(cacheKey);
+        return cached ? false : true;
+    });
     const containerRef = useRef(null);
 
     useEffect(() => {
         const fetchQueues = async () => {
             try {
                 const response = await endpoints.queues.list();
-                setQueues(response.data.queues);
+                const fetchedQueues = response.data.queues || [];
+                setQueues(fetchedQueues);
+                setCookie(cacheKey, fetchedQueues, 1);
             } catch (error) {
                 console.error("Error fetching queues:", error);
             } finally {

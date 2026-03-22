@@ -1,14 +1,24 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, off } from 'firebase/database';
 import { rtdb } from '../config/firebase';
+import { getCookie, setCookie } from '../utils/cookieUtils';
 
 /**
  * Real-time hook that listens to the RTDB `presence/` node and
  * returns an array of device objects with online/offline status.
  */
 export function useDevices() {
-    const [devices, setDevices] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const cacheKey = 'hl_devices';
+
+    const [devices, setDevices] = useState(() => {
+        const cached = getCookie(cacheKey);
+        return cached || [];
+    });
+    
+    const [loading, setLoading] = useState(() => {
+        const cached = getCookie(cacheKey);
+        return cached ? false : true;
+    });
 
     useEffect(() => {
         const presenceRef = ref(rtdb, 'presence');
@@ -18,6 +28,7 @@ export function useDevices() {
             if (!data) {
                 setDevices([]);
                 setLoading(false);
+                setCookie(cacheKey, [], 1);
                 return;
             }
 
@@ -31,6 +42,7 @@ export function useDevices() {
 
             setDevices(deviceList);
             setLoading(false);
+            setCookie(cacheKey, deviceList, 1);
         });
 
         // Cleanup: detach listener on unmount

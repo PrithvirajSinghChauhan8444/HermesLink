@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { endpoints } from '../../services/api';
+import { getCookie, setCookie } from '../../utils/cookieUtils';
 
 
 
@@ -8,7 +9,11 @@ import './LandingSection.css';
 
 export default function LandingSection() {
     const comp = useRef(null);
-    const [stats, setStats] = useState({ active: 0, queue: 0, history: 0 });
+    const cacheKey = 'hl_landing_stats';
+    const [stats, setStats] = useState(() => {
+        const cached = getCookie(cacheKey);
+        return cached || { active: 0, queue: 0, history: 0 };
+    });
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -18,11 +23,13 @@ export default function LandingSection() {
                     endpoints.queues.list(),
                     endpoints.jobs.history()
                 ]);
-                setStats({
+                const newStats = {
                     active: activeRes.data.total,
                     queue: queueRes.data.queues.length, // approximation or count
                     history: historyRes.data.total
-                });
+                };
+                setStats(newStats);
+                setCookie(cacheKey, newStats, 1);
             } catch (e) {
                 console.error("Failed to fetch dashboard stats", e);
             }
