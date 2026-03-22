@@ -51,6 +51,13 @@ class FirebaseJobBridge:
             fs_update = {"state": new_state.value, "updated_at": now}
             if error_reason:
                 fs_update["error"] = error_reason
+            
+            TERMINAL_STATES = ["COMPLETED", "FAILED", "STOPPED"]
+            if new_state.value in TERMINAL_STATES:
+                rtdb_data = self._job_rtdb_ref(job_id).get()
+                if rtdb_data and "progress" in rtdb_data:
+                    fs_update["progress"] = rtdb_data["progress"]
+
             self.db.collection("jobs").document(job_id).update(fs_update)
         except Exception as e:
             print(f"[Bridge] Firestore state sync failed for {job_id}: {e}")
