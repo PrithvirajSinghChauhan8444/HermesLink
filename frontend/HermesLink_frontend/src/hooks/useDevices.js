@@ -38,6 +38,7 @@ export function useDevices() {
                 platform: info.platform || 'unknown',
                 status: info.status || 'offline',
                 last_seen: info.last_seen || null,
+                storage_profiles: info.storage_profiles || {},
             }));
 
             setDevices(deviceList);

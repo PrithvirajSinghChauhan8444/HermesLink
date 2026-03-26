@@ -1,0 +1,7 @@
+storage_profiles:
+  default:
+    name: "Default Downloads"
+    path: "~/Downloads/HermesLink"
+  movies:
+    name: "Movies"
+    path: "~/Videos/HermesLink_Movies"

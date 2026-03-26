@@ -4,6 +4,7 @@ import time
 import uuid
 import socket
 import threading
+import yaml
 from datetime import datetime
 
 # Ensure src path
@@ -113,14 +114,28 @@ class HermesAgent:
         # Presence node
         self.presence_ref = self.rtdb.child(f"presence/{self.device_id}")
 
-        # Download root: ~/Downloads/HermesLink_Test/{device_id}/
+        # Download root (Fallback)
         base_dir = os.path.join(os.path.expanduser("~"), "Downloads", "HermesLink_Test")
         self.download_directory = os.path.join(base_dir, self.device_id)
         self.jobs_dir = os.path.join(self.download_directory, "jobs")
 
         os.makedirs(self.jobs_dir, exist_ok=True)
-        print(f"[Agent] Download root : {self.download_directory}")
-        print(f"[Agent] Jobs directory: {self.jobs_dir}")
+        print(f"[Agent] Fallback Download root : {self.download_directory}")
+        
+        # Load Storage Profiles
+        self.storage_profiles = {}
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.yaml")
+        try:
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+                if config and "storage_profiles" in config:
+                    # Expand ~ in paths automatically
+                    for p_id, p_data in config["storage_profiles"].items():
+                        p_data["path"] = os.path.expanduser(p_data.get("path", ""))
+                    self.storage_profiles = config["storage_profiles"]
+                    print(f"[Agent] Loaded {len(self.storage_profiles)} storage profiles.")
+        except Exception as e:
+            print(f"[Agent] Warning: Could not load config.yaml: {e}")
 
     # ── Presence ──────────────────────────────────────────────
 
@@ -132,6 +147,7 @@ class HermesAgent:
             "status": "online",
             "device_id": self.device_id,
             "download_directory": self.download_directory,
+            "storage_profiles": self.storage_profiles,
             "started_at": int(time.time() * 1000),
             "last_seen": int(time.time() * 1000),
         })
@@ -183,9 +199,38 @@ class HermesAgent:
             self._bridge.transition_job(job_id, JobState.FAILED, "No URL provided")
             return
 
-        # Each job gets its own folder: {device_id}/jobs/{job_id}/
-        output_path = os.path.join(self.jobs_dir, job_id)
-        os.makedirs(output_path, exist_ok=True)
+        # ── Resolve Output Directory ───────────────────────────
+        # Determine base directory based on selected storage profile
+        engine_config = job_data.get("engine_config", {})
+        requested_profile_id = engine_config.get("storage_profile_id", "default")
+        sub_directory = engine_config.get("sub_directory", "")
+
+        profile = self.storage_profiles.get(requested_profile_id)
+        if profile:
+            job_base_dir = profile["path"]
+        else:
+            job_base_dir = self.jobs_dir
+
+        try:
+            safe_base = os.path.abspath(job_base_dir)
+            
+            # Security: Ensure base path is created (so we can download to it)
+            os.makedirs(safe_base, exist_ok=True)
+
+            requested_path = os.path.join(safe_base, sub_directory)
+            final_path = os.path.abspath(requested_path)
+
+            if not final_path.startswith(safe_base):
+                raise ValueError(f"Path Traversal Attempt! Blocked: {final_path}")
+            
+            # Each job gets its own isolated folder within the safe resolved path
+            output_path = os.path.join(final_path, job_id)
+            os.makedirs(output_path, exist_ok=True)
+            
+        except Exception as e:
+            print(f"[Agent] Security or IO Error for job {job_id}: {e}")
+            self._bridge.transition_job(job_id, JobState.FAILED, f"Directory Error: {e}")
+            return
 
         print(f"[Agent] Job {job_id} — output: {output_path}")
         print(f"[Agent] Job {job_id} — URL   : {url}")

@@ -10,6 +10,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [type, setType] = useState('aria2');
     const [queueId, setQueueId] = useState('default');
     const [destination, setDestination] = useState('');
+    const [selectedStorageProfile, setSelectedStorageProfile] = useState('default');
     const [queues, setQueues] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -25,6 +26,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setType('aria2');
             setQueueId('default');
             setDestination('');
+            setSelectedStorageProfile('default');
             setError(null);
             setSelectedDevice(null);
         }
@@ -36,6 +38,18 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setSelectedDevice(onlineDevices[0]);
         }
     }, [onlineDevices, isOpen]);
+
+    // Update default storage profile when device changes
+    useEffect(() => {
+        if (selectedDevice && selectedDevice.storage_profiles) {
+            const profileKeys = Object.keys(selectedDevice.storage_profiles);
+            if (profileKeys.length > 0 && !profileKeys.includes(selectedStorageProfile)) {
+                setSelectedStorageProfile(profileKeys[0]);
+            } else if (profileKeys.length === 0) {
+                setSelectedStorageProfile('default');
+            }
+        }
+    }, [selectedDevice]);
 
     const fetchQueues = async () => {
         try {
@@ -64,8 +78,9 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                 engine_config: {
                     url,
                     type,
-                    destination: destination || null,
                     queue_id: queueId,
+                    storage_profile_id: selectedStorageProfile,
+                    sub_directory: destination || "",
                 },
                 progress: {},
                 created_at: new Date().toISOString(),
@@ -170,12 +185,34 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label">Destination Folder (Optional)</label>
+                        <label className="form-label">Storage Profile</label>
+                        {(!selectedDevice || !selectedDevice.storage_profiles || Object.keys(selectedDevice.storage_profiles).length === 0) ? (
+                            <select disabled className="form-select opacity-50 cursor-not-allowed">
+                                <option>Default Storage</option>
+                            </select>
+                        ) : (
+                            <select
+                                value={selectedStorageProfile}
+                                onChange={(e) => setSelectedStorageProfile(e.target.value)}
+                                className="form-select"
+                                required
+                            >
+                                {Object.entries(selectedDevice.storage_profiles).map(([p_id, p_info]) => (
+                                    <option key={p_id} value={p_id}>
+                                        {p_info.name || p_id} ({p_info.path})
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Sub-directory (Optional)</label>
                         <input
                             type="text"
                             value={destination}
                             onChange={(e) => setDestination(e.target.value)}
-                            placeholder="/home/user/downloads"
+                            placeholder="e.g. Inception (2010)"
                             className="form-input"
                         />
                     </div>
