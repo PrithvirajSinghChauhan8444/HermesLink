@@ -11,6 +11,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [queueId, setQueueId] = useState('default');
     const [destination, setDestination] = useState('');
     const [selectedStorageProfile, setSelectedStorageProfile] = useState('default');
+    const [destinationPathIndex, setDestinationPathIndex] = useState(0);
     const [queues, setQueues] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -27,6 +28,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setQueueId('default');
             setDestination('');
             setSelectedStorageProfile('default');
+            setDestinationPathIndex(0);
             setError(null);
             setSelectedDevice(null);
         }
@@ -48,8 +50,14 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             } else if (profileKeys.length === 0) {
                 setSelectedStorageProfile('default');
             }
+            setDestinationPathIndex(0);
         }
     }, [selectedDevice]);
+
+    // Get paths for the currently selected profile
+    const selectedProfileData = selectedDevice?.storage_profiles?.[selectedStorageProfile];
+    const profilePaths = selectedProfileData?.paths || [];
+    const profileBaseNames = selectedProfileData?.base_names || profilePaths.map(p => p.split('/').filter(Boolean).pop() || p);
 
     const fetchQueues = async () => {
         try {
@@ -80,6 +88,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                     type,
                     queue_id: queueId,
                     storage_profile_id: selectedStorageProfile,
+                    destination_path_index: destinationPathIndex,
                     sub_directory: destination || "",
                 },
                 progress: {},
@@ -193,18 +202,39 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         ) : (
                             <select
                                 value={selectedStorageProfile}
-                                onChange={(e) => setSelectedStorageProfile(e.target.value)}
+                                onChange={(e) => {
+                                    setSelectedStorageProfile(e.target.value);
+                                    setDestinationPathIndex(0);
+                                }}
                                 className="form-select"
                                 required
                             >
                                 {Object.entries(selectedDevice.storage_profiles).map(([p_id, p_info]) => (
                                     <option key={p_id} value={p_id}>
-                                        {p_info.name || p_id} ({p_info.path})
+                                        {p_info.name || p_id}
                                     </option>
                                 ))}
                             </select>
                         )}
                     </div>
+
+                    {/* Destination Path — shown only if profile has multiple paths */}
+                    {profilePaths.length > 1 && (
+                        <div className="form-group">
+                            <label className="form-label">Destination</label>
+                            <select
+                                value={destinationPathIndex}
+                                onChange={(e) => setDestinationPathIndex(Number(e.target.value))}
+                                className="form-select"
+                            >
+                                {profileBaseNames.map((name, idx) => (
+                                    <option key={idx} value={idx}>
+                                        {name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     <div className="form-group">
                         <label className="form-label">Sub-directory (Optional)</label>

@@ -129,11 +129,21 @@ class HermesAgent:
             with open(config_path, 'r') as f:
                 config = yaml.safe_load(f)
                 if config and "storage_profiles" in config:
-                    # Expand ~ in paths automatically
                     for p_id, p_data in config["storage_profiles"].items():
-                        p_data["path"] = os.path.expanduser(p_data.get("path", ""))
+                        # Backward compat: migrate old singular "path" → "paths" list
+                        if "path" in p_data and "paths" not in p_data:
+                            p_data["paths"] = [p_data.pop("path")]
+                        # Expand ~ and resolve each path
+                        raw_paths = p_data.get("paths", [])
+                        expanded = [os.path.expanduser(p) for p in raw_paths]
+                        p_data["paths"] = expanded
+                        # Derive human-friendly base names from last folder segment
+                        p_data["base_names"] = [os.path.basename(p.rstrip("/")) or p for p in expanded]
+                        # Remove legacy key if still present
+                        p_data.pop("path", None)
                     self.storage_profiles = config["storage_profiles"]
-                    print(f"[Agent] Loaded {len(self.storage_profiles)} storage profiles.")
+                    total_paths = sum(len(p.get("paths", [])) for p in self.storage_profiles.values())
+                    print(f"[Agent] Loaded {len(self.storage_profiles)} storage profiles ({total_paths} total paths).")
         except Exception as e:
             print(f"[Agent] Warning: Could not load config.yaml: {e}")
 
@@ -200,33 +210,37 @@ class HermesAgent:
             return
 
         # ── Resolve Output Directory ───────────────────────────
-        # Determine base directory based on selected storage profile
+        # Determine base directory based on selected storage profile + destination path
         engine_config = job_data.get("engine_config", {})
         requested_profile_id = engine_config.get("storage_profile_id", "default")
+        destination_path_index = engine_config.get("destination_path_index", 0)
         sub_directory = engine_config.get("sub_directory", "")
 
         profile = self.storage_profiles.get(requested_profile_id)
         if profile:
-            job_base_dir = profile["path"]
+            paths = profile.get("paths", [])
+            # Clamp index to valid range
+            idx = max(0, min(int(destination_path_index), len(paths) - 1)) if paths else -1
+            job_base_dir = paths[idx] if idx >= 0 else self.jobs_dir
         else:
             job_base_dir = self.jobs_dir
 
         try:
             safe_base = os.path.abspath(job_base_dir)
-            
+
             # Security: Ensure base path is created (so we can download to it)
             os.makedirs(safe_base, exist_ok=True)
 
-            requested_path = os.path.join(safe_base, sub_directory)
+            requested_path = os.path.join(safe_base, sub_directory) if sub_directory else safe_base
             final_path = os.path.abspath(requested_path)
 
             if not final_path.startswith(safe_base):
                 raise ValueError(f"Path Traversal Attempt! Blocked: {final_path}")
-            
-            # Each job gets its own isolated folder within the safe resolved path
-            output_path = os.path.join(final_path, job_id)
+
+            # Download directly into the resolved path (no job_id subfolder)
+            output_path = final_path
             os.makedirs(output_path, exist_ok=True)
-            
+
         except Exception as e:
             print(f"[Agent] Security or IO Error for job {job_id}: {e}")
             self._bridge.transition_job(job_id, JobState.FAILED, f"Directory Error: {e}")
