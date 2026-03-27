@@ -1,7 +1,8 @@
 """
 HermesLink REST API Server
 
-Exposes job and queue data over HTTP for the frontend.
+Exposes job data over HTTP for the frontend.
+Queues are managed directly via Firestore (not this API).
 Runs a JobRunner in the background so web-submitted downloads are
 actually executed (same as the CLI controller.py does).
 """
@@ -59,15 +60,6 @@ class JobListResponse(BaseModel):
     jobs: List[JobModel]
     total: int
 
-class QueueConfigModel(BaseModel):
-    queue_id: str
-    max_parallel_jobs: int
-    max_threads_per_job: int
-    priority: int
-    enabled: bool
-
-class QueueListResponse(BaseModel):
-    queues: List[QueueConfigModel]
 
 # --- Shared state ---
 
@@ -263,19 +255,6 @@ def job_action(job_id: str, request: JobActionRequest, user: dict = Depends(get_
     return result
 
 
-@app.api_route("/api/queues", methods=["GET", "HEAD"], response_model=QueueListResponse)
-def get_queues(user: dict = Depends(get_current_user)):
-    """Get all queue configurations."""
-    queues = []
-    for queue_id, config in job_manager.configs.items():
-        queues.append(QueueConfigModel(
-            queue_id=config.queue_id,
-            max_parallel_jobs=config.max_parallel_jobs,
-            max_threads_per_job=config.max_threads_per_job,
-            priority=config.priority,
-            enabled=config.enabled
-        ))
-    return QueueListResponse(queues=queues)
 
 
 @app.post("/api/jobs/reload")

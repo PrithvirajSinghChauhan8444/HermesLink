@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { useDevices } from '../../hooks/useDevices';
-import { endpoints } from '../../services/api';
+import { useQueues } from '../../hooks/useQueues';
 import './NewJobModal.css';
 
 export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
@@ -12,17 +12,16 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [destination, setDestination] = useState('');
     const [selectedStorageProfile, setSelectedStorageProfile] = useState('default');
     const [destinationPathIndex, setDestinationPathIndex] = useState(0);
-    const [queues, setQueues] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedDevice, setSelectedDevice] = useState(null);
 
     const { devices } = useDevices();
+    const { queues } = useQueues();
     const onlineDevices = devices.filter(d => d.status === 'online');
 
     useEffect(() => {
         if (isOpen) {
-            fetchQueues();
             setUrl('');
             setType('aria2');
             setQueueId('default');
@@ -59,15 +58,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const profilePaths = selectedProfileData?.paths || [];
     const profileBaseNames = selectedProfileData?.base_names || profilePaths.map(p => p.split('/').filter(Boolean).pop() || p);
 
-    const fetchQueues = async () => {
-        try {
-            const response = await endpoints.queues.list();
-            setQueues(response.data.queues);
-        } catch (err) {
-            console.error("Error fetching queues:", err);
-            setQueues([{ queue_id: 'default', priority: 10 }]);
-        }
-    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -159,7 +150,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                             >
                                 {queues.map(q => (
                                     <option key={q.queue_id} value={q.queue_id}>
-                                        {q.queue_id} (P: {q.priority})
+                                        {q.name || q.queue_id} (P: {q.priority})
                                     </option>
                                 ))}
                             </select>

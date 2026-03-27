@@ -249,6 +249,20 @@ class HermesAgent:
         print(f"[Agent] Job {job_id} — output: {output_path}")
         print(f"[Agent] Job {job_id} — URL   : {url}")
 
+        # ── Read queue config from Firestore ──────────────────
+        queue_id = engine_config.get("queue_id", "default")
+        thread_limit = 4  # fallback
+        try:
+            queue_doc = self.db.collection("queues").document(queue_id).get()
+            if queue_doc.exists:
+                queue_config = queue_doc.to_dict()
+                thread_limit = queue_config.get("max_threads_per_job", 4)
+                print(f"[Agent] Queue '{queue_id}' — threads: {thread_limit}, parallel: {queue_config.get('max_parallel_jobs', 2)}")
+            else:
+                print(f"[Agent] Queue '{queue_id}' not found in Firestore, using defaults.")
+        except Exception as e:
+            print(f"[Agent] Warning: Could not read queue config: {e}")
+
         # ── Announce on RTDB immediately so frontend sees it ──
         self._bridge._job_rtdb_ref(job_id).update({
             "state": JobState.PENDING.value,

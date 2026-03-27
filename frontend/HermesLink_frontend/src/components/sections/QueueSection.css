@@ -106,3 +106,68 @@
 .progress-fill-gray {
     @apply bg-gray-400 h-full w-1/2 rounded-full;
 }
+
+/* ── New elements ── */
+
+.queue-create-btn {
+    @apply mb-6 px-5 py-2.5 bg-black text-white text-sm font-medium rounded-lg
+           hover:bg-gray-800 transition-colors z-10;
+}
+
+.queue-error {
+    @apply mb-4 px-4 py-2 text-sm bg-red-50 text-red-600 border border-red-200 rounded-lg z-10;
+}
+
+.queue-updated-on {
+    @apply text-[10px] text-gray-400 mt-3;
+}
+
+.queue-actions {
+    @apply flex gap-2 mt-4;
+}
+
+.queue-edit-btn {
+    @apply px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded
+           hover:bg-gray-200 transition-colors;
+}
+
+.queue-delete-btn {
+    @apply px-3 py-1 text-xs font-medium bg-red-50 text-red-500 rounded
+           hover:bg-red-100 transition-colors;
+}
+
+/* ── Modal ── */
+
+.queue-modal-overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50;
+}
+
+.queue-modal {
+    @apply bg-white rounded-xl p-6 w-full max-w-md shadow-2xl;
+}
+
+.queue-modal h3 {
+    @apply text-lg font-semibold mb-4;
+}
+
+.queue-modal label {
+    @apply block text-xs font-medium text-gray-500 mb-3;
+}
+
+.queue-modal input {
+    @apply block w-full mt-1 px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400;
+}
+
+.queue-modal-actions {
+    @apply flex justify-end gap-3 mt-6;
+}
+
+.queue-modal-actions button[type="button"] {
+    @apply px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors;
+}
+
+.queue-modal-actions button[type="submit"] {
+    @apply px-4 py-2 text-sm font-medium bg-black text-white rounded-lg
+           hover:bg-gray-800 transition-colors;
+}
