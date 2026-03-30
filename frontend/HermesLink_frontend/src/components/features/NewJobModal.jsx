@@ -134,10 +134,8 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                 onChange={(e) => setType(e.target.value)}
                                 className="form-select"
                             >
-                                <option value="direct">Direct (HTTP/HTTPS)</option>
-                                <option value="media">Media (YouTube/Twitch)</option>
-                                <option value="p2p">P2P (Torrent/Magnet)</option>
-                                <option value="aria2">Aria2 (External)</option>
+                                <option value="aria2">Aria2 (Default)</option>
+                                <option value="yt-dlp">yt-dlp (YouTube/Media)</option>
                             </select>
                         </div>
 

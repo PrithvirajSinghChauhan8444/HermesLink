@@ -16,6 +16,7 @@ load_dotenv()
 from core.firebase_config import initialize_firebase, get_rtdb, get_db
 from core.models import JobState
 from engines.aria2 import Aria2Engine
+from engines.yt_dlp import YTDLPEngine
 
 
 # ─────────────────────────────────────────────────────────────
@@ -272,8 +273,17 @@ class HermesAgent:
             "updated_at": datetime.isoformat(datetime.now()),
         })
 
-        # ── Start aria2 engine ────────────────────────────────
-        engine = Aria2Engine()
+        # ── Start engine based on URL or Type ───────────────
+        engine_type = engine_config.get("type", "aria2")
+        is_youtube = any(domain in url.lower() for domain in ["youtube.com", "youtu.be"])
+        
+        if is_youtube or engine_type == "yt-dlp":
+            print(f"[Agent] Routing job {job_id} to YTDLPEngine")
+            engine = YTDLPEngine()
+        else:
+            print(f"[Agent] Routing job {job_id} to Aria2Engine")
+            engine = Aria2Engine()
+            
         self._active_engines[job_id] = engine
 
         gid = engine.start(job_id, url, output_path, self._bridge)
@@ -318,10 +328,11 @@ class HermesAgent:
 
     # ── Monitor Thread ────────────────────────────────────────
 
-    def _monitor_job(self, job_id: str, engine: Aria2Engine, gid: str, action_listener=None):
+    def _monitor_job(self, job_id: str, engine, gid: str, action_listener=None):
         """
-        Polls aria2 every MONITOR_INTERVAL_SECONDS seconds.
-        Aria2Engine.sync_state() pulls aria2 status via RPC and calls
+        Polls the engine every MONITOR_INTERVAL_SECONDS seconds.
+        Aria2Engine.sync_state() pulls aria2 status via RPC.
+        YTDLPEngine.sync_state() is mostly a passive stub while its thread updates.
         bridge.update_progress / bridge.transition_job automatically.
         Exits when the job reaches a terminal state.
         """
