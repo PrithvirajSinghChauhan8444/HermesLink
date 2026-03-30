@@ -91,11 +91,11 @@ class FirebaseJobBridge:
 # ─────────────────────────────────────────────────────────────
 class HermesAgent:
 
+    CONFIG_FILE = "test_agent_config.json"
     MONITOR_INTERVAL_SECONDS = 30   # how often to ask aria2 for progress
 
     def __init__(self):
-        # Always-fresh device ID for test isolation
-        self.device_id = f"device_{uuid.uuid4().hex[:12]}"
+        self.device_id = self._get_or_create_device_id()
         self.hostname = socket.gethostname()
         self.platform = os.uname().sysname.lower() if hasattr(os, "uname") else "unknown"
 
@@ -103,7 +103,7 @@ class HermesAgent:
         self._active_engines: dict = {}   # job_id → Aria2Engine
 
         print(f"[Agent] Booting HermesLink Worker…")
-        print(f"[Agent] Device ID: {self.device_id}")
+        print(f"[Agent] Persistent Device ID: {self.device_id}")
 
         # Firebase
         initialize_firebase()
@@ -147,6 +147,31 @@ class HermesAgent:
                     print(f"[Agent] Loaded {len(self.storage_profiles)} storage profiles ({total_paths} total paths).")
         except Exception as e:
             print(f"[Agent] Warning: Could not load config.yaml: {e}")
+
+    # ── Device Config ──────────────────────────────────────────
+
+    def _get_or_create_device_id(self) -> str:
+        import json
+        
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.CONFIG_FILE)
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+                    if 'device_id' in config:
+                        return config['device_id']
+            except Exception as e:
+                print(f"[Agent] Warning: Could not read {config_path}: {e}")
+
+        # Generate new ID
+        new_id = f"device_{uuid.uuid4().hex[:12]}"
+        try:
+            with open(config_path, 'w') as f:
+                json.dump({'device_id': new_id}, f, indent=2)
+        except Exception as e:
+            print(f"[Agent] Warning: Could not save new device ID to {config_path}: {e}")
+        
+        return new_id
 
     # ── Presence ──────────────────────────────────────────────
 

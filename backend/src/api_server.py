@@ -264,6 +264,20 @@ def reload_jobs(user: dict = Depends(get_current_user)):
     return {"status": "reloaded", "total_jobs": len(job_manager.list_jobs())}
 
 
+@app.get("/api/queues")
+def get_all_queues(user: dict = Depends(get_current_user)):
+    """Get all queues."""
+    queues_list = []
+    for qid, config in job_manager.configs.items():
+        queues_list.append({
+            "queue_id": qid,
+            "max_parallel_jobs": config.max_parallel_jobs,
+            "max_threads_per_job": config.max_threads_per_job,
+            "priority": config.priority
+        })
+    return {"queues": queues_list, "total": len(queues_list)}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
