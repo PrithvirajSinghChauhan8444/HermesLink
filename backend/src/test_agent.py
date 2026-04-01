@@ -92,7 +92,7 @@ class FirebaseJobBridge:
 class HermesAgent:
 
     CONFIG_FILE = "test_agent_config.json"
-    MONITOR_INTERVAL_SECONDS = 30   # how often to ask aria2 for progress
+    MONITOR_INTERVAL_SECONDS = 5   # how often to ask aria2 for progress
 
     def __init__(self):
         self.device_id, self.hostname = self._load_or_create_device_config()

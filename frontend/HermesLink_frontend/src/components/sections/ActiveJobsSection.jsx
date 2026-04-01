@@ -37,7 +37,82 @@ const ActiveJobCard = ({ job, actionLoading, handleAction, deviceMap }) => {
     const jobKey = job.job_id || job.id;
 
     const liveProgress = useJobProgress(jobKey);
-    const mergedProgress = liveProgress || job.progress || {};
+    const [optimisticProgress, setOptimisticProgress] = useState(null);
+    const lastProgressRef = useRef(null);
+
+    useEffect(() => {
+        const prog = liveProgress || job.progress;
+        if (!prog) return;
+        
+        let speedBps = 0;
+        if (prog.speed) {
+            const match = prog.speed.match(/([\d.]+)\s*(MB|KB|B)\/s/);
+            if (match) {
+                const val = parseFloat(match[1]);
+                const unit = match[2];
+                if (unit === 'MB') speedBps = val * 1024 * 1024;
+                else if (unit === 'KB') speedBps = val * 1024;
+                else speedBps = val;
+            }
+        }
+        
+        lastProgressRef.current = {
+            completedLength: parseInt(prog.completed_length || 0, 10),
+            totalLength: parseInt(prog.total_length || 0, 10),
+            percent: parseFloat(prog.percent || 0),
+            speedBps,
+            timestamp: Date.now()
+        };
+        
+        setOptimisticProgress({
+            completed_length: lastProgressRef.current.completedLength,
+            percent: lastProgressRef.current.percent
+        });
+    }, [liveProgress, job.progress]);
+
+    useEffect(() => {
+        if (!isRunning) return;
+
+        const interval = setInterval(() => {
+            if (!lastProgressRef.current || lastProgressRef.current.speedBps <= 0) return;
+
+            const now = Date.now();
+            const { completedLength, totalLength, percent, speedBps, timestamp } = lastProgressRef.current;
+            
+            if (totalLength <= 0) return;
+
+            const elapsedSec = (now - timestamp) / 1000;
+            
+            // Decay speed after 5.5s to gracefully handle delayed updates
+            let effectiveSpeed = speedBps;
+            if (elapsedSec > 5.5) {
+                effectiveSpeed = speedBps * Math.pow(0.5, (elapsedSec - 5.5) / 2);
+            }
+            
+            let projectedCompleted = completedLength + (elapsedSec * effectiveSpeed);
+            
+            // Cap at +5% of total length OR total length
+            const capLength = completedLength + (totalLength * 0.05);
+            if (projectedCompleted > capLength) projectedCompleted = capLength;
+            if (projectedCompleted > totalLength) projectedCompleted = totalLength;
+            
+            const projectedPercent = (projectedCompleted / totalLength) * 100;
+            
+            setOptimisticProgress(prev => {
+                if (!prev) return { completed_length: projectedCompleted, percent: projectedPercent };
+                if (Math.abs(prev.percent - projectedPercent) < 0.05) return prev;
+                return { completed_length: projectedCompleted, percent: projectedPercent };
+            });
+        }, 150);
+
+        return () => clearInterval(interval);
+    }, [isRunning]);
+
+    const mergedProgress = { ...(liveProgress || job.progress || {}) };
+    if (optimisticProgress) {
+        mergedProgress.completed_length = optimisticProgress.completed_length;
+        mergedProgress.percent = optimisticProgress.percent;
+    }
 
     return (
         <div className="job-card group">
