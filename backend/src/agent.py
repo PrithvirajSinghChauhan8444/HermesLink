@@ -20,8 +20,7 @@ class HermesAgent:
     CONFIG_FILE = "agent_config.json"
 
     def __init__(self):
-        self.device_id = self._get_or_create_device_id()
-        self.hostname = socket.gethostname()
+        self.device_id, self.hostname = self._load_or_create_device_config()
         self.platform = os.uname().sysname.lower() if hasattr(os, 'uname') else "unknown"
         self._job_listener = None
 
@@ -38,26 +37,34 @@ class HermesAgent:
         os.makedirs(self.download_directory, exist_ok=True)
         print(f"[Agent] Download directory: {self.download_directory}")
 
-    def _get_or_create_device_id(self) -> str:
-        """Loads an existing device ID from config or generates a new one."""
+    def _load_or_create_device_config(self) -> tuple[str, str]:
+        """Loads an existing device ID and name from config, or generates them."""
+        config = {}
         if os.path.exists(self.CONFIG_FILE):
             try:
                 with open(self.CONFIG_FILE, 'r') as f:
                     config = json.load(f)
-                    if 'device_id' in config:
-                        return config['device_id']
             except Exception as e:
                 print(f"[Agent] Warning: Could not read {self.CONFIG_FILE}: {e}")
 
-        # Generate new ID
-        new_id = f"device_{uuid.uuid4().hex[:12]}"
-        try:
-            with open(self.CONFIG_FILE, 'w') as f:
-                json.dump({'device_id': new_id}, f, indent=2)
-        except Exception as e:
-            print(f"[Agent] Warning: Could not save new device ID to {self.CONFIG_FILE}: {e}")
+        dirty = False
         
-        return new_id
+        if 'device_id' not in config:
+            config['device_id'] = f"device_{uuid.uuid4().hex[:12]}"
+            dirty = True
+            
+        if 'device_name' not in config:
+            config['device_name'] = socket.gethostname()
+            dirty = True
+            
+        if dirty:
+            try:
+                with open(self.CONFIG_FILE, 'w') as f:
+                    json.dump(config, f, indent=2)
+            except Exception as e:
+                print(f"[Agent] Warning: Could not save device config to {self.CONFIG_FILE}: {e}")
+        
+        return config['device_id'], config['device_name']
 
     def _get_or_create_download_dir(self) -> str:
         """Loads an existing download directory from config or creates a sensible default."""

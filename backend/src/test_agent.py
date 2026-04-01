@@ -95,8 +95,7 @@ class HermesAgent:
     MONITOR_INTERVAL_SECONDS = 30   # how often to ask aria2 for progress
 
     def __init__(self):
-        self.device_id = self._get_or_create_device_id()
-        self.hostname = socket.gethostname()
+        self.device_id, self.hostname = self._load_or_create_device_config()
         self.platform = os.uname().sysname.lower() if hasattr(os, "uname") else "unknown"
 
         self._job_listener = None
@@ -150,28 +149,37 @@ class HermesAgent:
 
     # ── Device Config ──────────────────────────────────────────
 
-    def _get_or_create_device_id(self) -> str:
+    def _load_or_create_device_config(self) -> tuple[str, str]:
         import json
         
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.CONFIG_FILE)
+        config = {}
+        
         if os.path.exists(config_path):
             try:
                 with open(config_path, 'r') as f:
                     config = json.load(f)
-                    if 'device_id' in config:
-                        return config['device_id']
             except Exception as e:
                 print(f"[Agent] Warning: Could not read {config_path}: {e}")
 
-        # Generate new ID
-        new_id = f"device_{uuid.uuid4().hex[:12]}"
-        try:
-            with open(config_path, 'w') as f:
-                json.dump({'device_id': new_id}, f, indent=2)
-        except Exception as e:
-            print(f"[Agent] Warning: Could not save new device ID to {config_path}: {e}")
+        dirty = False
         
-        return new_id
+        if 'device_id' not in config:
+            config['device_id'] = f"device_{uuid.uuid4().hex[:12]}"
+            dirty = True
+            
+        if 'device_name' not in config:
+            config['device_name'] = socket.gethostname()
+            dirty = True
+            
+        if dirty:
+            try:
+                with open(config_path, 'w') as f:
+                    json.dump(config, f, indent=2)
+            except Exception as e:
+                print(f"[Agent] Warning: Could not save device config to {config_path}: {e}")
+        
+        return config['device_id'], config['device_name']
 
     # ── Presence ──────────────────────────────────────────────
 
