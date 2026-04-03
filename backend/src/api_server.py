@@ -44,6 +44,7 @@ class EngineConfigModel(BaseModel):
     url: Optional[str] = None
     type: Optional[str] = None
     destination: Optional[str] = None
+    format: Optional[str] = None
 
 class JobModel(BaseModel):
     job_id: str
@@ -147,6 +148,7 @@ class CreateJobRequest(BaseModel):
     type: str = "aria2"
     queue_id: str = "default"
     destination: Optional[str] = None
+    format: Optional[str] = None
 
 class JobActionRequest(BaseModel):
     action: str  # PAUSE | RESUME | STOP | RETRY | RESTART
@@ -199,6 +201,7 @@ def create_job(request: CreateJobRequest, user: dict = Depends(get_current_user)
             "url": request.url,
             "type": request.type,
             "destination": destination,
+            "format": request.format,
         }
         if request.queue_id not in job_manager.queues:
             raise HTTPException(
@@ -262,6 +265,44 @@ def reload_jobs(user: dict = Depends(get_current_user)):
     """Reload jobs from disk (useful after external changes)."""
     job_manager.load_jobs()
     return {"status": "reloaded", "total_jobs": len(job_manager.list_jobs())}
+
+
+@app.get("/api/yt-dlp/info")
+def get_yt_dlp_info(url: str, user: dict = Depends(get_current_user)):
+    """Fetch video metadata and available formats using yt-dlp."""
+    import subprocess
+    import json
+    try:
+        process = subprocess.run(
+            ["yt-dlp", "--dump-json", "--no-playlist", "--no-warnings", url],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True
+        )
+        data = json.loads(process.stdout)
+        formats = data.get("formats", [])
+        return {
+            "title": data.get("title", "Unknown"),
+            "duration": data.get("duration", 0),
+            "thumbnail": data.get("thumbnail", ""),
+            "formats": [
+                {
+                    "format_id": f.get("format_id"),
+                    "ext": f.get("ext"),
+                    "resolution": f.get("resolution", "audio only" if f.get("vcodec") == "none" else "unknown"),
+                    "vcodec": f.get("vcodec"),
+                    "acodec": f.get("acodec"),
+                    "format_note": f.get("format_note"),
+                    "filesize": f.get("filesize", 0)
+                } for f in formats if f.get("format_id")
+            ]
+        }
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(status_code=400, detail=f"yt-dlp error: {e.stderr}")
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Failed to parse yt-dlp output")
+
 
 
 @app.get("/api/queues")

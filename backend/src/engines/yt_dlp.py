@@ -27,7 +27,22 @@ class YTDLPEngine(BaseEngine):
         
         # Regex to match yt-dlp's --newline output
         # e.g., [download]   1.5% of 10.00MiB at  2.00MiB/s ETA 00:04
-        self.progress_regex = re.compile(r'\[download\]\s+([\d\.]+)%\s+of.*?at\s+([\d\.]+[KMG]?i?B/s)')
+        self.progress_regex = re.compile(r'\[download\]\s+([\d\.]+)%\s+of\s+(?:~?\s*)?([\d\.]+[kKmMgG]?i?[bB])\s+at\s+([\d\.]+[kKmMgG]?i?[bB]/s)(?:\s+ETA\s+([\d:]+))?')
+
+    def _parse_size_to_bytes(self, size_str: str) -> int:
+        if not size_str:
+            return 0
+        size_upper = size_str.upper()
+        multiplier = 1
+        if 'K' in size_upper: multiplier = 1024
+        elif 'M' in size_upper: multiplier = 1024**2
+        elif 'G' in size_upper: multiplier = 1024**3
+        
+        num_str = re.sub(r'[A-Za-z]+', '', size_str).strip()
+        try:
+            return int(float(num_str) * multiplier)
+        except ValueError:
+            return 0
 
     def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> Any:
         from core.models import JobState
@@ -39,13 +54,22 @@ class YTDLPEngine(BaseEngine):
         
         logger.info(f"Starting yt-dlp for Job {job_id} | URL: {url} | Path: {output_path}")
         
+        # Pull format from engine_config if provided
+        job_obj = self._bridge.get_job(self.job_id)
+        selected_format = job_obj.engine_config.get("format") if job_obj else None
+        
         cmd = [
             "yt-dlp",
             "--newline",
+            "--no-playlist",
             "-P", output_path,
-            "-o", "%(title)s.%(ext)s",
-            url
+            "-o", "%(title)s.%(ext)s"
         ]
+        
+        if selected_format:
+            cmd.extend(["-f", selected_format])
+            
+        cmd.append(url)
         
         try:
             self.process = subprocess.Popen(
@@ -97,17 +121,25 @@ class YTDLPEngine(BaseEngine):
                 match = self.progress_regex.search(line)
                 if match:
                     percent_str = match.group(1)
-                    speed_str = match.group(2)
+                    size_str = match.group(2)
+                    speed_str = match.group(3)
+                    eta_str = match.group(4) or ""
                     
                     try:
                         percent = float(percent_str)
+                        total_bytes = self._parse_size_to_bytes(size_str)
+                        completed_bytes = int(total_bytes * (percent / 100.0))
+
                         current_time = time.time()
                         
                         # Throttle updates to avoid spamming the database/UI
-                        if current_time - last_update_time >= UPDATE_INTERVAL or percent == 100:
+                        if current_time - last_update_time >= UPDATE_INTERVAL or percent >= 100.0:
                             self._bridge.update_progress(self.job_id, {
                                 "percent": percent,
                                 "speed": speed_str,
+                                "eta": eta_str,
+                                "total_length": total_bytes,
+                                "completed_length": completed_bytes,
                                 "filename": os.path.basename(filename) if filename != "Unknown" else filename
                             })
                             last_update_time = current_time

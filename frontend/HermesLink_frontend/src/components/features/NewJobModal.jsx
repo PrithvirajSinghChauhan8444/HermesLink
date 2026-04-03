@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
+import { api } from '../../services/api';
 import { useDevices } from '../../hooks/useDevices';
 import { useQueues } from '../../hooks/useQueues';
 import './NewJobModal.css';
@@ -15,6 +16,9 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedDevice, setSelectedDevice] = useState(null);
+    const [formats, setFormats] = useState([]);
+    const [selectedFormat, setSelectedFormat] = useState('');
+    const [fetchingFormats, setFetchingFormats] = useState(false);
 
     const { devices } = useDevices();
     const { queues } = useQueues();
@@ -30,6 +34,9 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setDestinationPathIndex(0);
             setError(null);
             setSelectedDevice(null);
+            setFormats([]);
+            setSelectedFormat('');
+            setFetchingFormats(false);
         }
     }, [isOpen]);
 
@@ -58,8 +65,22 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const profilePaths = selectedProfileData?.paths || [];
     const profileBaseNames = selectedProfileData?.base_names || profilePaths.map(p => p.split('/').filter(Boolean).pop() || p);
 
-
-
+    const handleFetchFormats = async () => {
+        if (!url) return;
+        setFetchingFormats(true);
+        setError(null);
+        try {
+            const response = await api.get('/yt-dlp/info', { params: { url } });
+            setFormats(response.data.formats || []);
+            if (response.data.formats && response.data.formats.length > 0) {
+                setSelectedFormat(response.data.formats[0].format_id);
+            }
+        } catch (err) {
+            setError(err.response?.data?.detail || err.message || "Failed to fetch formats");
+        } finally {
+            setFetchingFormats(false);
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedDevice) {
@@ -81,6 +102,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                     storage_profile_id: selectedStorageProfile,
                     destination_path_index: destinationPathIndex,
                     sub_directory: destination || "",
+                    ...(type === 'yt-dlp' && selectedFormat ? { format: selectedFormat } : {}),
                 },
                 progress: {},
                 created_at: new Date().toISOString(),
@@ -154,6 +176,60 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                             </select>
                         </div>
                     </div>
+
+                    {type === 'yt-dlp' && (
+                        <div className="form-group mb-4">
+                            <label className="form-label">Format Selection</label>
+                            <div className="flex gap-2">
+                                <select 
+                                    className="form-select flex-1 w-full"
+                                    value={selectedFormat}
+                                    onChange={(e) => setSelectedFormat(e.target.value)}
+                                    disabled={formats.length === 0}
+                                >
+                                    {formats.length === 0 ? (
+                                        <option value="">Fetch to select exactly...</option>
+                                    ) : (
+                                        <>
+                                            <option value="">🌟 Best Quality (Auto-Merge)</option>
+                                            
+                                            <optgroup label="Audio Only">
+                                                {formats.filter(f => f.vcodec === 'none').map(f => (
+                                                    <option key={f.format_id} value={f.format_id}>
+                                                        🎵 Audio: {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+
+                                            <optgroup label="Video + Audio (Ready to Play)">
+                                                {formats.filter(f => f.vcodec !== 'none' && f.acodec !== 'none').map(f => (
+                                                    <option key={f.format_id} value={f.format_id}>
+                                                        🎥 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+
+                                            <optgroup label="Video Only (No Sound)">
+                                                {formats.filter(f => f.vcodec !== 'none' && f.acodec === 'none').map(f => (
+                                                    <option key={f.format_id} value={f.format_id}>
+                                                        🔇 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+                                        </>
+                                    )}
+                                </select>
+                                <button 
+                                    type="button"
+                                    onClick={handleFetchFormats}
+                                    disabled={fetchingFormats || !url}
+                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex-shrink-0 disabled:opacity-50 min-w-max transition-colors"
+                                >
+                                    {fetchingFormats ? 'Fetching...' : 'Fetch Formats'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Device Selector */}
                     <div className="form-group">
