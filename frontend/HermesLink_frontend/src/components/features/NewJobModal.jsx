@@ -201,20 +201,15 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                                 ))}
                                             </optgroup>
 
-                                            <optgroup label="Video + Audio (Ready to Play)">
-                                                {formats.filter(f => f.vcodec !== 'none' && f.acodec !== 'none').map(f => (
-                                                    <option key={f.format_id} value={f.format_id}>
-                                                        🎥 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-
-                                            <optgroup label="Video Only (No Sound)">
-                                                {formats.filter(f => f.vcodec !== 'none' && f.acodec === 'none').map(f => (
-                                                    <option key={f.format_id} value={f.format_id}>
-                                                        🔇 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
-                                                    </option>
-                                                ))}
+                                            <optgroup label="Video + Audio">
+                                                {formats.filter(f => f.vcodec !== 'none').map(f => {
+                                                    const value = f.acodec === 'none' ? `${f.format_id}+ba/b` : f.format_id;
+                                                    return (
+                                                        <option key={f.format_id} value={value}>
+                                                            🎥 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
+                                                        </option>
+                                                    );
+                                                })}
                                             </optgroup>
                                         </>
                                     )}
