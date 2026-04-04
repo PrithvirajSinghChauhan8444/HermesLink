@@ -1,9 +1,13 @@
 storage_profiles:
   default:
-    name: "Default Downloads"
+    name: Default Downloads
     paths:
-      - "~/Downloads/HermesLink"
+    - ~/Downloads/HermesLink
+    subfolders: []
   movies:
-    name: "Movies"
+    name: Movies
     paths:
-      - "~/Videos/HermesLink_Movies"
+    - ~/Videos/HermesLink_Movies
+    subfolders:
+    - /home/prit/Videos/HermesLink_Movies/new youtube
+    - /home/prit/Videos/HermesLink_Movies/from youtube

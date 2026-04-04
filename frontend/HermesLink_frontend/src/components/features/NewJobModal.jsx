@@ -300,11 +300,28 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         <label className="form-label">Sub-directory (Optional)</label>
                         <input
                             type="text"
+                            list="subfolders-list"
                             value={destination}
                             onChange={(e) => setDestination(e.target.value)}
-                            placeholder="e.g. Inception (2010)"
+                            onFocus={(e) => {
+                                try {
+                                    if (e.target.showPicker) e.target.showPicker();
+                                } catch (err) {}
+                            }}
+                            onClick={(e) => {
+                                try {
+                                    if (e.target.showPicker) e.target.showPicker();
+                                } catch (err) {}
+                            }}
+                            placeholder="Type a new folder name or select from list..."
                             className="form-input"
+                            autoComplete="off"
                         />
+                        <datalist id="subfolders-list">
+                            {selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders?.map((folder, idx) => (
+                                <option key={idx} value={folder.split('/').filter(Boolean).pop()} />
+                            ))}
+                        </datalist>
                     </div>
 
                     {error && (

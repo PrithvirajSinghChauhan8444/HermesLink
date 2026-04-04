@@ -125,6 +125,7 @@ class HermesAgent:
         # Load Storage Profiles
         self.storage_profiles = {}
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.yaml")
+        self.config_path = config_path
         try:
             with open(config_path, 'r') as f:
                 config = yaml.safe_load(f)
@@ -248,7 +249,7 @@ class HermesAgent:
         engine_config = job_data.get("engine_config", {})
         requested_profile_id = engine_config.get("storage_profile_id", "default")
         destination_path_index = engine_config.get("destination_path_index", 0)
-        sub_directory = engine_config.get("sub_directory", "")
+        sub_directory = engine_config.get("sub_directory", "").strip()
 
         profile = self.storage_profiles.get(requested_profile_id)
         if profile:
@@ -279,6 +280,27 @@ class HermesAgent:
             print(f"[Agent] Security or IO Error for job {job_id}: {e}")
             self._bridge.transition_job(job_id, JobState.FAILED, f"Directory Error: {e}")
             return
+
+        # Update and persist complete path instead of relative
+        if profile and sub_directory:
+            profile_subfolders = profile.setdefault("subfolders", [])
+            if output_path not in profile_subfolders:
+                profile_subfolders.append(output_path)
+                try:
+                    # Update Firebase Presence
+                    self.presence_ref.update({"storage_profiles": self.storage_profiles})
+                    
+                    # Update config.yaml safely
+                    with open(self.config_path, 'r') as f:
+                        cfg = yaml.safe_load(f) or {}
+                    
+                    if "storage_profiles" in cfg and requested_profile_id in cfg["storage_profiles"]:
+                        cfg["storage_profiles"][requested_profile_id]["subfolders"] = profile_subfolders
+                        with open(self.config_path, 'w') as f:
+                            yaml.safe_dump(cfg, f, default_flow_style=False, sort_keys=False)
+                        print(f"[Agent] Saved new absolute subfolder '{output_path}' to profile {requested_profile_id}")
+                except Exception as e:
+                    print(f"[Agent] Error saving subfolder: {e}")
 
         print(f"[Agent] Job {job_id} — output: {output_path}")
         print(f"[Agent] Job {job_id} — URL   : {url}")
