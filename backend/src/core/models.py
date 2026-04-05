@@ -69,6 +69,7 @@ class Job:
     updated_at: str = field(default_factory=lambda: datetime.isoformat(datetime.now()))
     queue_id: str = "default"
     thread_limit: int = 4
+    scheduled_at: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -82,6 +83,7 @@ class Job:
             "updated_at": self.updated_at,
             "queue_id": self.queue_id,
             "thread_limit": self.thread_limit,
+            "scheduled_at": self.scheduled_at,
         }
 
     @classmethod
@@ -96,6 +98,7 @@ class Job:
             updated_at=data.get("updated_at"),
             queue_id=data.get("queue_id", "default"),
             thread_limit=data.get("thread_limit", 4),
+            scheduled_at=data.get("scheduled_at"),
         )
         job.state = JobState(data.get("state", "PENDING"))
         return job

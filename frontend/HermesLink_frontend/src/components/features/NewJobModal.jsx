@@ -9,7 +9,7 @@ import './NewJobModal.css';
 export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [url, setUrl] = useState('');
     const [type, setType] = useState('aria2');
-    const [queueId, setQueueId] = useState('default');
+    const [queueId, setQueueId] = useState('auto');
     const [destination, setDestination] = useState('');
     const [selectedStorageProfile, setSelectedStorageProfile] = useState('default');
     const [destinationPathIndex, setDestinationPathIndex] = useState(0);
@@ -19,6 +19,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [formats, setFormats] = useState([]);
     const [selectedFormat, setSelectedFormat] = useState('');
     const [fetchingFormats, setFetchingFormats] = useState(false);
+    const [scheduledAt, setScheduledAt] = useState('');
 
     const { devices } = useDevices();
     const { queues } = useQueues();
@@ -28,7 +29,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
         if (isOpen) {
             setUrl('');
             setType('aria2');
-            setQueueId('default');
+            setQueueId('auto');
             setDestination('');
             setSelectedStorageProfile('default');
             setDestinationPathIndex(0);
@@ -37,6 +38,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setFormats([]);
             setSelectedFormat('');
             setFetchingFormats(false);
+            setScheduledAt('');
         }
     }, [isOpen]);
 
@@ -91,14 +93,13 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
         setError(null);
 
         try {
-            // Write directly to Firestore `jobs` collection so agent listener fires instantly
-            await addDoc(collection(db, 'jobs'), {
+            const jobPayload = {
                 device_id: selectedDevice.device_id,
                 state: 'PENDING',
+                queue_id: queueId,
                 engine_config: {
                     url,
                     type,
-                    queue_id: queueId,
                     storage_profile_id: selectedStorageProfile,
                     destination_path_index: destinationPathIndex,
                     sub_directory: destination || "",
@@ -107,7 +108,14 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                 progress: {},
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
-            });
+            };
+
+            if (scheduledAt) {
+                jobPayload.scheduled_at = new Date(scheduledAt).toISOString();
+            }
+
+            // Write directly to Firestore `jobs` collection so agent listener fires instantly
+            await addDoc(collection(db, 'jobs'), jobPayload);
 
             onJobCreated?.();
             onClose();
@@ -168,6 +176,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                 onChange={(e) => setQueueId(e.target.value)}
                                 className="form-select"
                             >
+                                <option value="auto">🌟 Auto-detect Routing</option>
                                 {queues.map(q => (
                                     <option key={q.queue_id} value={q.queue_id}>
                                         {q.name || q.queue_id} (P: {q.priority})
@@ -322,6 +331,16 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                 <option key={idx} value={folder.split('/').filter(Boolean).pop()} />
                             ))}
                         </datalist>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Schedule Download (Optional)</label>
+                        <input
+                            type="datetime-local"
+                            value={scheduledAt}
+                            onChange={(e) => setScheduledAt(e.target.value)}
+                            className="form-input"
+                        />
                     </div>
 
                     {error && (

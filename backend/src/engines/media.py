@@ -13,7 +13,13 @@ class MediaEngine(BaseEngine):
 
     def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> str:
         from core.models import JobState
-        print(f"[MediaEngine] Starting download for Job {job_id} | URL: {url}")
+        from core.classifier import categorize_download
+        
+        category = categorize_download(url, 'media', job_manager.get_job(job_id))
+        output_path = os.path.join(output_path, category)
+        os.makedirs(output_path, exist_ok=True)
+        
+        print(f"[MediaEngine] Starting download for Job {job_id} | URL: {url} | Path: {output_path}")
         
         self.is_cancelled = False
         

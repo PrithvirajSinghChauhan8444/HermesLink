@@ -46,17 +46,23 @@ class YTDLPEngine(BaseEngine):
 
     def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> Any:
         from core.models import JobState
+        from core.classifier import categorize_download
         
         self.job_id = job_id
         self.url = url
-        self.output_path = output_path
         self._bridge = job_manager
-        
-        logger.info(f"Starting yt-dlp for Job {job_id} | URL: {url} | Path: {output_path}")
         
         # Pull format from engine_config if provided
         job_obj = self._bridge.get_job(self.job_id)
         selected_format = job_obj.engine_config.get("format") if job_obj else None
+        
+        # Dynamic Folder Routing
+        category = categorize_download(url, 'media', job_obj)
+        output_path = os.path.join(output_path, category)
+        os.makedirs(output_path, exist_ok=True)
+        self.output_path = output_path
+        
+        logger.info(f"Starting yt-dlp for Job {job_id} | URL: {url} | Path: {output_path}")
         
         cmd = [
             "yt-dlp",

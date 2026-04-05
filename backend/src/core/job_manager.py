@@ -93,6 +93,14 @@ class JobManager:
 
     def create_job(self, config: Dict, device_id: str, queue_id: str = "default") -> Job:
         """Creates a new job in PENDING state directly in the Firestore jobs collection."""
+        
+        if queue_id == "auto":
+            url = config.get("url", "").lower()
+            if "youtube.com" in url or "youtu.be" in url:
+                queue_id = "media" if "media" in self.queues else "default"
+            else:
+                queue_id = "default"
+
         if queue_id not in self.queues:
             if queue_id == "default":
                 self._ensure_default_queue()
@@ -376,6 +384,13 @@ class JobManager:
             for jid in self.queues[queue_id].job_ids:
                 job = self.jobs.get(jid)
                 if job and job.state == JobState.PENDING:
+                    if job.scheduled_at:
+                        try:
+                            scheduled_time = datetime.fromisoformat(job.scheduled_at)
+                            if datetime.now() < scheduled_time:
+                                continue
+                        except ValueError:
+                            pass
                     candidate_job_id = jid
                     break
             

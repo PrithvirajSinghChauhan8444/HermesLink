@@ -103,6 +103,12 @@ class Aria2Engine(BaseEngine):
     def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> str:
         logger.info(f"Starting download process for Job {job_id} | URL: {url}")
         
+        from core.classifier import categorize_download
+        category = categorize_download(url, 'aria2', job_manager.get_job(job_id))
+        
+        output_path = os.path.join(output_path, category)
+        os.makedirs(output_path, exist_ok=True)
+        
         self.current_url = url
         self.current_output_path = output_path
         self.is_downgraded = False 
