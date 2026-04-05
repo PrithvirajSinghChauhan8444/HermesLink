@@ -5,7 +5,7 @@
 
 ## 🚀 Overview
 
-The project has successfully transitioned to an **Event-Driven Architecture** utilizing Firebase (RTDB for low latency updates and presence, Firestore for persistent job tracking) and the `Aria2Engine` for download execution. A dedicated Python backend agent (`test_agent.py`) actively listens for job assignments from the web client.
+The project has successfully transitioned to an **Event-Driven Architecture** utilizing Firebase (RTDB for low latency updates and presence, Firestore for persistent job tracking) and multiple engines (`Aria2Engine`, `YTDLPEngine`) for download execution. A dedicated Python backend agent (`test_agent.py`) actively listens for job assignments from the web client.
 
 ---
 
@@ -20,21 +20,21 @@ The project has successfully transitioned to an **Event-Driven Architecture** ut
   - Frontend `useDevices.js` hook successfully lists active devices in real-time with zero polling overhead.
   - If the agent drops connection, `last_seen` will stop updating and gracefully reflect as "offline" via Firebase.
 
-### ✅ PHASE 2 — Agent (Core Execution Layer)
-
-- **Status:** **Completed**
-- **Implementation:**
-  - The agent exclusively uses Firestore's `on_snapshot()` watcher to listen for newly assigned `PENDING` jobs, achieving the "Zero Idle Cost" goal (no active polling).
-  - WebSockets handle the payload delivery rapidly.
-  - When a job is detected, a dedicated monitoring thread begins processing and orchestrating the `Aria2Engine`.
-
-### ✅ PHASE 3 — Job System
+### ✅ PHASE 2 — Job System
 
 - **Status:** **Completed**
 - **Implementation:**
   - `jobs` collection exists in Firestore to handle the job lifecycle (`pending`, `running`, `completed`, `failed`).
   - Throttled Progress/State Sync: Aria2's rapid progress updates are exclusively sent to RTDB via `FirebaseJobBridge` to dodge Firestore write quotas.
   - Final terminal states (`COMPLETED`, `FAILED`, `STOPPED`) gracefully sync back to Firestore for persistence.
+
+### ✅ PHASE 3 — Agent (Core Execution Layer)
+
+- **Status:** **Completed**
+- **Implementation:**
+  - The agent exclusively uses Firestore's `on_snapshot()` watcher to listen for newly assigned `PENDING` jobs, achieving the "Zero Idle Cost" goal (no active polling).
+  - WebSockets handle the payload delivery rapidly.
+  - When a job is detected, a dedicated monitoring thread begins processing and orchestrates the correct engine (auto-routed to `Aria2Engine` or `YTDLPEngine`).
 
 ### ✅ PHASE 4 — Frontend Device Integration
 

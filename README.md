@@ -41,7 +41,7 @@ You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  �
 
 ### ✅ Device System (Presence & Discovery)
 
-- Agent (`test_agent.py`) registers in Firebase RTDB under `presence/{device_id}` on boot with hostname, platform, status, and storage profiles
+- Agent (`test_agent.py`) registers in Firebase RTDB under `presence/{device_id}` on boot with a custom `device_name` (or fallback hostname), platform, status, and storage profiles
 - Continuous heartbeat updates `last_seen` every 30 seconds
 - Frontend `useDevices.js` hook subscribes to RTDB presence for real-time device listing
 - Graceful shutdown sets status to `"offline"`
@@ -63,18 +63,19 @@ You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  �
 
 | Engine                   | File                     | Status               | Details                                                                                                                                                                                          |
 | ------------------------ | ------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Aria2**          | `aria2.py` (413 lines) | ✅ Fully implemented | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, automatic downgrade to single-thread on resume failure, partial file cleanup, force restart |
+| **Aria2**          | `aria2.py`             | ✅ Fully implemented | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, automatic downgrade to single-thread on resume failure, partial file cleanup, force restart |
+| **Media (yt-dlp)** | `media.py`             | ✅ Fully implemented | Native YouTube integration, dynamic API metadata fetching, format selection (Audio-Only / Audio+Video), and robust process signaling for pause/resume.                                           |
 | **Direct HTTP**    | `direct.py`            | 🟡 Incomplete        | Basic scaffold with streaming download logic, not wired into agent                                                                                                                               |
-| **Media (yt-dlp)** | `media.py`             | 🟡 Incomplete        | Basic scaffold with yt-dlp hooks, not wired into agent                                                                                                                                           |
 | **P2P (Torrent)**  | `p2p.py`               | ❌ Empty scaffold    | File exists but contains no code                                                                                                                                                                 |
 
-> **Note:** Only the **Aria2 engine** is currently active. Other engines are early scaffolds planned for future completion.
+> **Note:** **Aria2** and **yt-dlp** engines are currently active and integrated. Other engines are early scaffolds.
 
 ### ✅ Storage Profiles (Multi-Destination)
 
 - `config.yaml` defines named profiles with multiple `paths` per profile
+- Tracks per-profile `subfolders` history natively: custom sub-directories are persisted automatically for future selections
 - Agent expands `~`, derives human-friendly `base_names` from folder names, publishes to RTDB
-- Frontend `NewJobModal.jsx` shows Storage Profile + Destination dropdowns
+- Frontend `NewJobModal.jsx` shows Storage Profile + Destination + Subfolder History dropdowns
 - Path traversal protection via `os.path.abspath` + `startswith` validation
 - Backward compatible — auto-migrates old singular `path` key to `paths` list
 
@@ -94,7 +95,6 @@ You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  �
 
 ### ❌ Not Yet Implemented
 
-- **Engine auto-routing** — all jobs go to Aria2 regardless of `type` field
 - **Agent packaging** — runs as raw Python, no executables or installers
 - **Multi-user support** — single-user by design
 - **Zombie job recovery** — no sweeper for jobs stuck in `RUNNING` when agent crashes
@@ -268,9 +268,10 @@ HermesLink requires a Firebase project. Here's how to set one up:
 
 ### Storage Configuration
 
-Edit `backend/config.yaml` to define download locations:
+Edit `backend/config.yaml` to define a custom device name and download locations:
 
 ```yaml
+device_name: "My Home Server"
 storage_profiles:
   default:
     name: "Default Downloads"
@@ -326,22 +327,22 @@ HermesLink/
 
 ### Phase 1 — Engine Wiring & Expansion
 
-- [ ] **Engine Auto-Routing** — Wire `direct.py`, `media.py` into the agent's dispatch logic. Auto-select engine based on URL pattern (YouTube → yt-dlp, magnet: → p2p, HTTP → aria2/direct).
-- [ ] **yt-dlp Enhancements** — Add format selection, subtitle support, and playlist handling to the existing `media.py` engine.
+- [x] **Engine Auto-Routing** — Wire `media.py` into the agent's dispatch logic. Auto-select engine based on URL pattern (YouTube → yt-dlp, HTTP → aria2).
+- [x] **yt-dlp Enhancements** — Added format selection (Audio/Video). Future: subtitle support and playlist handling.
 - [ ] **Torrent/Magnet Support** — Complete the `p2p.py` engine using `libtorrent` or `aria2`'s built-in BitTorrent support.
 
-### Phase 2 — Bulk & Folder Downloads
-
-- [ ] **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
-- [ ] **Batch URL Import** — Paste multiple URLs or import from a text file; each becomes a separate queued job.
-- [ ] **Archive Extraction** — Optionally extract downloaded `.zip`/`.tar` files post-download.
-
-### Phase 3 — Smart Automation
+### Phase 2 — Smart Automation
 
 - [ ] **Intelligent Folder Naming** — Parse metadata from URLs (series names, episode numbers) to auto-create organized folder structures (e.g., `Breaking Bad/Season 3/S03E05`).
 - [ ] **Download Scheduling** — Schedule downloads for specific times or bandwidth windows.
 - [ ] **Automatic Queue Routing** — Route jobs to queues based on file type, size, or URL pattern rules.
 - [ ] **Zombie Job Sweeper** — Cloud Function to auto-recover jobs stuck in `RUNNING` state when an agent goes offline.
+
+### Phase 3 — Bulk & Folder Downloads
+
+- [ ] **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
+- [ ] **Batch URL Import** — Paste multiple URLs or import from a text file; each becomes a separate queued job.
+- [ ] **Archive Extraction** — Optionally extract downloaded `.zip`/`.tar` files post-download.
 
 ### Phase 4 — AI-Powered Features (Experimental)
 
