@@ -28,6 +28,32 @@ class Aria2Engine(BaseEngine):
         self.current_url = None
         self.current_output_path = None
 
+    def _check_resume_support(self, url: str) -> bool:
+        """Performs a lightweight pre-flight GET request to determine if the server supports range requests."""
+        if "googleusercontent.com" in url or "googlevideo.com" in url:
+            logger.info("Known non-compliant server for HTTP Range (Google Video); forcing single-thread.")
+            return False
+            
+        import requests
+        try:
+            response = requests.get(url, stream=True, allow_redirects=True, timeout=5)
+            headers = response.headers
+            response.close()
+            
+            if headers.get('Transfer-Encoding') == 'chunked' or 'Content-Length' not in headers:
+                logger.info("Server uses chunked encoding or omitting length; multi-thread not supported.")
+                return False
+            
+            accept_ranges = headers.get('Accept-Ranges', '').lower()
+            if accept_ranges == 'none':
+                logger.info("Server explicitly rejects range requests; multi-thread not supported.")
+                return False
+                
+            return True
+        except Exception as e:
+            logger.warning(f"Could not pre-flight check range support: {e}")
+            return True
+
     def _call_rpc(self, method, params, silent=False):
         payload = {
             "jsonrpc": "2.0",
@@ -120,7 +146,12 @@ class Aria2Engine(BaseEngine):
             job_manager.transition_job(job_id, JobState.FAILED, "Aria2 Daemon Failed")
             return "ERROR_DAEMON_FAILED"
 
-        gid = self._add_uri_internal(url, output_path, use_multithread=True)
+        supports_resume = self._check_resume_support(url)
+        if not supports_resume:
+            logger.info("Pre-flight check reveals server does NOT support multi-threading. Downgrading proactively.")
+            self.is_downgraded = True
+
+        gid = self._add_uri_internal(url, output_path, use_multithread=supports_resume)
         
         if gid and gid != "ERROR":
             self.gid = gid
@@ -205,6 +236,14 @@ class Aria2Engine(BaseEngine):
             except: pass
         elif aria2_status == "error" and current_internal_state != JobState.FAILED:
             error_msg = status.get("errorMessage", "Unknown Aria2 Error")
+            
+            # Autonomous Recovery Hook
+            if self.classify_error(error_msg) == "RESUME_NOT_SUPPORTED" and not self.is_downgraded:
+                logger.info("Auto-recovering from unsupported range request...")
+                success, rec_msg = self.recover()
+                if success:
+                    return # Successfully recovered, remain running
+                    
             try: job_manager.transition_job(job_id, JobState.FAILED, error_msg)
             except: pass
         elif aria2_status == "removed" and current_internal_state != JobState.STOPPED:

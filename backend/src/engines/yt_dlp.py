@@ -72,6 +72,11 @@ class YTDLPEngine(BaseEngine):
             "-o", "%(title)s.%(ext)s"
         ]
         
+        # Check for cookies file to bypass YouTube bot detection
+        cookie_path = os.path.join(os.getcwd(), "cookies.txt")
+        if os.path.exists(cookie_path):
+            cmd.extend(["--cookies", cookie_path])
+            
         if selected_format:
             cmd.extend(["-f", selected_format])
             
