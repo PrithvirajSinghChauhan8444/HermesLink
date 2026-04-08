@@ -36,6 +36,8 @@ export function useQueues() {
         return !cached;
     });
 
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         const queuesRef = collection(db, 'queues');
 
@@ -46,7 +48,12 @@ export function useQueues() {
             }));
             setQueues(queueList);
             setLoading(false);
+            setError(null);
             setCookie(cacheKey, queueList, 1);
+        }, (err) => {
+            console.error('[useQueues] Firestore listener error:', err);
+            setError(err);
+            setLoading(false);
         });
 
         return () => unsubscribe();
@@ -80,7 +87,7 @@ export function useQueues() {
         await deleteDoc(doc(db, 'queues', queueId));
     };
 
-    return { queues, loading, createQueue, updateQueue, deleteQueue };
+    return { queues, loading, error, createQueue, updateQueue, deleteQueue };
 }
 
 export default useQueues;

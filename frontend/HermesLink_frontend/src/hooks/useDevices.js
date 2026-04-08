@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, off } from 'firebase/database';
 import { rtdb } from '../config/firebase';
-import { getCookie, setCookie } from '../utils/cookieUtils';
+
+const LS_KEY = 'hl_devices';
+
+function lsGet(key) {
+    try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+function lsSet(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
 
 /**
  * Real-time hook that listens to the RTDB `presence/` node and
  * returns an array of device objects with online/offline status.
  */
 export function useDevices() {
-    const cacheKey = 'hl_devices';
-
-    const [devices, setDevices] = useState(() => {
-        const cached = getCookie(cacheKey);
-        return cached || [];
-    });
-    
-    const [loading, setLoading] = useState(() => {
-        const cached = getCookie(cacheKey);
-        return cached ? false : true;
-    });
+    const [devices, setDevices] = useState(() => lsGet(LS_KEY) || []);
+    const [loading, setLoading] = useState(() => !lsGet(LS_KEY));
 
     useEffect(() => {
         const presenceRef = ref(rtdb, 'presence');
@@ -28,7 +27,7 @@ export function useDevices() {
             if (!data) {
                 setDevices([]);
                 setLoading(false);
-                setCookie(cacheKey, [], 1);
+                lsSet(LS_KEY, []);
                 return;
             }
 
@@ -43,7 +42,7 @@ export function useDevices() {
 
             setDevices(deviceList);
             setLoading(false);
-            setCookie(cacheKey, deviceList, 1);
+            lsSet(LS_KEY, deviceList);
         });
 
         // Cleanup: detach listener on unmount

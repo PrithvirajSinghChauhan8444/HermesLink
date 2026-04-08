@@ -30,10 +30,6 @@ class Aria2Engine(BaseEngine):
 
     def _check_resume_support(self, url: str) -> bool:
         """Performs a lightweight pre-flight GET request to determine if the server supports range requests."""
-        if "googleusercontent.com" in url or "googlevideo.com" in url:
-            logger.info("Known non-compliant server for HTTP Range (Google Video); forcing single-thread.")
-            return False
-            
         import requests
         try:
             response = requests.get(url, stream=True, allow_redirects=True, timeout=5)

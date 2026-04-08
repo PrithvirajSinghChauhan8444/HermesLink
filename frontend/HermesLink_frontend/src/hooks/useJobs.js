@@ -23,6 +23,8 @@ export function useJobs({ states } = {}) {
         return cached ? false : true;
     });
 
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         const jobsRef = collection(db, 'jobs');
         const q = query(jobsRef, orderBy('created_at', 'desc'));
@@ -40,16 +42,18 @@ export function useJobs({ states } = {}) {
 
             setJobs(jobList);
             setLoading(false);
+            setError(null);
             setCookie(cacheKey, jobList, 1); // Cache for 1 day
-        }, (error) => {
-            console.error('[useJobs] Firestore listener error:', error);
+        }, (err) => {
+            console.error('[useJobs] Firestore listener error:', err);
+            setError(err);
             setLoading(false);
         });
 
         return () => unsubscribe();
     }, [cacheKey, JSON.stringify(states)]);
 
-    return { jobs, loading };
+    return { jobs, loading, error };
 }
 
 export default useJobs;
