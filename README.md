@@ -1,3 +1,4 @@
+
 <p align="center">
   <img src="docs/images/landing.png" width="700" alt="HermesLink Landing" />
 </p>
@@ -61,12 +62,12 @@ You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  �
 
 ### ✅ Download Engines
 
-| Engine                   | File                     | Status               | Details                                                                                                                                                                                          |
-| ------------------------ | ------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Aria2**          | `aria2.py`             | ✅ Fully implemented | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, automatic downgrade to single-thread on resume failure, partial file cleanup, force restart |
-| **Media (yt-dlp)** | `media.py`             | ✅ Fully implemented | Native YouTube integration, dynamic API metadata fetching, format selection (Audio-Only / Audio+Video), and robust process signaling for pause/resume.                                           |
-| **Direct HTTP**    | `direct.py`            | 🟡 Incomplete        | Basic scaffold with streaming download logic, not wired into agent                                                                                                                               |
-| **P2P (Torrent)**  | `p2p.py`               | ❌ Empty scaffold    | File exists but contains no code                                                                                                                                                                 |
+| Engine                   | File          | Status               | Details                                                                                                                                                                                          |
+| ------------------------ | ------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Aria2**          | `aria2.py`  | ✅ Fully implemented | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, automatic downgrade to single-thread on resume failure, partial file cleanup, force restart |
+| **Media (yt-dlp)** | `media.py`  | ✅ Fully implemented | Native YouTube integration, dynamic API metadata fetching, format selection (Audio-Only / Audio+Video), and robust process signaling for pause/resume.                                           |
+| **Direct HTTP**    | `direct.py` | 🟡 Incomplete        | Basic scaffold with streaming download logic, not wired into agent                                                                                                                               |
+| **P2P (Torrent)**  | `p2p.py`    | ❌ Empty scaffold    | File exists but contains no code                                                                                                                                                                 |
 
 > **Note:** **Aria2** and **yt-dlp** engines are currently active and integrated. Other engines are early scaffolds.
 
@@ -327,15 +328,15 @@ HermesLink/
 
 ### Phase 1 — Engine Wiring & Expansion
 
-- [x] **Engine Auto-Routing** — Wire `media.py` into the agent's dispatch logic. Auto-select engine based on URL pattern (YouTube → yt-dlp, HTTP → aria2).
-- [x] **yt-dlp Enhancements** — Added format selection (Audio/Video). Future: subtitle support and playlist handling.
-- [ ] **Torrent/Magnet Support** — Complete the `p2p.py` engine using `libtorrent` or `aria2`'s built-in BitTorrent support.
+- [X] **Engine Auto-Routing** — Wire `media.py` into the agent's dispatch logic. Auto-select engine based on URL pattern (YouTube → yt-dlp, HTTP → aria2).
+- [X] **yt-dlp Enhancements** — Added format selection (Audio/Video). Future: subtitle support and playlist handling.
+- [] **Torrent/Magnet Support** — Complete the `p2p.py` engine using `libtorrent` or `aria2`'s built-in BitTorrent support.
 
 ### Phase 2 — Smart Automation
 
-- [ ] **Intelligent Folder Naming** — Parse metadata from URLs (series names, episode numbers) to auto-create organized folder structures (e.g., `Breaking Bad/Season 3/S03E05`).
+- [X] **Intelligent Folder Naming** — Parse metadata from URLs (series names, episode numbers) to auto-create organized folder structures (e.g., `Breaking Bad/Season 3/S03E05`).
 - [ ] **Download Scheduling** — Schedule downloads for specific times or bandwidth windows.
-- [ ] **Automatic Queue Routing** — Route jobs to queues based on file type, size, or URL pattern rules.
+- [X] **Automatic Queue Routing** — Route jobs to queues based on file type, size, or URL pattern rules.
 - [ ] **Zombie Job Sweeper** — Cloud Function to auto-recover jobs stuck in `RUNNING` state when an agent goes offline.
 
 ### Phase 3 — Bulk & Folder Downloads
