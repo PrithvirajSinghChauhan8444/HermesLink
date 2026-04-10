@@ -330,7 +330,6 @@ HermesLink/
 
 - [X] **Engine Auto-Routing** — Wire `media.py` into the agent's dispatch logic. Auto-select engine based on URL pattern (YouTube → yt-dlp, HTTP → aria2).
 - [X] **yt-dlp Enhancements** — Added format selection (Audio/Video). Future: subtitle support and playlist handling.
-- [] **Torrent/Magnet Support** — Complete the `p2p.py` engine using `libtorrent` or `aria2`'s built-in BitTorrent support.
 
 ### Phase 2 — Smart Automation
 
