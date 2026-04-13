@@ -13,3 +13,4 @@ node_modules/
 _metadata.json
 package.json
 serviceAccountKey.json
+config.yaml
