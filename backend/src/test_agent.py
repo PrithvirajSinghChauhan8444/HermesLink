@@ -201,6 +201,35 @@ class HermesAgent:
     def _heartbeat(self):
         self.presence_ref.update({"last_seen": int(time.time() * 1000)})
 
+    def _recover_crash(self):
+        """Finds any assigned jobs stuck in RUNNING or PAUSED and reverts them to PENDING."""
+        print(f"[Agent] Checking for orphaned active jobs from previous sessions...")
+        try:
+            active_jobs = self.db.collection("jobs").where("device_id", "==", self.device_id).where("state", "in", ["RUNNING", "PAUSED"]).get()
+            
+            recovered_count = 0
+            for doc in active_jobs:
+                job_id = doc.id
+                print(f"[Agent] Recovering interrupted job: {job_id}")
+                
+                # Update both Firestore and RTDB to PENDING
+                # This ensures the active listener picks it up and restarts it
+                self.db.collection("jobs").document(job_id).update({
+                    "state": JobState.PENDING.value,
+                    "updated_at": datetime.isoformat(datetime.now()),
+                    "error": "System Restarted Unexpectedly (Crash Recovery)"
+                })
+                self._bridge._job_rtdb_ref(job_id).update({
+                    "state": JobState.PENDING.value,
+                    "updated_at": datetime.isoformat(datetime.now())
+                })
+                recovered_count += 1
+                
+            if recovered_count > 0:
+                print(f"[Agent] Recovered {recovered_count} job(s) to PENDING state.")
+        except Exception as e:
+            print(f"[Agent] Crash recovery failed: {e}")
+
     # ── Job Listener (Firestore) ───────────────────────────────
 
     def _attach_job_listener(self):
@@ -422,6 +451,7 @@ class HermesAgent:
 
     def run_forever(self):
         self._go_online()
+        self._recover_crash()
         self._attach_job_listener()
 
         print("[Agent] Running… (Ctrl+C to stop)")

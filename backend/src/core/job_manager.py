@@ -63,16 +63,15 @@ class JobManager:
             # (Wait, existing logic dequeues them. Let's keep that).
             
             if job.state == JobState.RUNNING:
-                print(f"[JobManager] Detected crash/unsafe shutdown for Job {job_id}. Recovery: Marking as FAILED.")
-                job.state = JobState.FAILED
+                print(f"[JobManager] Detected crash/unsafe shutdown for Job {job_id}. Recovery: Marking as PENDING to auto-resume.")
+                job.state = JobState.PENDING
                 job.error_reason = "System Restarted Unexpectedly (Crash Recovery)"
                 job.updated_at = datetime.isoformat(datetime.now())
                 updates_needed = True
                 
-                # It was running, so it might be in queue list depending on our policy.
-                # Usually RUNNING jobs effectively occupy a slot.
-                # If we fail it, we dequeue it.
-                self.dequeue(job_id)
+                # Re-queue the job so that the process_queues loop will start it again.
+                if job_id not in self.queues[queue_id].job_ids:
+                    self.enqueue(job_id, queue_id)
             
             elif job.state in [JobState.PENDING, JobState.PAUSED]:
                 # Ensure pending/paused jobs are in their queue list

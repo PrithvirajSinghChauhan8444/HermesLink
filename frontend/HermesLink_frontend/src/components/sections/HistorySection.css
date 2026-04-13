@@ -93,7 +93,7 @@
 }
 
 .col-filename {
-    @apply col-span-4;
+    @apply col-span-3;
 }
 
 .col-device {
@@ -101,7 +101,7 @@
 }
 
 .col-size {
-    @apply col-span-2 text-right;
+    @apply col-span-1 text-right;
 }
 
 .col-status {
@@ -110,6 +110,10 @@
 
 .col-engine {
     @apply col-span-1 text-right;
+}
+
+.col-actions {
+    @apply col-span-2 text-right;
 }
 
 .history-list-container {
@@ -133,7 +137,7 @@
 }
 
 .row-filename {
-    @apply col-span-4 truncate text-gray-300 group-hover:text-white transition-colors;
+    @apply col-span-3 truncate text-gray-300 group-hover:text-white transition-colors;
 }
 
 .row-device {
@@ -141,7 +145,7 @@
 }
 
 .row-size {
-    @apply col-span-2 text-right font-mono text-gray-400;
+    @apply col-span-1 text-right font-mono text-gray-400;
 }
 
 .row-status {
@@ -166,4 +170,12 @@
 
 .row-engine {
     @apply col-span-1 text-right text-xs text-gray-500 group-hover:text-gray-300;
+}
+
+.row-actions {
+    @apply col-span-2 flex justify-end items-center;
+}
+
+.action-btn {
+    @apply text-xs font-mono transition-colors hover:bg-white/10;
 }

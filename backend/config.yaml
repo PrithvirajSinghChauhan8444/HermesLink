@@ -3,7 +3,8 @@ storage_profiles:
     name: Default Downloads
     paths:
     - ~/Downloads/HermesLink
-    subfolders: []
+    subfolders:
+    - /home/prit/Downloads/HermesLink/testing
   movies:
     name: Movies
     paths:

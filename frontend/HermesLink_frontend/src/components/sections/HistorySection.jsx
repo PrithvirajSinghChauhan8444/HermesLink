@@ -1,16 +1,28 @@
 import { useState, useRef } from 'react';
+import { ref, set } from 'firebase/database';
+import { rtdb } from '../../config/firebase';
 import { useJobs } from '../../hooks/useJobs';
 import { useDevices } from '../../hooks/useDevices';
 import { formatBytes } from '../../utils/format';
-
-
-
 import './HistorySection.css';
 
 export default function HistorySection() {
     const { jobs, loading } = useJobs({ states: ['COMPLETED', 'FAILED', 'STOPPED'] });
     const { devices } = useDevices();
     const deviceMap = Object.fromEntries(devices.map(d => [d.device_id, d]));
+    const [actionLoading, setActionLoading] = useState({});
+
+    const handleAction = async (jobId, action) => {
+        setActionLoading(prev => ({ ...prev, [jobId]: action }));
+        try {
+            const actionRef = ref(rtdb, `jobs/${jobId}/action`);
+            await set(actionRef, action);
+        } catch (error) {
+            console.error(`Error sending ${action} for job ${jobId}:`, error);
+        } finally {
+            setActionLoading(prev => ({ ...prev, [jobId]: null }));
+        }
+    };
 
     return (
         <div className="history-container">
@@ -34,6 +46,7 @@ export default function HistorySection() {
                         <div className="col-size">Size</div>
                         <div className="col-status">Status</div>
                         <div className="col-engine">Engine</div>
+                        <div className="col-actions">Actions</div>
                     </div>
 
                     <div className="history-list-container">
@@ -70,6 +83,30 @@ export default function HistorySection() {
                                         </div>
                                         <div className="row-engine">
                                             {job.engine_config?.type}
+                                        </div>
+                                        <div className="row-actions">
+                                            {(job.state === 'FAILED' || job.state === 'STOPPED') && (
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button
+                                                        className="action-btn retry-btn"
+                                                        disabled={!!actionLoading[jobKey]}
+                                                        onClick={() => handleAction(jobKey, 'RETRY')}
+                                                        title="Retry from where it left off"
+                                                        style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', padding: '4px 8px', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.2)' }}
+                                                    >
+                                                        {actionLoading[jobKey] === 'RETRY' ? '...' : 'Retry'}
+                                                    </button>
+                                                    <button
+                                                        className="action-btn restart-btn"
+                                                        disabled={!!actionLoading[jobKey]}
+                                                        onClick={() => handleAction(jobKey, 'RESTART')}
+                                                        title="Restart from scratch"
+                                                        style={{ background: 'rgba(250, 204, 21, 0.1)', color: '#facc15', padding: '4px 8px', borderRadius: '4px', border: '1px solid rgba(250, 204, 21, 0.2)' }}
+                                                    >
+                                                        {actionLoading[jobKey] === 'RESTART' ? '...' : 'Restart'}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 );
