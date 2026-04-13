@@ -1,1 +1,15 @@
 .vscode/settings.json
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+.vscode/
+node_modules/
+.vite/deps
+
+
+_metadata.json
+package.json
+serviceAccountKey.json
