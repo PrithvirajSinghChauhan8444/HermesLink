@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/landing.png" width="700" alt="HermesLink Landing" />
+  <img src="docs/images/landing.gif" width="700" alt="HermesLink Landing" />
 </p>
 
 <h1 align="center">HermesLink</h1>
@@ -52,11 +52,14 @@ You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  �
 </p>
 <p align="center"><em>Download history with completed and failed jobs</em></p>
 
-### 🎬 Walkthrough
+### 🎬 Walkthroughs
 
-https://github.com/user-attachments/assets/go_through.mp4
+#### System Overview
+![HermesLink Walkthrough](docs/videos/walkthrough.mp4)
 
-> If the video doesn't load above, see it at [`docs/images/go_through.mp4`](docs/images/go_through.mp4).
+#### Tutorial & Setup
+![HermesLink Tutorial](docs/videos/tutorial.mp4)
+
 
 ---
 

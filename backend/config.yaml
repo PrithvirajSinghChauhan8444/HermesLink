@@ -11,6 +11,7 @@ storage_profiles:
     - /home/prit/Downloads/HermesLink/try1
     - /home/prit/Downloads/HermesLink/final
     - /home/prit/Downloads/HermesLink/final2
+    - /home/prit/Downloads/HermesLink/Youtube
   movies:
     name: Movies
     paths:
