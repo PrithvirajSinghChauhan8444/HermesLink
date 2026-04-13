@@ -69,9 +69,10 @@ class ZombieSweeper:
             if not offline_device_ids:
                 return  # No offline devices to worry about
 
-            # 2. Query Firestore for active jobs
-            # PENDING, RUNNING, PAUSED
-            active_states = [JobState.PENDING.value, JobState.RUNNING.value, JobState.PAUSED.value]
+            # 2. Query Firestore for actively-executing jobs (NOT PENDING)
+            # PENDING jobs are excluded because they may be legitimately assigned
+            # to an offline device waiting to boot up (offline assignment feature).
+            active_states = [JobState.RUNNING.value, JobState.PAUSED.value]
             
             docs = self.db.collection("jobs").where("state", "in", active_states).get()
             

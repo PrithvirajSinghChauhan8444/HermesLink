@@ -21,6 +21,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from core.job_manager import JobManager
 from core.models import JobState
 from core.job_runner import JobRunner

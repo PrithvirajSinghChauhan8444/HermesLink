@@ -357,6 +357,32 @@ class HermesAgent:
             "updated_at": datetime.isoformat(datetime.now()),
         })
 
+        # ── Scheduled Download: Wait until scheduled_at ───────
+        scheduled_at_str = job_data.get("scheduled_at")
+        if scheduled_at_str:
+            try:
+                scheduled_time = datetime.fromisoformat(scheduled_at_str)
+                delay = (scheduled_time - datetime.now()).total_seconds()
+                if delay > 0:
+                    print(f"[Agent] Job {job_id} is scheduled for {scheduled_at_str}. Waiting {delay:.0f}s…")
+                    self._bridge._job_rtdb_ref(job_id).update({
+                        "scheduled_at": scheduled_at_str,
+                    })
+                    # Sleep in 1s increments so we can react to external cancellation
+                    while delay > 0:
+                        time.sleep(1)
+                        delay -= 1
+                        # Check if the job was cancelled/stopped while waiting
+                        current = self._bridge.get_job(job_id)
+                        if current and current.state in {JobState.STOPPED, JobState.FAILED}:
+                            print(f"[Agent] Job {job_id} was cancelled during scheduling wait. Aborting.")
+                            return
+                    print(f"[Agent] Schedule reached for job {job_id}. Starting download now.")
+                else:
+                    print(f"[Agent] Job {job_id} schedule was in the past ({scheduled_at_str}). Starting immediately.")
+            except (ValueError, TypeError) as e:
+                print(f"[Agent] Could not parse scheduled_at for job {job_id}: {e}. Starting immediately.")
+
         # ── Start engine based on URL or Type ───────────────
         engine_type = engine_config.get("type", "aria2")
         is_youtube = any(domain in url.lower() for domain in ["youtube.com", "youtu.be"])
@@ -405,14 +431,14 @@ class HermesAgent:
         # ── Start monitoring thread ───────────────────────────
         monitor_thread = threading.Thread(
             target=self._monitor_job,
-            args=(job_id, engine, gid, action_listener),
+            args=(job_id, engine, gid, action_listener, job_data),
             daemon=True,
         )
         monitor_thread.start()
 
     # ── Monitor Thread ────────────────────────────────────────
 
-    def _monitor_job(self, job_id: str, engine, gid: str, action_listener=None):
+    def _monitor_job(self, job_id: str, engine, gid: str, action_listener=None, job_data: dict = None):
         """
         Polls the engine every MONITOR_INTERVAL_SECONDS seconds.
         Aria2Engine.sync_state() pulls aria2 status via RPC.
@@ -437,6 +463,12 @@ class HermesAgent:
             if current and current.state in TERMINAL:
                 print(f"[Monitor] Job {job_id} reached terminal state: "
                       f"{current.state.value}. Stopping monitor.")
+                
+                # Post-download: Auto-extract archives if requested
+                if current.state == JobState.COMPLETED and job_data:
+                    auto_extract = job_data.get("engine_config", {}).get("auto_extract", False)
+                    if auto_extract:
+                        self._extract_archive(job_id, current)
                 break
 
         self._active_engines.pop(job_id, None)
@@ -446,6 +478,96 @@ class HermesAgent:
             except Exception:
                 pass
         print(f"[Monitor] Job {job_id} monitor exited.")
+
+    # ── Archive Extraction ────────────────────────────────────
+
+    def _extract_archive(self, job_id: str, job):
+        """Attempts to extract the downloaded file if it is an archive."""
+        import zipfile
+        import tarfile
+        import shutil
+        
+        ARCHIVE_EXTENSIONS = (".zip", ".tar", ".tar.gz", ".tgz", ".tar.bz2", ".tar.xz", ".gz", ".rar")
+        
+        # 1. Try to get the exact file path from RTDB progress (written by engine at COMPLETED)
+        rtdb_data = self._bridge._job_rtdb_ref(job_id).get() or {}
+        progress = rtdb_data.get("progress", {})
+        file_path = progress.get("file_path", "")
+        
+        archive_files = []
+        if file_path and os.path.isfile(file_path):
+            # Check if the downloaded file is actually an archive
+            if any(file_path.lower().endswith(ext) for ext in ARCHIVE_EXTENSIONS):
+                archive_files.append(file_path)
+                print(f"[Extract] Found archive via engine file_path: {file_path}")
+            else:
+                print(f"[Extract] Downloaded file is not an archive: {file_path}")
+                return
+        else:
+            # 2. Fallback: scan the output directory recursively
+            output_path = rtdb_data.get("output_path", "")
+            if not output_path or not os.path.isdir(output_path):
+                print(f"[Extract] No valid output_path for job {job_id}. Skipping.")
+                return
+            
+            print(f"[Extract] file_path not available, scanning {output_path} recursively...")
+            for root, dirs, files in os.walk(output_path):
+                for f in files:
+                    if any(f.lower().endswith(ext) for ext in ARCHIVE_EXTENSIONS):
+                        archive_files.append(os.path.join(root, f))
+        
+        if not archive_files:
+            print(f"[Extract] No archive files found for job {job_id}.")
+            return
+        
+        for archive_path in archive_files:
+            filename = os.path.basename(archive_path)
+            print(f"[Extract] Extracting: {filename}")
+            
+            # Report extraction status via RTDB
+            self._bridge._job_rtdb_ref(job_id).update({
+                "progress": {
+                    "filename": f"📦 Extracting: {filename}",
+                    "percent": 100,
+                }
+            })
+            
+            try:
+                # Extract into a subfolder named after the archive (prevents overwrites)
+                archive_parent = os.path.dirname(archive_path)
+                base_name = filename
+                for ext in (".tar.gz", ".tar.bz2", ".tar.xz", ".tgz", ".tar", ".zip", ".gz", ".rar"):
+                    if base_name.lower().endswith(ext):
+                        base_name = base_name[:len(base_name) - len(ext)]
+                        break
+                extract_dir = os.path.join(archive_parent, base_name)
+                os.makedirs(extract_dir, exist_ok=True)
+                
+                if zipfile.is_zipfile(archive_path):
+                    with zipfile.ZipFile(archive_path, 'r') as zf:
+                        zf.extractall(extract_dir)
+                elif tarfile.is_tarfile(archive_path):
+                    with tarfile.open(archive_path, 'r:*') as tf:
+                        tf.extractall(extract_dir)
+                else:
+                    try:
+                        shutil.unpack_archive(archive_path, extract_dir)
+                    except Exception:
+                        print(f"[Extract] Unsupported archive format: {filename}")
+                        continue
+                
+                print(f"[Extract] Successfully extracted: {filename} → {extract_dir}")
+                
+            except Exception as e:
+                print(f"[Extract] Failed to extract {filename}: {e}")
+        
+        # Update progress to show extraction complete
+        self._bridge._job_rtdb_ref(job_id).update({
+            "progress": {
+                "filename": f"✅ Extracted {len(archive_files)} archive(s)",
+                "percent": 100,
+            }
+        })
 
     # ── Main Loop ─────────────────────────────────────────────
 

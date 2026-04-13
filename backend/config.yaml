@@ -5,6 +5,12 @@ storage_profiles:
     - ~/Downloads/HermesLink
     subfolders:
     - /home/prit/Downloads/HermesLink/testing
+    - /home/prit/Downloads/HermesLink/watch
+    - /home/prit/Downloads/HermesLink/Zip
+    - /home/prit/Downloads/HermesLink/not_auto
+    - /home/prit/Downloads/HermesLink/try1
+    - /home/prit/Downloads/HermesLink/final
+    - /home/prit/Downloads/HermesLink/final2
   movies:
     name: Movies
     paths:

@@ -20,10 +20,12 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [selectedFormat, setSelectedFormat] = useState('');
     const [fetchingFormats, setFetchingFormats] = useState(false);
     const [scheduledAt, setScheduledAt] = useState('');
+    const [batchMode, setBatchMode] = useState(false);
+    const [batchUrls, setBatchUrls] = useState('');
+    const [autoExtract, setAutoExtract] = useState(false);
 
     const { devices } = useDevices();
     const { queues } = useQueues();
-    const onlineDevices = devices.filter(d => d.status === 'online');
 
     useEffect(() => {
         if (isOpen) {
@@ -39,15 +41,19 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setSelectedFormat('');
             setFetchingFormats(false);
             setScheduledAt('');
+            setBatchMode(false);
+            setBatchUrls('');
+            setAutoExtract(false);
         }
     }, [isOpen]);
 
-    // Auto-select the first online device when devices load
+    // Auto-select the first device when devices load (prefer online if available)
     useEffect(() => {
-        if (isOpen && onlineDevices.length > 0 && !selectedDevice) {
-            setSelectedDevice(onlineDevices[0]);
+        if (isOpen && devices.length > 0 && !selectedDevice) {
+            const online = devices.find(d => d.status === 'online');
+            setSelectedDevice(online || devices[0]);
         }
-    }, [onlineDevices, isOpen]);
+    }, [devices, isOpen]);
 
     // Update default storage profile when device changes
     useEffect(() => {
@@ -83,6 +89,17 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setFetchingFormats(false);
         }
     };
+    const handleFileImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            setBatchUrls(prev => prev ? prev + '\n' + ev.target.result : ev.target.result);
+        };
+        reader.readAsText(file);
+        e.target.value = ''; // reset so the same file can be re-imported
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedDevice) {
@@ -93,29 +110,53 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
         setError(null);
 
         try {
-            const jobPayload = {
-                device_id: selectedDevice.device_id,
-                state: 'PENDING',
-                queue_id: queueId,
-                engine_config: {
-                    url,
-                    type,
-                    storage_profile_id: selectedStorageProfile,
-                    destination_path_index: destinationPathIndex,
-                    sub_directory: destination || "",
-                    ...(type === 'yt-dlp' && selectedFormat ? { format: selectedFormat } : {}),
-                },
-                progress: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            };
-
-            if (scheduledAt) {
-                jobPayload.scheduled_at = new Date(scheduledAt).toISOString();
+            // Collect URLs: single mode or batch mode
+            let urls = [];
+            if (batchMode) {
+                urls = batchUrls
+                    .split('\n')
+                    .map(u => u.trim())
+                    .filter(u => u.length > 0 && (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('magnet:')));
+                if (urls.length === 0) {
+                    setError('No valid URLs found. Each line should be a URL starting with http(s):// or magnet:');
+                    setLoading(false);
+                    return;
+                }
+            } else {
+                if (!url) {
+                    setError('Please enter a URL.');
+                    setLoading(false);
+                    return;
+                }
+                urls = [url];
             }
 
-            // Write directly to Firestore `jobs` collection so agent listener fires instantly
-            await addDoc(collection(db, 'jobs'), jobPayload);
+            // Create a separate job for each URL
+            for (const jobUrl of urls) {
+                const jobPayload = {
+                    device_id: selectedDevice.device_id,
+                    state: 'PENDING',
+                    queue_id: queueId,
+                    engine_config: {
+                        url: jobUrl,
+                        type,
+                        storage_profile_id: selectedStorageProfile,
+                        destination_path_index: destinationPathIndex,
+                        sub_directory: destination || "",
+                        auto_extract: autoExtract,
+                        ...(type === 'yt-dlp' && selectedFormat ? { format: selectedFormat } : {}),
+                    },
+                    progress: {},
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                };
+
+                if (scheduledAt) {
+                    jobPayload.scheduled_at = new Date(scheduledAt).toISOString();
+                }
+
+                await addDoc(collection(db, 'jobs'), jobPayload);
+            }
 
             onJobCreated?.();
             onClose();
@@ -143,18 +184,77 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="modal-form">
-                    {/* URL */}
-                    <div className="form-group">
-                        <label className="form-label">URL</label>
-                        <input
-                            type="text"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            placeholder="https://example.com/file.zip"
-                            className="form-input"
-                            required
-                        />
+                    {/* Mode Toggle */}
+                    <div className="form-group" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                        <button
+                            type="button"
+                            onClick={() => setBatchMode(false)}
+                            style={{
+                                flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)',
+                                background: !batchMode ? 'rgba(99,102,241,0.2)' : 'transparent',
+                                color: !batchMode ? '#818cf8' : '#9ca3af', fontWeight: 600, fontSize: '13px',
+                                cursor: 'pointer', transition: 'all 0.2s'
+                            }}
+                        >Single URL</button>
+                        <button
+                            type="button"
+                            onClick={() => setBatchMode(true)}
+                            style={{
+                                flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)',
+                                background: batchMode ? 'rgba(99,102,241,0.2)' : 'transparent',
+                                color: batchMode ? '#818cf8' : '#9ca3af', fontWeight: 600, fontSize: '13px',
+                                cursor: 'pointer', transition: 'all 0.2s'
+                            }}
+                        >Batch Import</button>
                     </div>
+
+                    {/* URL Input — single or batch */}
+                    {!batchMode ? (
+                        <div className="form-group">
+                            <label className="form-label">URL</label>
+                            <input
+                                type="text"
+                                value={url}
+                                onChange={(e) => setUrl(e.target.value)}
+                                placeholder="https://example.com/file.zip"
+                                className="form-input"
+                                required={!batchMode}
+                            />
+                        </div>
+                    ) : (
+                        <div className="form-group">
+                            <label className="form-label">
+                                URLs (one per line)
+                                <span style={{ float: 'right', fontSize: '11px', color: '#6b7280' }}>
+                                    {batchUrls.split('\n').filter(u => u.trim()).length} URL(s)
+                                </span>
+                            </label>
+                            <textarea
+                                value={batchUrls}
+                                onChange={(e) => setBatchUrls(e.target.value)}
+                                placeholder={"https://example.com/file1.zip\nhttps://example.com/file2.zip\nhttps://example.com/file3.zip"}
+                                className="form-input"
+                                rows={5}
+                                style={{ resize: 'vertical', fontFamily: 'monospace', fontSize: '12px' }}
+                            />
+                            <label
+                                style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                    marginTop: '8px', padding: '6px 12px', borderRadius: '6px',
+                                    border: '1px dashed rgba(255,255,255,0.15)', cursor: 'pointer',
+                                    fontSize: '12px', color: '#9ca3af', transition: 'all 0.2s'
+                                }}
+                            >
+                                📄 Import from .txt file
+                                <input
+                                    type="file"
+                                    accept=".txt"
+                                    onChange={handleFileImport}
+                                    style={{ display: 'none' }}
+                                />
+                            </label>
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="form-group">
@@ -238,24 +338,24 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                     {/* Device Selector */}
                     <div className="form-group">
                         <label className="form-label">Device</label>
-                        {onlineDevices.length === 0 ? (
+                        {devices.length === 0 ? (
                             <div className="device-selector-empty">
-                                <span>⚠️ No devices online. Start the HermesLink agent on a device.</span>
+                                <span>⚠️ No devices found. Connect a HermesLink agent first.</span>
                             </div>
                         ) : (
                             <select
                                 value={selectedDevice?.device_id || ''}
                                 onChange={(e) => {
-                                    const dev = onlineDevices.find(d => d.device_id === e.target.value);
+                                    const dev = devices.find(d => d.device_id === e.target.value);
                                     setSelectedDevice(dev || null);
                                 }}
                                 className="form-select"
                                 required
                             >
                                 <option value="" disabled>Select a device...</option>
-                                {onlineDevices.map(device => (
+                                {devices.map(device => (
                                     <option key={device.device_id} value={device.device_id}>
-                                        🟢 {device.name} ({device.platform})
+                                        {device.status === 'online' ? '🟢' : '🔴'} {device.name} ({device.platform}) {device.status === 'offline' ? '(Offline)' : ''}
                                     </option>
                                 ))}
                             </select>
@@ -343,6 +443,22 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         />
                     </div>
 
+                    {/* Auto-Extract Toggle */}
+                    <div className="form-group">
+                        <label style={{
+                            display: 'flex', alignItems: 'center', gap: '10px',
+                            cursor: 'pointer', fontSize: '13px', color: '#d1d5db'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={autoExtract}
+                                onChange={(e) => setAutoExtract(e.target.checked)}
+                                style={{ width: '16px', height: '16px', accentColor: '#818cf8' }}
+                            />
+                            📦 Auto-extract archives (.zip, .tar, .gz, .rar) after download
+                        </label>
+                    </div>
+
                     {error && (
                         <div className="text-red-400 text-sm p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
                             {error}
@@ -355,7 +471,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         </button>
                         <button
                             type="submit"
-                            disabled={loading || onlineDevices.length === 0}
+                            disabled={loading || devices.length === 0}
                             className="submit-button"
                         >
                             {loading ? 'Creating...' : 'Start Download'}

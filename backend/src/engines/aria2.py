@@ -228,6 +228,16 @@ class Aria2Engine(BaseEngine):
             try: job_manager.transition_job(job_id, JobState.PAUSED)
             except: pass
         elif aria2_status == "complete" and current_internal_state != JobState.COMPLETED:
+            # Write the final file path into progress so post-processing can find it
+            files = status.get("files", [])
+            if files:
+                final_file_path = files[0].get("path", "")
+                if final_file_path:
+                    job_manager.update_progress(job_id, {
+                        "percent": 100,
+                        "speed": "0 MB/s",
+                        "file_path": final_file_path,
+                    })
             try: job_manager.transition_job(job_id, JobState.COMPLETED)
             except: pass
         elif aria2_status == "error" and current_internal_state != JobState.FAILED:

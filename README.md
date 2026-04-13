@@ -1,4 +1,3 @@
-
 <p align="center">
   <img src="docs/images/landing.png" width="700" alt="HermesLink Landing" />
 </p>
@@ -334,9 +333,9 @@ HermesLink/
 ### Phase 2 — Smart Automation
 
 - [X] **Intelligent Folder Naming** — Parse metadata from URLs (series names, episode numbers) to auto-create organized folder structures (e.g., `Breaking Bad/Season 3/S03E05`).
-- [ ] **Download Scheduling** — Schedule downloads for specific times or bandwidth windows.
+- [X] **Download Scheduling** — Schedule downloads for specific times or bandwidth windows.
 - [X] **Automatic Queue Routing** — Route jobs to queues based on file type, size, or URL pattern rules.
-- [ ] **Zombie Job Sweeper** — Cloud Function to auto-recover jobs stuck in `RUNNING` state when an agent goes offline.
+- [X] **Zombie Job Sweeper** — Cloud Function to auto-recover jobs stuck in `RUNNING` state when an agent goes offline.
 
 ### Phase 3 — Bulk & Folder Downloads
 
