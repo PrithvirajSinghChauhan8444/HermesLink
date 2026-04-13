@@ -339,11 +339,12 @@ HermesLink/
 
 ### Phase 3 — Bulk & Folder Downloads
 
-- [ ] **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
 - [X] **Batch URL Import** — Paste multiple URLs or import from a text file; each becomes a separate queued job.
 - [X] **Archive Extraction** — Optionally extract downloaded `.zip`/`.tar` files post-download.
 
 ### Phase 4 — AI-Powered Features (Experimental)
+
+- [ ] **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
 
 - [ ] **Smart Link Analysis** — Use AI to parse pages and extract the best download link from a given URL.
 - [ ] **Content Categorization** — Automatically categorize downloads and suggest storage profiles based on content type.
