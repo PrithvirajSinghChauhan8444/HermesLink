@@ -1,0 +1,98 @@
+.landing-section-container {
+    @apply h-screen w-full flex flex-col items-center justify-center text-black relative overflow-hidden;
+}
+
+.bg-decor-container {
+    @apply absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-10 pointer-events-none;
+}
+
+.orb-1 {
+    @apply absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-gray-300 to-transparent blur-3xl;
+}
+
+.orb-2 {
+    @apply absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tl from-gray-300 to-transparent blur-3xl;
+}
+
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-landing {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 1;
+}
+
+.landing-svg-1 {
+    top: 15%;
+    left: 10%;
+    width: 120px;
+    animation-delay: 0s;
+}
+
+.landing-svg-2 {
+    bottom: 20%;
+    right: 15%;
+    width: 150px;
+    animation-delay: 2s;
+}
+
+.landing-svg-3 {
+    top: 30%;
+    right: 25%;
+    width: 80px;
+    animation-delay: 4s;
+}
+
+/* Global floating keyframe typically put in index.css but added here for encapsulation if needed, though better in index.css. Defined here for completeness if index.css lacks it. */
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+}
+
+.content-container {
+    @apply z-10 flex flex-col items-center gap-8;
+}
+
+.hero-title {
+    @apply text-center;
+}
+
+.hero-h1 {
+    @apply text-8xl md:text-9xl font-bold tracking-tighter mb-2 bg-gradient-to-b from-black to-gray-600 bg-clip-text text-transparent;
+}
+
+.hero-subtitle {
+    @apply text-xl md:text-2xl font-light tracking-widest uppercase text-gray-500;
+}
+
+.stats-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mt-8;
+}
+
+.stat-card {
+    @apply bg-white/95 p-6 rounded-xl border border-white/50 depth-shadow flex flex-col items-center hover:scale-105 transition-transform duration-300;
+}
+
+.stat-value {
+    @apply text-4xl font-light;
+}
+
+.stat-label {
+    @apply text-xs uppercase tracking-wider text-gray-500 mt-2 font-bold;
+}
+
+.scroll-indicator {
+    @apply absolute bottom-12 animate-bounce text-black/20;
+    scale: 1.5;
+}

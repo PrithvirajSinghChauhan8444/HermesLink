@@ -1,0 +1,181 @@
+.history-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-white relative;
+    overflow: hidden;
+}
+
+.history-wrapper {
+    @apply w-full max-w-6xl z-10 relative;
+}
+
+.history-header {
+    @apply flex justify-between items-end mb-8;
+}
+
+.history-title {
+    @apply text-5xl font-light tracking-tighter;
+}
+
+/* Floating Decor Styles relying on `.floating-svg` from LandingSection, but redefined/encapsulated for stability */
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-history {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.2;
+}
+
+.history-svg-1 {
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    transform: translate(-50%, -50%);
+    /* Center it behind the table */
+    animation: float-center 8s ease-in-out infinite;
+    opacity: 0.1;
+}
+
+.history-svg-2 {
+    top: 15%;
+    left: 10%;
+    width: 120px;
+    animation-delay: 1s;
+}
+
+.history-svg-3 {
+    bottom: 15%;
+    right: 10%;
+    width: 150px;
+    animation-delay: 3s;
+}
+
+@keyframes float-center {
+    0% {
+        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translateY(-20px) rotate(2deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+    }
+}
+
+.history-filters {
+    @apply flex gap-2 text-xs;
+}
+
+.filter-pill-all {
+    @apply px-3 py-1 bg-white/10 rounded-full border border-white/5 hover:bg-white/20 cursor-pointer transition-colors;
+}
+
+.filter-pill-completed {
+    @apply px-3 py-1 bg-transparent rounded-full border border-white/5 hover:bg-white/10 cursor-pointer transition-colors text-green-500;
+}
+
+.filter-pill-failed {
+    @apply px-3 py-1 bg-transparent rounded-full border border-white/5 hover:bg-white/10 cursor-pointer transition-colors text-red-500;
+}
+
+.history-table-container {
+    @apply border border-white/10 rounded-2xl bg-[#111111]/90 depth-shadow h-[60vh] overflow-y-auto relative no-scrollbar;
+}
+
+.history-table-header {
+    @apply grid grid-cols-12 bg-[#171717] p-4 text-xs font-mono text-gray-400 uppercase tracking-wider border-b border-white/5 sticky top-0 z-10 backdrop-blur-md;
+}
+
+.col-date {
+    @apply col-span-1;
+}
+
+.col-filename {
+    @apply col-span-3;
+}
+
+.col-device {
+    @apply col-span-2;
+}
+
+.col-size {
+    @apply col-span-1 text-right;
+}
+
+.col-status {
+    @apply col-span-2 text-center;
+}
+
+.col-engine {
+    @apply col-span-1 text-right;
+}
+
+.col-actions {
+    @apply col-span-2 text-right;
+}
+
+.history-list-container {
+    @apply flex flex-col;
+}
+
+.history-loading {
+    @apply p-8 text-center text-gray-500 font-light;
+}
+
+.history-empty {
+    @apply p-12 text-center text-gray-600 font-light;
+}
+
+.history-row {
+    @apply grid grid-cols-12 p-4 text-sm items-center border-b border-white/5 hover:bg-white/5 transition-colors;
+}
+
+.row-date {
+    @apply col-span-1 text-xs text-gray-500 font-mono;
+}
+
+.row-filename {
+    @apply col-span-3 truncate text-gray-300 group-hover:text-white transition-colors;
+}
+
+.row-device {
+    @apply col-span-2 text-xs text-gray-500 truncate;
+}
+
+.row-size {
+    @apply col-span-1 text-right font-mono text-gray-400;
+}
+
+.row-status {
+    @apply col-span-2 flex justify-center;
+}
+
+.status-badge {
+    @apply text-[10px] uppercase tracking-wider px-2 py-1 rounded-full border;
+}
+
+.status-completed {
+    @apply bg-green-500/10 border-green-500/20 text-green-500;
+}
+
+.status-failed {
+    @apply bg-red-500/10 border-red-500/20 text-red-500;
+}
+
+.status-default {
+    @apply bg-gray-500/10 border-gray-500/20 text-gray-500;
+}
+
+.row-engine {
+    @apply col-span-1 text-right text-xs text-gray-500 group-hover:text-gray-300;
+}
+
+.row-actions {
+    @apply col-span-2 flex justify-end items-center;
+}
+
+.action-btn {
+    @apply text-xs font-mono transition-colors hover:bg-white/10;
+}

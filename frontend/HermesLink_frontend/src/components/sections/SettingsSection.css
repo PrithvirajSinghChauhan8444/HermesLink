@@ -1,0 +1,69 @@
+.settings-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-white relative;
+    overflow: hidden;
+}
+
+.settings-title {
+    @apply text-5xl font-light mb-12 tracking-tighter z-10;
+}
+
+/* Floating Decor Styles relying on `.floating-svg` from LandingSection, but redefined/encapsulated for stability */
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-settings {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.2;
+}
+
+.settings-svg-1 {
+    top: 20%;
+    left: 15%;
+    width: 160px;
+    animation-delay: 1s;
+}
+
+.settings-svg-2 {
+    bottom: 20%;
+    right: 15%;
+    width: 120px;
+    animation-delay: 3s;
+}
+
+.settings-svg-3 {
+    top: 60%;
+    left: 20%;
+    width: 100px;
+    animation-delay: 0s;
+    opacity: 0.15;
+}
+
+.settings-svg-4 {
+    top: 15%;
+    right: 20%;
+    width: 140px;
+    animation-delay: 2s;
+    opacity: 0.15;
+}
+
+.settings-grid {
+    @apply max-w-2xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 z-10;
+}
+
+.settings-card {
+    @apply border border-white/10 p-6 rounded-xl hover:bg-white hover:border-white transition-colors duration-500 ease-in-out cursor-pointer;
+}
+
+.card-title {
+    @apply text-xl font-light mb-2 text-gray-300 group-hover:text-black transition-colors duration-500 ease-in-out;
+}
+
+.card-desc {
+    @apply text-sm text-gray-600 group-hover:text-gray-500 transition-colors duration-500 ease-in-out;
+}
+
+.footer-info {
+    @apply mt-16 text-xs font-mono text-gray-700 z-10;
+}

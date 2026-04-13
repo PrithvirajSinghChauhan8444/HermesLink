@@ -1,0 +1,173 @@
+.queue-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-black;
+}
+
+.queue-title {
+    @apply text-5xl font-light mb-12 tracking-tighter z-10;
+}
+
+.queue-grid {
+    @apply w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10;
+}
+
+/* Floating Decor Styles relying on LandingSection's .floating-svg or defining it similarly */
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-queue {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.1;
+}
+
+.queue-svg-1 {
+    top: 25%;
+    left: 15%;
+    width: 100px;
+    animation-delay: 1s;
+}
+
+.queue-svg-2 {
+    bottom: 25%;
+    right: 15%;
+    width: 140px;
+    animation-delay: 3s;
+}
+
+.queue-svg-3 {
+    top: 60%;
+    left: 10%;
+    width: 80px;
+    animation-delay: 2s;
+    opacity: 0.15;
+}
+
+.queue-svg-4 {
+    top: 15%;
+    right: 25%;
+    width: 120px;
+    animation-delay: 0.5s;
+    opacity: 0.15;
+}
+
+.queue-loading {
+    @apply col-span-full text-center font-light text-gray-400;
+}
+
+.queue-card {
+    @apply bg-white/95 p-6 rounded-xl border border-white/60 depth-shadow hover:shadow-gray-300/60 transition-all duration-300 relative overflow-hidden;
+}
+
+.queue-priority-bg {
+    @apply absolute top-0 right-0 p-4 opacity-50 text-6xl font-black text-gray-100 -z-0 select-none group-hover:scale-110 transition-transform duration-500;
+}
+
+.queue-content {
+    @apply relative z-10;
+}
+
+.queue-header {
+    @apply flex justify-between items-center mb-6;
+}
+
+.queue-id {
+    @apply text-xl font-medium capitalize;
+}
+
+.queue-status-badge {
+    @apply px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider;
+}
+
+.status-active {
+    @apply bg-green-100 text-green-700;
+}
+
+.status-paused {
+    @apply bg-red-100 text-red-700;
+}
+
+.queue-stats-container {
+    @apply space-y-4;
+}
+
+.queue-stat-row {
+    @apply flex justify-between text-xs text-gray-500 mb-1;
+}
+
+.progress-bg {
+    @apply w-full bg-gray-100 h-1.5 rounded-full overflow-hidden;
+}
+
+.progress-fill-black {
+    @apply bg-black h-full w-1/3 rounded-full opacity-20 group-hover:opacity-100 transition-opacity;
+}
+
+.progress-fill-gray {
+    @apply bg-gray-400 h-full w-1/2 rounded-full;
+}
+
+/* ── New elements ── */
+
+.queue-create-btn {
+    @apply mb-6 px-5 py-2.5 bg-black text-white text-sm font-medium rounded-lg
+           hover:bg-gray-800 transition-colors z-10;
+}
+
+.queue-error {
+    @apply mb-4 px-4 py-2 text-sm bg-red-50 text-red-600 border border-red-200 rounded-lg z-10;
+}
+
+.queue-updated-on {
+    @apply text-[10px] text-gray-400 mt-3;
+}
+
+.queue-actions {
+    @apply flex gap-2 mt-4;
+}
+
+.queue-edit-btn {
+    @apply px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded
+           hover:bg-gray-200 transition-colors;
+}
+
+.queue-delete-btn {
+    @apply px-3 py-1 text-xs font-medium bg-red-50 text-red-500 rounded
+           hover:bg-red-100 transition-colors;
+}
+
+/* ── Modal ── */
+
+.queue-modal-overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50;
+}
+
+.queue-modal {
+    @apply bg-white rounded-xl p-6 w-full max-w-md shadow-2xl;
+}
+
+.queue-modal h3 {
+    @apply text-lg font-semibold mb-4;
+}
+
+.queue-modal label {
+    @apply block text-xs font-medium text-gray-500 mb-3;
+}
+
+.queue-modal input {
+    @apply block w-full mt-1 px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400;
+}
+
+.queue-modal-actions {
+    @apply flex justify-end gap-3 mt-6;
+}
+
+.queue-modal-actions button[type="button"] {
+    @apply px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors;
+}
+
+.queue-modal-actions button[type="submit"] {
+    @apply px-4 py-2 text-sm font-medium bg-black text-white rounded-lg
+           hover:bg-gray-800 transition-colors;
+}

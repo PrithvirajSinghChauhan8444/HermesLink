@@ -1,0 +1,172 @@
+.active-jobs-container {
+    @apply h-screen w-full flex flex-col items-center justify-center p-8 text-black;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-container {
+    @apply w-full max-w-5xl flex justify-between items-center mb-12 border-b border-gray-200 pb-4;
+}
+
+.title-large {
+    @apply text-5xl font-light tracking-tighter text-black;
+}
+
+.subtitle-gray {
+    @apply text-gray-400 mt-2 font-light;
+}
+
+.stats-container {
+    @apply text-right hidden md:block;
+}
+
+.stat-number-large {
+    @apply text-4xl font-light block;
+}
+
+.stat-label-small {
+    @apply text-xs uppercase tracking-wider text-gray-400;
+}
+
+.jobs-grid-container {
+    @apply w-full max-w-5xl space-y-4 h-[60vh] overflow-y-auto no-scrollbar pr-2 relative z-10;
+}
+
+/* Floating Decor Styles relying on `.floating-svg` from LandingSection, but redefined/encapsulated for stability */
+.floating-decor-container {
+    @apply absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-[1];
+}
+
+.floating-svg-active {
+    @apply absolute;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.2;
+}
+
+.active-svg-1 {
+    top: 15%;
+    left: 5%;
+    width: 200px;
+    animation-delay: 0.5s;
+    opacity: 0.2;
+    /* Even lower opacity for large gear */
+}
+
+.active-svg-2 {
+    bottom: 10%;
+    right: 5%;
+    width: 180px;
+    animation-delay: 2.5s;
+}
+
+.active-svg-3 {
+    top: 35%;
+    right: 15%;
+    width: 100px;
+    animation-delay: 4.5s;
+}
+
+.loading-text {
+    @apply text-center font-light animate-pulse text-gray-400;
+}
+
+.empty-state-container {
+    @apply flex flex-col items-center justify-center h-full border-2 border-dashed border-black rounded-xl text-gray-400;
+}
+
+.empty-title {
+    @apply text-2xl font-light mb-2;
+}
+
+.empty-subtitle {
+    @apply text-sm;
+}
+
+.job-card {
+    @apply bg-white/95 p-6 rounded-xl border border-white/60 depth-shadow hover:shadow-gray-300/60 transition-all duration-300 relative overflow-hidden;
+}
+
+.job-header {
+    @apply flex justify-between items-start mb-4 relative z-10;
+}
+
+.job-title-container {
+    @apply flex items-center gap-4;
+}
+
+.status-indicator {
+    @apply w-2 h-2 rounded-full;
+}
+
+.status-running {
+    @apply bg-green-500 animate-pulse;
+}
+
+.status-paused {
+    @apply bg-yellow-500;
+}
+
+.job-filename {
+    @apply text-lg font-medium truncate max-w-[400px] text-gray-800;
+}
+
+.job-type-badge {
+    @apply text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100;
+}
+
+.progress-bar-container {
+    @apply w-full bg-gray-100 h-1.5 rounded-full mb-4 overflow-hidden relative z-10;
+}
+
+.progress-bar-fill {
+    @apply bg-black h-full rounded-full transition-all duration-500 ease-out relative;
+}
+
+.progress-bar-glow {
+    @apply absolute right-0 top-0 bottom-0 w-[50px] bg-gradient-to-l from-white/30 to-transparent;
+}
+
+.job-footer {
+    @apply flex justify-between items-center text-xs text-gray-500 font-mono relative z-10;
+}
+
+.job-stats-group {
+    @apply flex gap-4;
+}
+
+.stat-pill {
+    @apply bg-gray-50 px-2 py-1 rounded;
+}
+
+.eta-text {
+    @apply text-gray-400;
+}
+
+.eta-value {
+    @apply text-black font-semibold;
+}
+
+/* ── Job Control Buttons ── */
+.job-controls {
+    @apply flex items-center gap-2 mt-3 pt-3 border-t border-gray-100 relative z-10;
+}
+
+.ctrl-btn {
+    @apply flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed select-none;
+}
+
+.ctrl-pause {
+    @apply bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:border-amber-300 active:scale-95;
+}
+
+.ctrl-resume {
+    @apply bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:border-green-300 active:scale-95;
+}
+
+.ctrl-stop {
+    @apply bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:border-red-300 active:scale-95 ml-auto;
+}
+
+.status-pending {
+    @apply bg-gray-400 animate-pulse;
+}
