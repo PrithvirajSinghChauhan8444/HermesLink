@@ -35,83 +35,6 @@ You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  �
 
 ---
 
-## 📊 Current State
-
-> Based on actual codebase inspection — not aspirational.
-
-### ✅ Device System (Presence & Discovery)
-
-- Agent (`test_agent.py`) registers in Firebase RTDB under `presence/{device_id}` on boot with a custom `device_name` (or fallback hostname), platform, status, and storage profiles
-- Continuous heartbeat updates `last_seen` every 30 seconds
-- Frontend `useDevices.js` hook subscribes to RTDB presence for real-time device listing
-- Graceful shutdown sets status to `"offline"`
-
-### ✅ Job System (Full Lifecycle)
-
-- Jobs are created in **Firestore** from the web dashboard with `state: PENDING` and a target `device_id`
-- Agent detects new jobs via **Firestore `on_snapshot`** — zero-polling, event-driven dispatch
-- `FirebaseJobBridge` writes live progress to **RTDB** (avoids Firestore write quotas) and syncs terminal states (`COMPLETED`, `FAILED`, `STOPPED`) back to **Firestore** for persistence
-- Frontend hooks: `useJobs.js` (Firestore job list), `useJobProgress.js` (RTDB live progress)
-
-### ✅ Download Controls (Real-Time)
-
-- **Pause / Resume / Stop** via RTDB `action` nodes — agent listens and forwards commands to the active engine
-- Sub-second control latency
-- Frontend `ActiveJobsSection.jsx` renders control buttons
-
-### ✅ Download Engines
-
-| Engine                   | File          | Status               | Details                                                                                                                                                                                          |
-| ------------------------ | ------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Aria2**          | `aria2.py`  | ✅ Fully implemented | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, automatic downgrade to single-thread on resume failure, partial file cleanup, force restart |
-| **Media (yt-dlp)** | `media.py`  | ✅ Fully implemented | Native YouTube integration, dynamic API metadata fetching, format selection (Audio-Only / Audio+Video), and robust process signaling for pause/resume.                                           |
-| **Direct HTTP**    | `direct.py` | 🟡 Incomplete        | Basic scaffold with streaming download logic, not wired into agent                                                                                                                               |
-| **P2P (Torrent)**  | `p2p.py`    | ❌ Empty scaffold    | File exists but contains no code                                                                                                                                                                 |
-
-> **Note:** **Aria2** and **yt-dlp** engines are currently active and integrated. Other engines are early scaffolds.
-
-### ✅ Storage Profiles (Multi-Destination)
-
-- `config.yaml` defines named profiles with multiple `paths` per profile
-- Tracks per-profile `subfolders` history natively: custom sub-directories are persisted automatically for future selections
-- Agent expands `~`, derives human-friendly `base_names` from folder names, publishes to RTDB
-- Frontend `NewJobModal.jsx` shows Storage Profile + Destination + Subfolder History dropdowns
-- Path traversal protection via `os.path.abspath` + `startswith` validation
-- Backward compatible — auto-migrates old singular `path` key to `paths` list
-
-### ✅ Queue Management (Firebase-Only)
-
-- Queue configs stored in **Firestore `queues/` collection** — single source of truth
-- `useQueues.js` hook provides real-time subscription + create/update/delete
-- `QueueSection.jsx` renders queue cards with create/edit/delete modals, toggle active/paused
-- Agent reads queue config (`max_threads_per_job`, `max_parallel_jobs`) from Firestore per job
-- Default queue cannot be deleted
-
-### ✅ API Server
-
-- FastAPI server (`api_server.py`) with Firebase Auth token verification on all endpoints
-- Endpoints: job CRUD, job actions (pause/resume/stop), job history
-- CORS configured for frontend dev server
-
-### ❌ Not Yet Implemented
-
-- **Agent packaging** — runs as raw Python, no executables or installers
-- **Multi-user support** — single-user by design
-- **Zombie job recovery** — no sweeper for jobs stuck in `RUNNING` when agent crashes
-- **Notification system** — no Telegram/Discord/push alerts
-
-### Architecture Highlights
-
-| Feature                               | How                                                 |
-| ------------------------------------- | --------------------------------------------------- |
-| Zero-idle-cost job dispatch           | Firestore `on_snapshot` (no polling)              |
-| Sub-second download controls          | RTDB action nodes                                   |
-| Progress without Firestore quota burn | Progress → RTDB only; terminal states → Firestore |
-| Pluggable download engines            | Strategy pattern with `BaseEngine` interface      |
-| Path traversal protection             | `os.path.abspath` + `startswith` validation     |
-
----
-
 ## 🖼️ Screenshots
 
 <p align="center">
@@ -137,29 +60,86 @@ https://github.com/user-attachments/assets/go_through.mp4
 
 ---
 
-## 🏗️ Architecture
+## ✨ Features
 
-```
-┌──────────────────┐      ┌──────────────────────┐      ┌──────────────────┐
-│   Web Dashboard   │      │       Firebase        │      │   Device Agent   │
-│   (React + Vite)  │◄────►│  RTDB: live state     │◄────►│   (Python)       │
-│                   │      │  Firestore: jobs/queues│      │                  │
-│  • Submit jobs    │      │  Auth: user tokens     │      │  • Aria2Engine   │
-│  • Live progress  │      │                        │      │  • Path resolver │
-│  • Queue CRUD     │      │                        │      │  • Monitor thread│
-│  • Device picker  │      │                        │      │  • Control loop  │
-└──────────────────┘      └──────────────────────┘      └──────────────────┘
-```
+### Device System (Presence & Discovery)
 
-### Data Flow
+- Agent registers in Firebase RTDB under `presence/{device_id}` on boot with a custom `device_name` (or fallback hostname), platform, status, and storage profiles
+- Continuous heartbeat updates `last_seen` every 30 seconds
+- Frontend subscribes to RTDB presence for real-time device listing
+- Graceful shutdown sets status to `"offline"`
 
-1. **User** submits a download job from the web dashboard
-2. **Firestore** stores the job with `state: PENDING` and `device_id`
-3. **Agent** on the target device detects the new job via `on_snapshot`
-4. **Aria2** engine starts the download via RPC
-5. **Progress** updates stream to RTDB in real-time
-6. **Frontend** renders live progress bars from RTDB subscriptions
-7. **Terminal states** (completed/failed/stopped) sync back to Firestore
+### Job System (Full Lifecycle)
+
+- Jobs are created in **Firestore** from the web dashboard with `state: PENDING` and a target `device_id`
+- Agent detects new jobs via **Firestore `on_snapshot`** — zero-polling, event-driven dispatch
+- `FirebaseJobBridge` writes live progress to **RTDB** (avoids Firestore write quotas) and syncs terminal states (`COMPLETED`, `FAILED`, `STOPPED`) back to **Firestore** for persistence
+
+### Download Controls (Real-Time)
+
+- **Pause / Resume / Stop** via RTDB `action` nodes — agent listens and forwards commands to the active engine
+- Sub-second control latency
+
+### Download Engines
+
+| Engine                   | File          | Details                                                                                                                                                                                     |
+| ------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Aria2**          | `aria2.py`  | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, auto-downgrade to single-thread on resume failure, partial file cleanup, force restart |
+| **Media (yt-dlp)** | `media.py`  | YouTube & video platform integration, dynamic API metadata fetching, format selection (Audio-Only / Audio+Video), robust process signaling for pause/resume                                 |
+| **Direct HTTP**    | `direct.py` | Streaming HTTP/HTTPS direct downloads                                                                                                                                                       |
+
+### Smart File Categorization
+
+- AI-powered classifier analyzes URLs and filenames to determine file type categories (Application, Document, Media, Archive, etc.)
+- Downloads are automatically routed into organized subdirectories within the chosen storage profile
+- Fully configurable category rules
+
+### Download Scheduling
+
+- Schedule downloads for specific times or bandwidth windows
+- Deferred job execution with automatic start at the scheduled time
+
+### Automatic Queue Routing
+
+- Route jobs to queues based on file type, size, or URL pattern rules
+- Configurable rule engine for automated queue assignment
+
+### Batch URL Import
+
+- Paste multiple URLs or import from a text file; each becomes a separate queued job
+- Quick bulk-download workflow from the dashboard
+
+### Archive Extraction
+
+- Optionally extract downloaded `.zip`/`.tar`/`.gz` files post-download
+- Automatic detection and extraction regardless of categorized subdirectory
+
+### Storage Profiles (Multi-Destination)
+
+- `config.yaml` defines named profiles with multiple `paths` per profile
+- Tracks per-profile `subfolders` history: custom sub-directories are persisted automatically for future selections
+- Agent expands `~`, derives human-friendly `base_names` from folder names, publishes to RTDB
+- Frontend shows Storage Profile + Destination + Subfolder History dropdowns
+- Path traversal protection via `os.path.abspath` + `startswith` validation
+
+### Queue Management
+
+- Queue configs stored in **Firestore `queues/` collection** — single source of truth
+- Real-time subscription + create/update/delete via dashboard
+- Queue cards with create/edit/delete modals, toggle active/paused
+- Agent reads queue config (`max_threads_per_job`, `max_parallel_jobs`) from Firestore per job
+- Default queue cannot be deleted
+
+### Zombie Job Sweeper
+
+- Cloud Function that auto-recovers jobs stuck in `RUNNING` state when an agent goes offline
+- Prevents orphaned downloads from blocking queue capacity
+
+### API Server
+
+- FastAPI server with Firebase Auth token verification on all endpoints
+- Endpoints: job CRUD, job actions (pause/resume/stop), job history
+- CORS configured for frontend dev server
 
 ---
 
@@ -170,36 +150,8 @@ https://github.com/user-attachments/assets/go_through.mp4
 - Python 3.10+
 - Node.js 18+
 - [aria2](https://aria2.github.io/) installed and in PATH
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) installed and in PATH (for media downloads)
 - A Firebase project with Firestore, RTDB, and Auth enabled
-
-### Backend (Agent)
-
-```bash
-cd backend
-pip install -r requirements.txt
-
-# Create your .env with Firebase credentials
-cp .env.example .env
-
-# Configure download paths
-# Edit config.yaml to set your storage profiles
-
-# Start the agent
-cd src
-python test_agent.py
-```
-
-### Frontend (Dashboard)
-
-```bash
-cd frontend/HermesLink_frontend
-npm install
-
-# Create .env with your Firebase config
-cp .env.example .env
-
-npm run dev
-```
 
 ### Firebase Setup
 
@@ -266,6 +218,35 @@ HermesLink requires a Firebase project. Here's how to set one up:
      - `enabled`: `true` (boolean)
      - `updated_on`: `"28-03-2026"` (string)
 
+### Backend (Agent)
+
+```bash
+cd backend
+pip install -r requirements.txt
+
+# Create your .env with Firebase credentials
+cp .env.example .env
+
+# Configure download paths
+# Edit config.yaml to set your storage profiles
+
+# Start the agent
+cd src
+python agent.py
+```
+
+### Frontend (Dashboard)
+
+```bash
+cd frontend/HermesLink_frontend
+npm install
+
+# Create .env with your Firebase config
+cp .env.example .env
+
+npm run dev
+```
+
 ### Storage Configuration
 
 Edit `backend/config.yaml` to define a custom device name and download locations:
@@ -286,6 +267,45 @@ storage_profiles:
 
 ---
 
+## 🏗️ Architecture
+
+```
+┌──────────────────┐      ┌──────────────────────┐      ┌──────────────────┐
+│   Web Dashboard   │      │       Firebase        │      │   Device Agent   │
+│   (React + Vite)  │◄────►│  RTDB: live state     │◄────►│   (Python)       │
+│                   │      │  Firestore: jobs/queues│      │                  │
+│  • Submit jobs    │      │  Auth: user tokens     │      │  • Aria2Engine   │
+│  • Live progress  │      │                        │      │  • yt-dlp Engine │
+│  • Queue CRUD     │      │                        │      │  • Classifier    │
+│  • Device picker  │      │                        │      │  • Control loop  │
+└──────────────────┘      └──────────────────────┘      └──────────────────┘
+```
+
+### Architecture Highlights
+
+| Feature                               | How                                                 |
+| ------------------------------------- | --------------------------------------------------- |
+| Zero-idle-cost job dispatch           | Firestore `on_snapshot` (no polling)              |
+| Sub-second download controls          | RTDB action nodes                                   |
+| Progress without Firestore quota burn | Progress → RTDB only; terminal states → Firestore |
+| Pluggable download engines            | Strategy pattern with `BaseEngine` interface      |
+| Smart file categorization             | AI-powered classifier auto-routes files             |
+| Path traversal protection             | `os.path.abspath` + `startswith` validation     |
+
+### Data Flow
+
+1. **User** submits a download job from the web dashboard
+2. **Firestore** stores the job with `state: PENDING` and `device_id`
+3. **Agent** on the target device detects the new job via `on_snapshot`
+4. **Classifier** analyzes the URL and selects the appropriate engine and category
+5. **Engine** (Aria2 / yt-dlp) starts the download
+6. **Progress** updates stream to RTDB in real-time
+7. **Frontend** renders live progress bars from RTDB subscriptions
+8. **Terminal states** (completed/failed/stopped) sync back to Firestore
+9. **Post-processing** — archive extraction and file categorization run if configured
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -293,13 +313,15 @@ HermesLink/
 ├── backend/
 │   ├── config.yaml              # Storage profiles (device-local)
 │   └── src/
-│       ├── test_agent.py        # Main agent entry point
+│       ├── agent.py             # Main agent entry point
 │       ├── api_server.py        # FastAPI REST server
 │       ├── core/
 │       │   ├── models.py        # Job, QueueConfig, QueueState dataclasses
 │       │   ├── job_manager.py   # Job lifecycle management
 │       │   ├── job_runner.py    # Background job execution loop
 │       │   ├── job_controller.py # Control actions (pause/resume/stop)
+│       │   ├── classifier.py   # Smart file categorization engine
+│       │   ├── zombie_sweeper.py # Stale job recovery
 │       │   └── firebase_config.py
 │       └── engines/
 │           ├── base.py          # Abstract engine interface
@@ -321,50 +343,13 @@ HermesLink/
 
 ---
 
-## 🗺️ Roadmap
-
-> **Note**: This roadmap reflects the current direction of the project. Plans are exploratory and subject to change as the project evolves. Some features may be reprioritized, redesigned, or dropped based on feasibility and real-world usage patterns.
-
-### Phase 1 — Engine Wiring & Expansion
-
-- [X] **Engine Auto-Routing** — Wire `media.py` into the agent's dispatch logic. Auto-select engine based on URL pattern (YouTube → yt-dlp, HTTP → aria2).
-- [X] **yt-dlp Enhancements** — Added format selection (Audio/Video). Future: subtitle support and playlist handling.
-
-### Phase 2 — Smart Automation
-
-- [X] **Intelligent Folder Naming** — Parse metadata from URLs (series names, episode numbers) to auto-create organized folder structures (e.g., `Breaking Bad/Season 3/S03E05`).
-- [X] **Download Scheduling** — Schedule downloads for specific times or bandwidth windows.
-- [X] **Automatic Queue Routing** — Route jobs to queues based on file type, size, or URL pattern rules.
-- [X] **Zombie Job Sweeper** — Cloud Function to auto-recover jobs stuck in `RUNNING` state when an agent goes offline.
-
-### Phase 3 — Bulk & Folder Downloads
-
-- [X] **Batch URL Import** — Paste multiple URLs or import from a text file; each becomes a separate queued job.
-- [X] **Archive Extraction** — Optionally extract downloaded `.zip`/`.tar` files post-download.
-
-### Phase 4 — AI-Powered Features (Experimental)
-
-- [ ] **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
-
-- [ ] **Smart Link Analysis** — Use AI to parse pages and extract the best download link from a given URL.
-- [ ] **Content Categorization** — Automatically categorize downloads and suggest storage profiles based on content type.
-- [ ] **Natural Language Job Creation** — "Download the latest episode of X on my home server" → auto-resolved job.
-
-### Infrastructure
-
-- [ ] **Agent Packaging** — Bundle agent as a standalone executable (PyInstaller) for non-developer users.
-- [ ] **Notification System** — Telegram/Discord/push notifications on job completion.
-- [ ] **Multi-User Support** — Per-user device registration and job isolation (currently single-user by design).
-
----
-
 ## 🛠️ Tech Stack
 
 | Layer           | Technology                                                 |
 | --------------- | ---------------------------------------------------------- |
 | Frontend        | React 18, Vite, GSAP, TailwindCSS                          |
 | Backend Agent   | Python 3.10+, Firebase Admin SDK, PyYAML                   |
-| Download Engine | aria2 (via JSON-RPC)                                       |
+| Download Engine | aria2 (via JSON-RPC), yt-dlp                               |
 | Database        | Firebase RTDB (live state) + Cloud Firestore (persistence) |
 | Auth            | Firebase Authentication                                    |
 | API Server      | FastAPI + Pydantic                                         |
@@ -374,6 +359,21 @@ HermesLink/
 ## 📝 Changelog
 
 Detailed daily changelogs are maintained in [`changes_detail/`](changes_detail/).
+
+---
+
+## 🔮 Future Plans
+
+> These are exploratory ideas that **may** be implemented in future iterations.
+
+- **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
+- **Smart Link Analysis** — Use AI to parse pages and extract the best download link from a given URL.
+- **Content Categorization** — Automatically categorize downloads and suggest storage profiles based on content type.
+- **Natural Language Job Creation** — "Download the latest episode of X on my home server" → auto-resolved job.
+- **Agent Packaging** — Bundle agent as a standalone executable (PyInstaller) for non-developer users.
+- **Notification System** — Push notifications on job completion via Discord or similar integrations.
+- **Multi-User Support** — Per-user device registration and job isolation (currently single-user by design.
+- **P2P / Torrent Engine** — Full BitTorrent/Magnet link support via libtorrent or aria2 BT mode.
 
 ---
 
