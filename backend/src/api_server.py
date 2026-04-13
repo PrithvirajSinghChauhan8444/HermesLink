@@ -25,6 +25,7 @@ from core.job_manager import JobManager
 from core.models import JobState
 from core.job_runner import JobRunner
 from core.job_controller import JobController
+from core.zombie_sweeper import ZombieSweeper
 from core.firebase_config import initialize_firebase
 
 # Default download directory (same as controller.py)
@@ -74,6 +75,7 @@ except Exception as e:
 job_manager = JobManager()
 job_runner = JobRunner(job_manager)
 job_controller = JobController(job_manager)
+zombie_sweeper = ZombieSweeper(interval_seconds=120)
 
 # --- Lifespan: start/stop the runner with the server ---
 
@@ -83,11 +85,13 @@ async def lifespan(app: FastAPI):
     os.makedirs(DEFAULT_DOWNLOAD_DIR, exist_ok=True)
     # Start the background runner thread
     job_runner.start()
+    zombie_sweeper.start()
     print(f"[API] JobRunner started. Downloads will be saved to: {DEFAULT_DOWNLOAD_DIR}")
     yield
     # Cleanly stop the runner when the server shuts down
     job_runner.stop()
-    print("[API] JobRunner stopped.")
+    zombie_sweeper.stop()
+    print("[API] Services gracefully stopped.")
 
 # --- App Setup ---
 
