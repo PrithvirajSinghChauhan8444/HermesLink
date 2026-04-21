@@ -17,6 +17,7 @@ from core.firebase_config import initialize_firebase, get_rtdb, get_db
 from core.models import JobState
 from engines.aria2 import Aria2Engine
 from engines.yt_dlp import YTDLPEngine
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 
 # ─────────────────────────────────────────────────────────────
@@ -205,7 +206,7 @@ class HermesAgent:
         """Finds any assigned jobs stuck in RUNNING or PAUSED and reverts them to PENDING."""
         print(f"[Agent] Checking for orphaned active jobs from previous sessions...")
         try:
-            active_jobs = self.db.collection("jobs").where("device_id", "==", self.device_id).where("state", "in", ["RUNNING", "PAUSED"]).get()
+            active_jobs = self.db.collection("jobs").where(filter=FieldFilter("device_id", "==", self.device_id)).where(filter=FieldFilter("state", "in", ["RUNNING", "PAUSED"])).get()
             
             recovered_count = 0
             for doc in active_jobs:
@@ -238,8 +239,8 @@ class HermesAgent:
 
         jobs_ref = (
             self.db.collection("jobs")
-            .where("device_id", "==", self.device_id)
-            .where("state", "==", "PENDING")
+            .where(filter=FieldFilter("device_id", "==", self.device_id))
+            .where(filter=FieldFilter("state", "==", "PENDING"))
         )
 
         def on_snapshot(col_snapshot, changes, read_time):

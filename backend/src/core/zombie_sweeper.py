@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .models import JobState
 from .firebase_config import get_rtdb, get_db
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 class ZombieSweeper:
     """
@@ -74,7 +75,7 @@ class ZombieSweeper:
             # to an offline device waiting to boot up (offline assignment feature).
             active_states = [JobState.RUNNING.value, JobState.PAUSED.value]
             
-            docs = self.db.collection("jobs").where("state", "in", active_states).get()
+            docs = self.db.collection("jobs").where(filter=FieldFilter("state", "in", active_states)).get()
             
             swept_count = 0
             for doc in docs:

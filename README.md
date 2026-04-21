@@ -270,6 +270,85 @@ storage_profiles:
 
 ---
 
+## 🖥️ Background Service (Linux/Arch)
+
+For production use on Linux (especially Arch), it is recommended to run HermesLink as a background service. This ensures it starts automatically at boot and can be managed easily.
+
+### 1. Setup Services
+Service files are located in `~/.config/systemd/user/`.
+- `hermeslink-agent.service`: Core background worker.
+- `hermeslink-api.service`: REST API server.
+
+<details>
+<summary><b>View Service File Definitions (for manual setup)</b></summary>
+
+**hermeslink-agent.service**
+```ini
+[Unit]
+Description=HermesLink Background Agent
+After=network.target
+
+[Service]
+Type=simple
+Environment="PYTHONUNBUFFERED=1"
+WorkingDirectory=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/src
+ExecStart=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/.venv/bin/python agent.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+```
+
+**hermeslink-api.service**
+```ini
+[Unit]
+Description=HermesLink API Server
+After=network.target
+
+[Service]
+Type=simple
+Environment="PYTHONUNBUFFERED=1"
+WorkingDirectory=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/src
+ExecStart=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/.venv/bin/python api_server.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+```
+</details>
+
+### 2. Management Tool (`hermeslink`)
+A unified control script is provided in the project root. To use it from anywhere:
+
+```bash
+# Link the script to your local bin
+mkdir -p ~/.local/bin && ln -s "$(pwd)/hermeslink-ctl.sh" ~/.local/bin/hermeslink
+
+# Reload systemd and enable auto-start
+systemctl --user daemon-reload
+hermeslink enable
+```
+
+### 3. CLI Commands
+| Command | Action |
+| :--- | :--- |
+| `hermeslink start` | Start all services |
+| `hermeslink stop` | Stop all services |
+| `hermeslink restart` | Restart all services |
+| `hermeslink logs` | View live logs |
+| `hermeslink status` | Check service status |
+| `hermeslink enable` | Enable auto-start at boot |
+
+---
+
+---
+
 ## 🏗️ Architecture
 
 ```

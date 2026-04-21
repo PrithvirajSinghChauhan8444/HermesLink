@@ -243,6 +243,8 @@ class JobManager:
                 self.configs["default"] = QueueConfig(queue_id="default")
             
             for job_id, job_data in raw_jobs.items():
+                if not isinstance(job_data, dict):
+                    continue
                 job = Job.from_dict(job_data)
                 if not job.queue_id or job.queue_id not in self.queues:
                     job.queue_id = "default" 
