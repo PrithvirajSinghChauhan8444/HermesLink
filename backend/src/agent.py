@@ -579,11 +579,22 @@ class HermesAgent:
 
         print("[Agent] Running… (Ctrl+C to stop)")
 
+        import signal
+        def handle_sigterm(signum, frame):
+            print("\n[Agent] SIGTERM received.")
+            self._shutdown()
+            sys.exit(0)
+
+        signal.signal(signal.SIGTERM, handle_sigterm)
+
         try:
             while True:
                 self._heartbeat()
                 time.sleep(30)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
+            self._shutdown()
+        except Exception as e:
+            print(f"[Agent] Unexpected error in main loop: {e}")
             self._shutdown()
 
     def _shutdown(self):

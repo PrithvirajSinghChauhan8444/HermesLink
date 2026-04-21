@@ -31,14 +31,27 @@ export function useDevices() {
                 return;
             }
 
-            const deviceList = Object.entries(data).map(([device_id, info]) => ({
-                device_id,
-                name: info.name || device_id,
-                platform: info.platform || 'unknown',
-                status: info.status || 'offline',
-                last_seen: info.last_seen || null,
-                storage_profiles: info.storage_profiles || {},
-            }));
+            const deviceList = Object.entries(data).map(([device_id, info]) => {
+                let status = info.status || 'offline';
+                
+                // If it claims to be online, verify it has sent a heartbeat recently
+                if (status === 'online' && info.last_seen) {
+                    const now = Date.now();
+                    const secondsSinceHeartbeat = (now - info.last_seen) / 1000;
+                    if (secondsSinceHeartbeat > 65) { // 30s interval + 35s grace
+                        status = 'stale';
+                    }
+                }
+
+                return {
+                    device_id,
+                    name: info.name || device_id,
+                    platform: info.platform || 'unknown',
+                    status: status,
+                    last_seen: info.last_seen || null,
+                    storage_profiles: info.storage_profiles || {},
+                };
+            });
 
             setDevices(deviceList);
             setLoading(false);

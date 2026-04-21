@@ -23,6 +23,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [batchMode, setBatchMode] = useState(false);
     const [batchUrls, setBatchUrls] = useState('');
     const [autoExtract, setAutoExtract] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     const { devices } = useDevices();
     const { queues } = useQueues();
@@ -405,32 +406,60 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         </div>
                     )}
 
-                    <div className="form-group">
+                    <div className="form-group relative">
                         <label className="form-label">Sub-directory (Optional)</label>
-                        <input
-                            type="text"
-                            list="subfolders-list"
-                            value={destination}
-                            onChange={(e) => setDestination(e.target.value)}
-                            onFocus={(e) => {
-                                try {
-                                    if (e.target.showPicker) e.target.showPicker();
-                                } catch (err) {}
-                            }}
-                            onClick={(e) => {
-                                try {
-                                    if (e.target.showPicker) e.target.showPicker();
-                                } catch (err) {}
-                            }}
-                            placeholder="Type a new folder name or select from list..."
-                            className="form-input"
-                            autoComplete="off"
-                        />
-                        <datalist id="subfolders-list">
-                            {selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders?.map((folder, idx) => (
-                                <option key={idx} value={folder.split('/').filter(Boolean).pop()} />
-                            ))}
-                        </datalist>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={destination}
+                                onChange={(e) => {
+                                    setDestination(e.target.value);
+                                    setShowSuggestions(true);
+                                }}
+                                onFocus={() => setShowSuggestions(true)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                placeholder="Type a new folder name or select..."
+                                className="form-input pr-10"
+                                autoComplete="off"
+                            />
+                            {selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders?.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                                    onClick={() => setShowSuggestions(!showSuggestions)}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="m6 9 6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+
+                        {showSuggestions && selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders?.length > 0 && (
+                            <div className="absolute z-10 left-0 right-0 top-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl max-h-40 overflow-y-auto overflow-x-hidden">
+                                {selectedDevice.storage_profiles[selectedStorageProfile].subfolders.map((folder, idx) => {
+                                    const folderName = folder.split('/').filter(Boolean).pop();
+                                    if (!folderName) return null;
+                                    
+                                    // Simple filtering based on input
+                                    if (destination && !folderName.toLowerCase().includes(destination.toLowerCase())) return null;
+
+                                    return (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 last:border-0 truncate"
+                                            onClick={() => {
+                                                setDestination(folderName);
+                                                setShowSuggestions(false);
+                                            }}
+                                        >
+                                            📁 {folderName}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">
