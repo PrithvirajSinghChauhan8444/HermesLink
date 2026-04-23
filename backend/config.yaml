@@ -17,7 +17,9 @@ storage_profiles:
   movies:
     name: Movies
     paths:
-    - ~/Videos/HermesLink_Movies
+    - /media/NewVolume/STUFF/Watch
     subfolders:
-    - /home/prit/Videos/HermesLink_Movies/new youtube
-    - /home/prit/Videos/HermesLink_Movies/from youtube
+    - /media/NewVolume/STUFF/Watch/new youtube
+    - /media/NewVolume/STUFF/Watch/from youtube
+    - /media/NewVolume/STUFF/Watch/Series
+    - /media/NewVolume/STUFF/Watch/Anime
