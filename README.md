@@ -1,261 +1,153 @@
-<p align="center">
-  <img src="docs/images/landing.gif" width="700" alt="HermesLink Landing" />
-</p>
+<div align="center">
+  <img src="docs/images/landing.gif" width="720" alt="HermesLink Banner" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" />
+  
+  # ⚡ HermesLink
 
-<h1 align="center">HermesLink</h1>
-<p align="center">
-  <em>A distributed, real-time remote download manager.</em>
-  <br/>
-  Submit downloads from anywhere. Execute them on any device.
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" />
-  <img src="https://img.shields.io/badge/Firebase-RTDB%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black" />
-  <img src="https://img.shields.io/badge/Aria2-RPC-green?logo=gnu&logoColor=white" />
-  <img src="https://img.shields.io/badge/License-MIT-green" />
-</p>
+  ### *A Distributed, Real-Time Remote Download Manager*
+  
+  Submit downloads from any device, anywhere. Execute them securely on your private download boxes.
+  
+  [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white&style=flat-square)](https://www.python.org/)
+  [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black&style=flat-square)](https://react.dev/)
+  [![Firebase](https://img.shields.io/badge/Firebase-RTDB%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black&style=flat-square)](https://firebase.google.com/)
+  [![Aria2](https://img.shields.io/badge/Aria2-Engine-green?logo=git&logoColor=white&style=flat-square)](https://aria2.github.io/)
+  [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+</div>
 
 ---
 
-## 🤔 What is HermesLink?
+## 📌 Overview
 
-HermesLink separates the **intent** (what to download) from the **execution** (where to download it). You submit a download from a web browser on your phone, and it executes on your home server, office PC, or any device running the HermesLink agent.
+HermesLink decouples **download scheduling (intent)** from **file downloading (execution)**. Using a real-time web dashboard, you can trigger a download from your phone or laptop on the go, which immediately executes on your home server, office machine, or private server cluster running the HermesLink background agent.
 
 ```
-You (phone/laptop)  →  Web Dashboard  →  Firebase  →  Agent on your PC  →  File downloaded
+┌──────────────────┐      ┌─────────────────┐      ┌───────────────┐      ┌─────────────┐
+│  You (Dashboard) │ ───> │ Firebase Cloud  │ ───> │ Device Agent  │ ───> │ Local File  │
+│  (Phone/Laptop)  │      │  (Firestore/DB) │      │ (Home Server) │      │ Storage     │
+└──────────────────┘      └─────────────────┘      └───────────────┘      └─────────────┘
 ```
 
-### Who is this for?
-
-- You want to start a download on your home PC while at work
-- You manage downloads across multiple machines
-- You want a centralized dashboard for all your downloads
+### Key Use Cases
+* **Remote Scheduling:** Start large downloads on your home server while you are away.
+* **Centralized Coordination:** Monitor and control download queues across multiple hosts in one interface.
+* **Smart Organization:** Automatically sort and organize downloads based on file type and name rules.
 
 ---
 
-## 🖼️ Screenshots
+## 🖼️ Media & Previews
 
-<p align="center">
-  <img src="docs/images/active_download.png" width="700" alt="Active Downloads" />
-</p>
-<p align="center"><em>Active downloads with real-time progress tracking</em></p>
+<details open>
+  <summary><b>📷 Screenshots</b></summary>
+  <br>
 
-<p align="center">
-  <img src="docs/images/add_download.png" width="700" alt="Add Download Modal" />
-</p>
-<p align="center"><em>New download modal — select device, storage profile, and queue</em></p>
+  <p align="center">
+    <img src="docs/images/active_download.png" width="700" alt="Active Downloads" style="border-radius: 6px; border: 1px solid #ddd;" />
+    <br><em>Real-time active downloads monitoring with progress updates</em>
+  </p>
 
-<p align="center">
-  <img src="docs/images/history.png" width="700" alt="Download History" />
-</p>
-<p align="center"><em>Download history with completed and failed jobs</em></p>
+  <p align="center">
+    <img src="docs/images/add_download.png" width="700" alt="Add Download Modal" style="border-radius: 6px; border: 1px solid #ddd;" />
+    <br><em>New job dialog — customize target device, queue, and storage location</em>
+  </p>
 
-### 🎬 Walkthroughs
+  <p align="center">
+    <img src="docs/images/history.png" width="700" alt="Download History" style="border-radius: 6px; border: 1px solid #ddd;" />
+    <br><em>Comprehensive download history log with statuses</em>
+  </p>
+</details>
 
-#### System Overview
-![HermesLink Walkthrough](docs/videos/walkthrough.mp4)
+<details>
+  <summary><b>🎬 Walkthrough Videos</b></summary>
+  <br>
 
-#### Tutorial & Setup
-![HermesLink Tutorial](docs/videos/tutorial.mp4)
+  * **System Overview & Walkthrough:**
+    ![HermesLink Walkthrough](docs/videos/walkthrough.mp4)
 
+  * **Setup & Configurations Tutorial:**
+    ![HermesLink Tutorial](docs/videos/tutorial.mp4)
+</details>
 
 ---
 
 ## ✨ Features
 
-### Device System (Presence & Discovery)
+### 📡 Real-Time Device Discovery
+* **Instant Presence:** Agents register in Firebase Realtime Database (`presence/{device_id}`) detailing status, platform, and storage config.
+* **Active Keepalive:** Heartbeat updates run every 30 seconds to track live status; automatic `"offline"` transition on clean shutdown.
 
-- Agent registers in Firebase RTDB under `presence/{device_id}` on boot with a custom `device_name` (or fallback hostname), platform, status, and storage profiles
-- Continuous heartbeat updates `last_seen` every 30 seconds
-- Frontend subscribes to RTDB presence for real-time device listing
-- Graceful shutdown sets status to `"offline"`
+### 🔄 Distributed Job System
+* **Event-Driven Dispatch:** Jobs are stored in **Firestore** and fetched by target agents using Firestore listeners (zero idle polling, instant triggers).
+* **Network Efficiency:** Active progress stats stream to **RTDB** to prevent Firestore write-quota exhaustion, while terminal states (`COMPLETED`, `FAILED`, `STOPPED`) sync to **Firestore** for persistent records.
+* **Instant Controls:** Pause, resume, stop, and retry actions execute in sub-second latency via RTDB control nodes.
 
-### Job System (Full Lifecycle)
+### ⚙️ Pluggable Download Engines
+HermesLink utilizes a robust interface (`BaseEngine`) for handling downloads:
+* **Aria2 Daemon:** High-performance multi-connection engine. Supports pausing/resuming, automatic single-thread fallback on errors, and partial file cleanup.
+* **yt-dlp Engine:** Specialized handler for YouTube and streaming media platforms, featuring dynamic format selection and process command signaling.
+* **Direct HTTP:** Lightweight streaming downloader for straightforward HTTP/HTTPS file URLs.
 
-- Jobs are created in **Firestore** from the web dashboard with `state: PENDING` and a target `device_id`
-- Agent detects new jobs via **Firestore `on_snapshot`** — zero-polling, event-driven dispatch
-- `FirebaseJobBridge` writes live progress to **RTDB** (avoids Firestore write quotas) and syncs terminal states (`COMPLETED`, `FAILED`, `STOPPED`) back to **Firestore** for persistence
+### 🧠 Smart Features & Organization
+* **AI-Powered File Sorting:** Categorizes completed files (Applications, Archives, Media, Documents, etc.) based on type, routing them into clean subdirectories.
+* **Auto-Extraction:** Optional extraction of compressed archives (`.zip`, `.tar`, `.gz`) post-download.
+* **Custom Queues:** Define parallel execution limits (`max_parallel_jobs`), thread counts (`max_threads_per_job`), and priority levels in Firestore.
+* **Zombie Job Sweeper:** Auto-sweeper cleans up stuck `RUNNING` tasks if an agent drops offline unexpectedly.
 
-### Download Controls (Real-Time)
+---
 
-- **Pause / Resume / Stop** via RTDB `action` nodes — agent listens and forwards commands to the active engine
-- Sub-second control latency
+## 🛠️ Tech Stack
 
-### Download Engines
-
-| Engine                   | File          | Details                                                                                                                                                                                     |
-| ------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Aria2**          | `aria2.py`  | JSON-RPC control, daemon management, multi-thread download, pause/resume/stop, error classification, auto-downgrade to single-thread on resume failure, partial file cleanup, force restart |
-| **Media (yt-dlp)** | `media.py`  | YouTube & video platform integration, dynamic API metadata fetching, format selection (Audio-Only / Audio+Video), robust process signaling for pause/resume                                 |
-| **Direct HTTP**    | `direct.py` | Streaming HTTP/HTTPS direct downloads                                                                                                                                                       |
-
-### Smart File Categorization
-
-- AI-powered classifier analyzes URLs and filenames to determine file type categories (Application, Document, Media, Archive, etc.)
-- Downloads are automatically routed into organized subdirectories within the chosen storage profile
-- Fully configurable category rules
-
-### Download Scheduling
-
-- Schedule downloads for specific times or bandwidth windows
-- Deferred job execution with automatic start at the scheduled time
-
-### Automatic Queue Routing
-
-- Route jobs to queues based on file type, size, or URL pattern rules
-- Configurable rule engine for automated queue assignment
-
-### Batch URL Import
-
-- Paste multiple URLs or import from a text file; each becomes a separate queued job
-- Quick bulk-download workflow from the dashboard
-
-### Archive Extraction
-
-- Optionally extract downloaded `.zip`/`.tar`/`.gz` files post-download
-- Automatic detection and extraction regardless of categorized subdirectory
-
-### Storage Profiles (Multi-Destination)
-
-- `config.yaml` defines named profiles with multiple `paths` per profile
-- Tracks per-profile `subfolders` history: custom sub-directories are persisted automatically for future selections
-- Agent expands `~`, derives human-friendly `base_names` from folder names, publishes to RTDB
-- Frontend shows Storage Profile + Destination + Subfolder History dropdowns
-- Path traversal protection via `os.path.abspath` + `startswith` validation
-
-### Queue Management
-
-- Queue configs stored in **Firestore `queues/` collection** — single source of truth
-- Real-time subscription + create/update/delete via dashboard
-- Queue cards with create/edit/delete modals, toggle active/paused
-- Agent reads queue config (`max_threads_per_job`, `max_parallel_jobs`) from Firestore per job
-- Default queue cannot be deleted
-
-### Zombie Job Sweeper
-
-- Cloud Function that auto-recovers jobs stuck in `RUNNING` state when an agent goes offline
-- Prevents orphaned downloads from blocking queue capacity
-
-### API Server
-
-- FastAPI server with Firebase Auth token verification on all endpoints
-- Endpoints: job CRUD, job actions (pause/resume/stop), job history
-- CORS configured for frontend dev server
+| Layer | Component | Notes |
+| :--- | :--- | :--- |
+| **Frontend** | React 18, Vite, GSAP, TailwindCSS | High-performance dashboard with smooth transitions |
+| **Backend Agent** | Python 3.10+, Firebase Admin SDK | Cross-platform Python execution |
+| **Database** | Firebase Firestore & Realtime DB | Hybrid storage architecture (persistent + live-state) |
+| **Auth** | Firebase Authentication | Admin login restrictions |
+| **API Server** | FastAPI, Uvicorn | REST APIs for automation triggers |
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 📋 Prerequisites
+* **Python 3.10+**
+* **Node.js 18+**
+* **aria2** installed and available in system `PATH`
+* **yt-dlp** installed and available in system `PATH` (optional, for video sites)
+* A **Firebase Project**
 
-- Python 3.10+
-- Node.js 18+
-- [aria2](https://aria2.github.io/) installed and in PATH
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) installed and in PATH (for media downloads)
-- A Firebase project with Firestore, RTDB, and Auth enabled
+---
 
-### Firebase Setup
+### 🔧 1. Firebase Setup
 
-HermesLink requires a Firebase project. Here's how to set one up:
+1. **Create Firebase Project:** Go to the [Firebase Console](https://console.firebase.google.com/) and register a new project.
+2. **Enable Firestore Database:** Enable Firestore under Build. You can choose **Test Mode** during initialization.
+3. **Enable Realtime Database:** Create a Realtime Database instance in your preferred region. Note the database URL.
+4. **Enable Email/Password Authentication:** Enable the Email/Password sign-in method. Add a user account to serve as your administrator.
+5. **Get App Configurations:** Register a Web App (`</>`) in Project Settings and copy the configuration keys.
+6. **Generate Service Account Keys:** Go to **Project Settings** → **Service accounts**, click **Generate new private key**, and save the resulting JSON file as `backend/serviceAccountKey.json`.
+7. **Seed default Queue:**
+   Create a collection in Firestore named `queues`. Add a document with ID `default` containing:
+   - `name`: `"Default"` (string)
+   - `max_parallel_jobs`: `2` (number)
+   - `max_threads_per_job`: `4` (number)
+   - `priority`: `10` (number)
+   - `enabled`: `true` (boolean)
+   - `updated_on`: `"22-06-2026"` (string)
 
-1. **Create a Firebase Project**
+---
 
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Click **Add project** → give it a name → create
-2. **Enable Firestore**
+### 💻 2. Configuration Files
 
-   - In the Firebase Console sidebar, go to **Build → Firestore Database**
-   - Click **Create database** → choose **Start in test mode** (or configure security rules later)
-   - Select a region close to you
-3. **Enable Realtime Database (RTDB)**
-
-   - In the sidebar, go to **Build → Realtime Database**
-   - Click **Create Database** → choose your region → **Start in test mode**
-   - Note the database URL (e.g., `https://your-project.firebaseio.com`)
-4. **Enable Authentication**
-
-   - Go to **Build → Authentication → Get started**
-   - Enable **Email/Password** sign-in method
-   - Create a user account (this will be your admin login)
-5. **Get your Firebase config keys**
-
-   - Go to **Project Settings** (gear icon) → **General** → scroll to **Your apps**
-   - Click the web icon (`</>`) → register an app
-   - Copy the `firebaseConfig` object — you'll need these values for the `.env` files
-6. **Generate a service account key (for backend)**
-
-   - Go to **Project Settings → Service accounts**
-   - Click **Generate new private key** → download the JSON file
-   - Save it as `backend/serviceAccountKey.json`
-7. **Create your `.env` files**
-
-   **Backend** (`backend/.env`):
-
-   ```env
-   GOOGLE_APPLICATION_CREDENTIALS=serviceAccountKey.json
-   FIREBASE_DATABASE_URL=https://your-project-id.firebaseio.com
-   ```
-
-   **Frontend** (`frontend/HermesLink_frontend/.env`):
-
-   ```env
-   VITE_FIREBASE_API_KEY=your-api-key
-   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your-project-id
-   VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-   VITE_FIREBASE_APP_ID=your-app-id
-   VITE_FIREBASE_MEASUREMENT_ID=your-measurement-id
-   VITE_FIREBASE_DATABASE_URL=https://your-project-id.firebaseio.com
-   ```
-8. **Seed the default queue**
-
-   - In Firestore Console, create a collection called `queues`
-   - Add a document with ID `default` and these fields:
-     - `name`: `"Default"` (string)
-     - `max_parallel_jobs`: `2` (number)
-     - `max_threads_per_job`: `4` (number)
-     - `priority`: `10` (number)
-     - `enabled`: `true` (boolean)
-     - `updated_on`: `"28-03-2026"` (string)
-
-### Backend (Agent)
-
-```bash
-cd backend
-pip install -r requirements.txt
-
-# Create your .env with Firebase credentials
-cp .env.example .env
-
-# Configure download paths
-# Edit config.yaml to set your storage profiles
-
-# Start the agent
-cd src
-python agent.py
+#### Backend Environment Configuration
+Create `backend/.env`:
+```env
+GOOGLE_APPLICATION_CREDENTIALS=serviceAccountKey.json
+FIREBASE_DATABASE_URL=https://<your-project-id>-default-rtdb.firebaseio.com
 ```
 
-### Frontend (Dashboard)
-
-```bash
-cd frontend/HermesLink_frontend
-npm install
-
-# Create .env with your Firebase config
-cp .env.example .env
-
-npm run dev
-```
-
-### Storage Configuration
-
-Edit `backend/config.yaml` to define a custom device name and download locations:
-
+Create `backend/config.yaml` to specify storage folders:
 ```yaml
-device_name: "My Home Server"
+device_name: "Home Media Server"
 storage_profiles:
   default:
     name: "Default Downloads"
@@ -264,25 +156,64 @@ storage_profiles:
   movies:
     name: "Movies"
     paths:
-      - "~/Videos/HermesLink_Movies"
-      - "/mnt/external/Movies"
+      - "/mnt/media/Movies"
+```
+
+#### Frontend Environment Configuration
+Create `frontend/HermesLink_frontend/.env`:
+```env
+VITE_FIREBASE_API_KEY=your-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+VITE_FIREBASE_DATABASE_URL=https://<your-project-id>-default-rtdb.firebaseio.com
 ```
 
 ---
 
-## 🖥️ Background Service (Linux/Arch)
+### 🏃 3. Run Applications
 
-For production use on Linux (especially Arch), it is recommended to run HermesLink as a background service. This ensures it starts automatically at boot and can be managed easily.
+#### Backend Agent Setup
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-### 1. Setup Services
-Service files are located in `~/.config/systemd/user/`.
-- `hermeslink-agent.service`: Core background worker.
-- `hermeslink-api.service`: REST API server.
+# Run the agent worker
+cd src
+python agent.py
+```
 
-<details>
-<summary><b>View Service File Definitions (for manual setup)</b></summary>
+#### Frontend Dashboard Setup
+```bash
+cd frontend/HermesLink_frontend
+npm install
+npm run dev
+```
 
-**hermeslink-agent.service**
+---
+
+## 🖥️ Production Daemon Setup (Linux / systemd)
+
+For running HermesLink as a background service on Linux (e.g., Arch, Debian), you can configure systemd user services.
+
+### 1. Link Control CLI
+Link the provided control script to your local bin:
+```bash
+mkdir -p ~/.local/bin
+ln -s "$(pwd)/hermeslink-ctl.sh" ~/.local/bin/hermeslink
+
+# Reload user daemon configuration
+systemctl --user daemon-reload
+```
+
+### 2. Configure Service Units
+Create user service definitions under `~/.config/systemd/user/`:
+
+#### `~/.config/systemd/user/hermeslink-agent.service`
 ```ini
 [Unit]
 Description=HermesLink Background Agent
@@ -291,18 +222,16 @@ After=network.target
 [Service]
 Type=simple
 Environment="PYTHONUNBUFFERED=1"
-WorkingDirectory=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/src
-ExecStart=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/.venv/bin/python agent.py
+WorkingDirectory=/absolute/path/to/HermesLink/backend/src
+ExecStart=/absolute/path/to/HermesLink/backend/.venv/bin/python agent.py
 Restart=always
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
 
 [Install]
 WantedBy=default.target
 ```
 
-**hermeslink-api.service**
+#### `~/.config/systemd/user/hermeslink-api.service`
 ```ini
 [Unit]
 Description=HermesLink API Server
@@ -311,160 +240,58 @@ After=network.target
 [Service]
 Type=simple
 Environment="PYTHONUNBUFFERED=1"
-WorkingDirectory=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/src
-ExecStart=/home/prit/Project_Linux/Hermeslink/HermesLink/backend/.venv/bin/python api_server.py
+WorkingDirectory=/absolute/path/to/HermesLink/backend/src
+ExecStart=/absolute/path/to/HermesLink/backend/.venv/bin/python api_server.py
 Restart=always
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
 
 [Install]
 WantedBy=default.target
 ```
-</details>
 
-### 2. Management Tool (`hermeslink`)
-A unified control script is provided in the project root. To use it from anywhere:
-
-```bash
-# Link the script to your local bin
-mkdir -p ~/.local/bin && ln -s "$(pwd)/hermeslink-ctl.sh" ~/.local/bin/hermeslink
-
-# Reload systemd and enable auto-start
-systemctl --user daemon-reload
-hermeslink enable
-```
-
-### 3. CLI Commands
-| Command | Action |
-| :--- | :--- |
-| `hermeslink start` | Start all services |
-| `hermeslink stop` | Stop all services |
-| `hermeslink restart` | Restart all services |
-| `hermeslink logs` | View live logs |
-| `hermeslink status` | Check service status |
-| `hermeslink enable` | Enable auto-start at boot |
+### 3. Service Commands
+You can now manage backend processes using the `hermeslink` utility:
+* **Start Services:** `hermeslink start`
+* **Stop Services:** `hermeslink stop`
+* **Restart Services:** `hermeslink restart`
+* **Check Status:** `hermeslink status`
+* **Follow Logs:** `hermeslink logs`
+* **Enable Boot Autostart:** `hermeslink enable`
 
 ---
 
----
-
-## 🏗️ Architecture
-
-```
-┌──────────────────┐      ┌──────────────────────┐      ┌──────────────────┐
-│   Web Dashboard   │      │       Firebase        │      │   Device Agent   │
-│   (React + Vite)  │◄────►│  RTDB: live state     │◄────►│   (Python)       │
-│                   │      │  Firestore: jobs/queues│      │                  │
-│  • Submit jobs    │      │  Auth: user tokens     │      │  • Aria2Engine   │
-│  • Live progress  │      │                        │      │  • yt-dlp Engine │
-│  • Queue CRUD     │      │                        │      │  • Classifier    │
-│  • Device picker  │      │                        │      │  • Control loop  │
-└──────────────────┘      └──────────────────────┘      └──────────────────┘
-```
-
-### Architecture Highlights
-
-| Feature                               | How                                                 |
-| ------------------------------------- | --------------------------------------------------- |
-| Zero-idle-cost job dispatch           | Firestore `on_snapshot` (no polling)              |
-| Sub-second download controls          | RTDB action nodes                                   |
-| Progress without Firestore quota burn | Progress → RTDB only; terminal states → Firestore |
-| Pluggable download engines            | Strategy pattern with `BaseEngine` interface      |
-| Smart file categorization             | AI-powered classifier auto-routes files             |
-| Path traversal protection             | `os.path.abspath` + `startswith` validation     |
-
-### Data Flow
-
-1. **User** submits a download job from the web dashboard
-2. **Firestore** stores the job with `state: PENDING` and `device_id`
-3. **Agent** on the target device detects the new job via `on_snapshot`
-4. **Classifier** analyzes the URL and selects the appropriate engine and category
-5. **Engine** (Aria2 / yt-dlp) starts the download
-6. **Progress** updates stream to RTDB in real-time
-7. **Frontend** renders live progress bars from RTDB subscriptions
-8. **Terminal states** (completed/failed/stopped) sync back to Firestore
-9. **Post-processing** — archive extraction and file categorization run if configured
-
----
-
-## 📁 Project Structure
+## 📂 Codebase Directory Layout
 
 ```
 HermesLink/
 ├── backend/
-│   ├── config.yaml              # Storage profiles (device-local)
+│   ├── config.yaml              # Local storage profile paths
 │   └── src/
-│       ├── agent.py             # Main agent entry point
-│       ├── api_server.py        # FastAPI REST server
+│       ├── agent.py             # Main background agent daemon
+│       ├── api_server.py        # FastAPI endpoints controller
 │       ├── core/
-│       │   ├── models.py        # Job, QueueConfig, QueueState dataclasses
-│       │   ├── job_manager.py   # Job lifecycle management
-│       │   ├── job_runner.py    # Background job execution loop
-│       │   ├── job_controller.py # Control actions (pause/resume/stop)
-│       │   ├── classifier.py   # Smart file categorization engine
-│       │   ├── zombie_sweeper.py # Stale job recovery
+│       │   ├── models.py        # Structural data representations
+│       │   ├── job_manager.py   # Job state operations
+│       │   ├── job_runner.py    # Main task loops
+│       │   ├── classifier.py    # Auto-categorization engine
+│       │   ├── zombie_sweeper.py# Disconnected worker task cleanup
 │       │   └── firebase_config.py
 │       └── engines/
-│           ├── base.py          # Abstract engine interface
-│           ├── aria2.py         # Aria2 RPC engine (primary)
-│           ├── direct.py        # HTTP/HTTPS direct downloads
-│           ├── media.py         # yt-dlp based downloader
-│           └── p2p.py           # Torrent/Magnet (scaffold)
+│           ├── base.py          # Abstract download driver
+│           ├── aria2.py         # aria2 RPC engine handler
+│           ├── direct.py        # Native HTTP downloader
+│           └── media.py         # yt-dlp downloader
 ├── frontend/
-│   └── HermesLink_frontend/     # React + Vite app
+│   └── HermesLink_frontend/     # React Dashboard (Vite)
 │       └── src/
-│           ├── hooks/           # useDevices, useJobs, useQueues, etc.
-│           ├── components/      # UI: ActiveJobs, QueueSection, NewJobModal
-│           ├── services/        # API client
-│           └── config/          # Firebase init
-├── changes_detail/              # Daily changelog
-└── docs/
-    └── images/                  # Architecture diagrams & previews
+│           ├── hooks/           # Real-time state listeners
+│           ├── components/      # UI components & sections
+│           └── config/          # Firebase initialization
+├── firestore.rules              # Firestore authorization configurations
+└── database.rules.json          # RTDB action validation limits
 ```
 
 ---
 
-## 🛠️ Tech Stack
-
-| Layer           | Technology                                                 |
-| --------------- | ---------------------------------------------------------- |
-| Frontend        | React 18, Vite, GSAP, TailwindCSS                          |
-| Backend Agent   | Python 3.10+, Firebase Admin SDK, PyYAML                   |
-| Download Engine | aria2 (via JSON-RPC), yt-dlp                               |
-| Database        | Firebase RTDB (live state) + Cloud Firestore (persistence) |
-| Auth            | Firebase Authentication                                    |
-| API Server      | FastAPI + Pydantic                                         |
-
----
-
-## 📝 Changelog
-
-Detailed daily changelogs are maintained in [`changes_detail/`](changes_detail/).
-
----
-
-## 🔮 Future Plans
-
-> These are exploratory ideas that **may** be implemented in future iterations.
-
-- **Google Drive Folder Downloads** — Given a shared Drive folder link, enumerate contents and queue individual file downloads.
-- **Smart Link Analysis** — Use AI to parse pages and extract the best download link from a given URL.
-- **Content Categorization** — Automatically categorize downloads and suggest storage profiles based on content type.
-- **Natural Language Job Creation** — "Download the latest episode of X on my home server" → auto-resolved job.
-- **Agent Packaging** — Bundle agent as a standalone executable (PyInstaller) for non-developer users.
-- **Notification System** — Push notifications on job completion via Discord or similar integrations.
-- **Multi-User Support** — Per-user device registration and job isolation (currently single-user by design.
-- **P2P / Torrent Engine** — Full BitTorrent/Magnet link support via libtorrent or aria2 BT mode.
-
----
-
 ## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-<p align="center">
-  <strong>HermesLink</strong> — Download from anywhere, to anywhere.
-</p>
+This project is licensed under the terms of the MIT License.

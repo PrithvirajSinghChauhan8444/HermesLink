@@ -1,41 +1,15 @@
-import { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { endpoints } from '../../services/api';
-import { getCookie, setCookie } from '../../utils/cookieUtils';
-
-
+import { useJobs } from '../../hooks/useJobs';
+import { useQueues } from '../../hooks/useQueues';
 
 import './LandingSection.css';
 
 export default function LandingSection() {
     const comp = useRef(null);
-    const cacheKey = 'hl_landing_stats';
-    const [stats, setStats] = useState(() => {
-        const cached = getCookie(cacheKey);
-        return cached || { active: 0, queue: 0, history: 0 };
-    });
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const [activeRes, queueRes, historyRes] = await Promise.all([
-                    endpoints.jobs.active(),
-                    endpoints.queues.list(),
-                    endpoints.jobs.history()
-                ]);
-                const newStats = {
-                    active: activeRes.data.total,
-                    queue: queueRes.data.queues.length, // approximation or count
-                    history: historyRes.data.total
-                };
-                setStats(newStats);
-                setCookie(cacheKey, newStats, 1);
-            } catch (e) {
-                console.error("Failed to fetch dashboard stats", e);
-            }
-        };
-        fetchStats();
-    }, []);
+    const { jobs: activeJobs } = useJobs({ states: ['PENDING', 'RUNNING', 'PAUSED'] });
+    const { jobs: historyJobs } = useJobs({ states: ['COMPLETED', 'FAILED', 'STOPPED'] });
+    const { queues } = useQueues();
 
     useLayoutEffect(() => {
         let ctx = gsap.context(() => {
@@ -80,15 +54,15 @@ export default function LandingSection() {
 
                 <div className="stats-grid">
                     <div className="stat-card">
-                        <span className="stat-value">{stats.active}</span>
+                        <span className="stat-value">{activeJobs?.length ?? 0}</span>
                         <span className="stat-label">Active Jobs</span>
                     </div>
                     <div className="stat-card">
-                        <span className="stat-value">{stats.queue}</span>
+                        <span className="stat-value">{queues?.length ?? 0}</span>
                         <span className="stat-label">Queues</span>
                     </div>
                     <div className="stat-card">
-                        <span className="stat-value">{stats.history}</span>
+                        <span className="stat-value">{historyJobs?.length ?? 0}</span>
                         <span className="stat-label">Completed</span>
                     </div>
                 </div>

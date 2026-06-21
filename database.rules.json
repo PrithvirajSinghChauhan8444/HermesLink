@@ -1,0 +1,30 @@
+{
+  "rules": {
+    "presence": {
+      // Any authenticated user can read presence to see which devices are online
+      ".read": "auth != null",
+      // Clients do not write presence (it's written by the agent using Admin SDK, which bypasses rules)
+      ".write": false
+    },
+    "jobs": {
+      // Any authenticated user can read jobs to monitor download progress
+      ".read": "auth != null",
+      "$job_id": {
+        // Any authenticated user can read a specific job
+        ".read": "auth != null",
+        "action": {
+          // Clients write control actions (PAUSE, RESUME, CANCEL, RETRY, RESTART)
+          // Limit validation to acceptable action strings to make it extremely robust
+          ".write": "auth != null && (!newData.exists() || (newData.isString() && (newData.val() == 'PAUSE' || newData.val() == 'RESUME' || newData.val() == 'CANCEL' || newData.val() == 'STOP' || newData.val() == 'RETRY' || newData.val() == 'RESTART')))"
+        },
+        // Other fields like progress and state are only updated by the agent (which uses Admin SDK)
+        "progress": {
+          ".write": false
+        },
+        "state": {
+          ".write": false
+        }
+      }
+    }
+  }
+}

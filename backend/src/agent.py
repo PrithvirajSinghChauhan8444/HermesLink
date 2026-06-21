@@ -173,6 +173,7 @@ class HermesAgent:
         if 'device_name' not in config:
             config['device_name'] = socket.gethostname()
             dirty = True
+
             
         if dirty:
             try:
@@ -340,6 +341,7 @@ class HermesAgent:
         thread_limit = 4  # fallback
         try:
             queue_doc = self.db.collection("queues").document(queue_id).get()
+            
             if queue_doc.exists:
                 queue_config = queue_doc.to_dict()
                 thread_limit = queue_config.get("max_threads_per_job", 4)
