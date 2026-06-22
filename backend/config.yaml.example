@@ -1,0 +1,11 @@
+storage_profiles:
+  default:
+    name: Default Downloads
+    paths:
+    - ~/Downloads/HermesLink
+    subfolders: []
+  movies:
+    name: Movies
+    paths:
+    - /path/to/your/movies/folder
+    subfolders: []

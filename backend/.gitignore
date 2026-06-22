@@ -52,3 +52,4 @@ serviceAccountKey.json
 *.json
 !package.json
 !tsconfig.json
+config.yaml
