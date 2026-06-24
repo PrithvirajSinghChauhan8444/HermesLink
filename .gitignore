@@ -17,3 +17,4 @@ config.yaml
 backend/config.yaml
 backend/src/agent_config.json
 .vscode/
+not_comt/
