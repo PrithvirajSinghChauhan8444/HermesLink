@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { getCookie, setCookie } from '../utils/cookieUtils';
+
+function lsGet(key) {
+    try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+function lsSet(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
 
 /**
  * Real-time hook that listens to the Firestore `jobs` collection.
@@ -14,12 +20,12 @@ export function useJobs({ states } = {}) {
     const cacheKey = states ? `hl_jobs_${states.join('_')}` : 'hl_jobs_all';
 
     const [jobs, setJobs] = useState(() => {
-        const cached = getCookie(cacheKey);
+        const cached = lsGet(cacheKey);
         return cached || [];
     });
     
     const [loading, setLoading] = useState(() => {
-        const cached = getCookie(cacheKey);
+        const cached = lsGet(cacheKey);
         return cached ? false : true;
     });
 
@@ -43,7 +49,7 @@ export function useJobs({ states } = {}) {
             setJobs(jobList);
             setLoading(false);
             setError(null);
-            setCookie(cacheKey, jobList, 1); // Cache for 1 day
+            lsSet(cacheKey, jobList);
         }, (err) => {
             console.error('[useJobs] Firestore listener error:', err);
             setError(err);

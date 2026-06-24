@@ -4,7 +4,13 @@ import {
     setDoc, updateDoc, deleteDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { getCookie, setCookie } from '../utils/cookieUtils';
+
+function lsGet(key) {
+    try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+function lsSet(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
 
 /**
  * Real-time Firestore hook for the `queues` collection.
@@ -27,12 +33,12 @@ export function useQueues() {
     const cacheKey = 'hl_queues';
 
     const [queues, setQueues] = useState(() => {
-        const cached = getCookie(cacheKey);
+        const cached = lsGet(cacheKey);
         return cached || [];
     });
 
     const [loading, setLoading] = useState(() => {
-        const cached = getCookie(cacheKey);
+        const cached = lsGet(cacheKey);
         return !cached;
     });
 
@@ -43,13 +49,13 @@ export function useQueues() {
 
         const unsubscribe = onSnapshot(queuesRef, (snapshot) => {
             const queueList = snapshot.docs.map((d) => ({
-                queue_id: d.id,
                 ...d.data(),
+                queue_id: d.id,
             }));
             setQueues(queueList);
             setLoading(false);
             setError(null);
-            setCookie(cacheKey, queueList, 1);
+            lsSet(cacheKey, queueList);
         }, (err) => {
             console.error('[useQueues] Firestore listener error:', err);
             setError(err);

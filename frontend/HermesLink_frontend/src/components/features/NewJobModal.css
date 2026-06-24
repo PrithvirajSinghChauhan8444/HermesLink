@@ -1,51 +1,291 @@
 .new-job-modal-overlay {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm;
+    background: rgba(0, 0, 0, 0.25);
+    @apply fixed inset-0 z-50 flex items-center justify-center;
 }
 
 .new-job-modal-container {
-    @apply w-full max-w-lg bg-[#111111]/95 text-white rounded-2xl border border-white/10 depth-shadow p-8 m-4 relative overflow-hidden;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+        0 30px 70px rgba(0, 0, 0, 0.5), 
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 100px rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+    width: 560px;
+    height: fit-content;
+    max-height: min(650px, 90vh);
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+    @apply rounded-[32px] px-8 py-1 m-4 relative;
+    
+    overflow: visible;
+    overscroll-behavior: contain;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Background glowing lights */
+.modal-glow-blob-1 {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 70%);
+    top: -80px;
+    right: -80px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.modal-glow-blob-2 {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.01) 0%, rgba(255, 255, 255, 0) 70%);
+    bottom: -60px;
+    left: -60px;
+    z-index: -1;
+    pointer-events: none;
 }
 
 .modal-header {
-    @apply flex justify-between items-center mb-8;
+    @apply flex justify-between items-center mb-4 relative z-10;
 }
 
 .modal-title {
-    @apply text-2xl font-light tracking-tight;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: #ffffff;
 }
 
 .close-button {
-    @apply text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5;
+    color: rgba(255, 255, 255, 0.5);
+    @apply hover:text-white hover:scale-105 transition-all duration-200 p-2 rounded-full hover:bg-white/10;
 }
 
 .modal-form {
-    @apply space-y-6;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: visible;
+    @apply relative z-10;
 }
 
 .form-group {
-    @apply flex flex-col gap-2;
+    @apply flex flex-col gap-2.5;
 }
 
 .form-label {
-    @apply text-xs uppercase tracking-wider text-gray-400 font-mono pl-1;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-family: system-ui, -apple-system, sans-serif;
+    padding-left: 2px;
 }
 
+/* Upscaled high contrast inputs */
 .form-input {
-    @apply w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-gray-600;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 500;
+    @apply w-full rounded-2xl px-5 py-3 focus:outline-none focus:border-white focus:bg-black/35 transition-all duration-200 placeholder:text-gray-400;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.form-input:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
 
 .form-select {
-    @apply w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 transition-colors appearance-none cursor-pointer;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 500;
+    @apply w-full rounded-2xl px-5 py-3 focus:outline-none focus:border-white focus:bg-black/35 transition-all duration-200 appearance-none cursor-pointer;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.form-select:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+/* Styled option elements inside select */
+.form-select option, .form-select optgroup {
+    background: #111112;
+    color: #ffffff;
 }
 
 .modal-actions {
-    @apply flex justify-end gap-4 mt-8 pt-4 border-t border-white/5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    @apply mt-5 pt-4 border-t border-white/10;
 }
 
 .cancel-button {
-    @apply px-6 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid transparent;
+    @apply px-7 py-3 rounded-2xl hover:text-white hover:bg-white/10 transition-all duration-200;
 }
 
+/* Mode toggles styling - inline pills row */
+.mode-toggle-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    margin-top: 4px;
+}
+
+.mode-toggle-pill {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.mode-toggle-pill.active {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mode-toggle-pill:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+/* Futuristic glowing premium button */
 .submit-button {
-    @apply px-6 py-2 rounded-lg text-sm font-medium bg-white text-black hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: #ffffff;
+    color: #000000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid #ffffff;
+    @apply px-7 py-3 rounded-2xl hover:bg-white/90 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:bg-white/50 disabled:text-black/50 disabled:cursor-not-allowed disabled:active:scale-100;
+}
+
+/* Dots stepper progress indicator styling at bottom */
+.dots-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.dot-node {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.dot-node.active {
+    background: #ffffff;
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.dot-node:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* Format fetch button styling */
+.fetch-formats-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    @apply px-4 py-2 rounded-2xl hover:bg-white/15 active:scale-95 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+/* Suggestions Dropdown for Subfolder selection */
+.suggestions-list {
+    background: #111113;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    @apply absolute z-20 left-0 right-0 top-full mt-1.5 rounded-xl max-h-40 overflow-y-auto overflow-x-hidden;
+    overscroll-behavior: contain;
+    animation: dropdownFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.suggestion-item {
+    @apply w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-150 border-b border-white/5 last:border-0 truncate;
+}
+
+.step-fields-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    overscroll-behavior: contain;
+    animation: modalStepFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.step-fields-container::-webkit-scrollbar {
+    width: 6px;
+}
+.step-fields-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.step-fields-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+.step-fields-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.step-fields-container-visible {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    animation: modalStepFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes modalStepFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

@@ -31,6 +31,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [useCustomName, setUseCustomName] = useState(false);
     const [fetchingFileName, setFetchingFileName] = useState(false);
     const [dynamicFolder, setDynamicFolder] = useState(true);
+    const [currentStep, setCurrentStep] = useState(1);
 
     const { devices } = useDevices();
     const { queues } = useQueues();
@@ -59,6 +60,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setUseCustomName(false);
             setFetchingFileName(false);
             setDynamicFolder(true);
+            setCurrentStep(1);
         }
     }, [isOpen]);
 
@@ -155,6 +157,36 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
         e.target.value = ''; // reset so the same file can be re-imported
     };
 
+    const handleNext = (e) => {
+        e?.preventDefault();
+        // Validation for Step 1
+        if (currentStep === 1) {
+            if (batchMode) {
+                const urls = batchUrls
+                    .split('\n')
+                    .map(u => u.trim())
+                    .filter(u => u.length > 0 && (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('magnet:')));
+                if (urls.length === 0) {
+                    setError('No valid URLs found. Each line should be a URL starting with http(s):// or magnet:');
+                    return;
+                }
+            } else {
+                if (!url) {
+                    setError('Please enter a URL.');
+                    return;
+                }
+            }
+            setError(null);
+        }
+        setCurrentStep(prev => prev + 1);
+    };
+
+    const handleBack = (e) => {
+        e?.preventDefault();
+        setError(null);
+        setCurrentStep(prev => prev - 1);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedDevice) {
@@ -241,8 +273,10 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     if (!isOpen) return null;
 
     return (
-        <div className="new-job-modal-overlay">
+        <div className="new-job-modal-overlay" onWheel={(e) => e.stopPropagation()}>
             <div className="new-job-modal-container">
+                <div className="modal-glow-blob-1" />
+                <div className="modal-glow-blob-2" />
                 <div className="modal-header">
                     <h2 className="modal-title">New Download</h2>
                     <button onClick={onClose} className="close-button">
@@ -253,363 +287,369 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="modal-form">
-                    {/* Mode Toggle */}
-                    <div className="form-group" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                        <button
-                            type="button"
-                            onClick={() => setBatchMode(false)}
-                            style={{
-                                flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)',
-                                background: !batchMode ? 'rgba(99,102,241,0.2)' : 'transparent',
-                                color: !batchMode ? '#818cf8' : '#9ca3af', fontWeight: 600, fontSize: '13px',
-                                cursor: 'pointer', transition: 'all 0.2s'
-                            }}
-                        >Single URL</button>
-                        <button
-                            type="button"
-                            onClick={() => setBatchMode(true)}
-                            style={{
-                                flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)',
-                                background: batchMode ? 'rgba(99,102,241,0.2)' : 'transparent',
-                                color: batchMode ? '#818cf8' : '#9ca3af', fontWeight: 600, fontSize: '13px',
-                                cursor: 'pointer', transition: 'all 0.2s'
-                            }}
-                        >Batch Import</button>
-                    </div>
+                <form onSubmit={(e) => { e.preventDefault(); if (currentStep === 3) handleSubmit(e); }} className="modal-form">
 
-                    {/* URL Input — single or batch */}
-                    {!batchMode ? (
-                        <>
+                    {currentStep === 1 && (
+                        <div className="step-fields-container">
+                            {/* Mode Toggle */}
+                            <div className="mode-toggle-row">
+                                <button
+                                    type="button"
+                                    onClick={() => setBatchMode(false)}
+                                    className={`mode-toggle-pill ${!batchMode ? 'active' : ''}`}
+                                >Single URL</button>
+                                <button
+                                    type="button"
+                                    onClick={() => setBatchMode(true)}
+                                    className={`mode-toggle-pill ${batchMode ? 'active' : ''}`}
+                                >Batch Import</button>
+                            </div>
+
+                            {/* URL Input — single or batch */}
+                            {!batchMode ? (
+                                <>
+                                    <div className="form-group">
+                                        <label className="form-label">URL</label>
+                                        <input
+                                            type="text"
+                                            value={url}
+                                            onChange={(e) => setUrl(e.target.value)}
+                                            placeholder="https://example.com/file.zip"
+                                            className="form-input"
+                                            required={!batchMode}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">
+                                            File Name {fetchingFileName && <span style={{ fontSize: '12px', color: '#a3a3a3', marginLeft: '8px' }}>⏱️ Fetching...</span>}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={useCustomName ? byUserFileName : (fetchingFileName ? 'Fetching...' : originalFileName)}
+                                            onChange={(e) => {
+                                                if (useCustomName) {
+                                                    setByUserFileName(e.target.value);
+                                                }
+                                            }}
+                                            disabled={!useCustomName || fetchingFileName}
+                                            placeholder="original_filename.ext"
+                                            className="form-input"
+                                            style={{ opacity: (!useCustomName || fetchingFileName) ? 0.7 : 1 }}
+                                        />
+                                        
+                                        <label style={{
+                                            display: 'flex', alignItems: 'center', gap: '8px',
+                                            cursor: 'pointer', fontSize: '13px', color: '#d1d5db', marginTop: '8px'
+                                        }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={useCustomName}
+                                                onChange={(e) => {
+                                                    setUseCustomName(e.target.checked);
+                                                    if (!e.target.checked) {
+                                                        setByUserFileName(originalFileName);
+                                                    }
+                                                }}
+                                                style={{ width: '15px', height: '15px', accentColor: '#ffffff' }}
+                                            />
+                                            Use custom name
+                                        </label>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        URLs (one per line)
+                                        <span style={{ float: 'right', fontSize: '11px', color: '#6b7280' }}>
+                                            {batchUrls.split('\n').filter(u => u.trim()).length} URL(s)
+                                        </span>
+                                    </label>
+                                    <textarea
+                                        value={batchUrls}
+                                        onChange={(e) => setBatchUrls(e.target.value)}
+                                        placeholder={"https://example.com/file1.zip\nhttps://example.com/file2.zip\nhttps://example.com/file3.zip"}
+                                        className="form-input"
+                                        rows={5}
+                                        style={{ resize: 'vertical', fontFamily: 'monospace', fontSize: '12px' }}
+                                    />
+                                    <label
+                                        style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                            marginTop: '8px', padding: '6px 12px', borderRadius: '6px',
+                                            border: '1px dashed rgba(255,255,255,0.15)', cursor: 'pointer',
+                                            fontSize: '12px', color: '#9ca3af', transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        📄 Import from .txt file
+                                        <input
+                                            type="file"
+                                            accept=".txt"
+                                            onChange={handleFileImport}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="form-group">
+                                    <label className="form-label">Type</label>
+                                    <select
+                                        value={type}
+                                        onChange={(e) => setType(e.target.value)}
+                                        className="form-select"
+                                    >
+                                        <option value="aria2">Aria2 (Default)</option>
+                                        <option value="yt-dlp">yt-dlp (YouTube/Media)</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Queue</label>
+                                    <select
+                                        value={queueId}
+                                        onChange={(e) => setQueueId(e.target.value)}
+                                        className="form-select"
+                                    >
+                                        <option value="auto">🌟 Auto-detect Routing</option>
+                                        {queues.map(q => (
+                                            <option key={q.queue_id} value={q.queue_id}>
+                                                {q.name || q.queue_id} (P: {q.priority})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {type === 'yt-dlp' && (
+                                <div className="form-group mb-4">
+                                    <label className="form-label">Format Selection</label>
+                                    <div className="flex gap-2">
+                                        <select 
+                                            className="form-select flex-1 w-full"
+                                            value={selectedFormat}
+                                            onChange={(e) => setSelectedFormat(e.target.value)}
+                                            disabled={formats.length === 0}
+                                        >
+                                            {formats.length === 0 ? (
+                                                <option value="">Fetch to select exactly...</option>
+                                            ) : (
+                                                <>
+                                                    <option value="">🌟 Best Quality (Auto-Merge)</option>
+                                                    
+                                                    <optgroup label="Audio Only">
+                                                        {formats.filter(f => f.vcodec === 'none').map(f => (
+                                                            <option key={f.format_id} value={f.format_id}>
+                                                                🎵 Audio: {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+
+                                                    <optgroup label="Video + Audio">
+                                                        {formats.filter(f => f.vcodec !== 'none').map(f => {
+                                                            const value = f.acodec === 'none' ? `${f.format_id}+ba/b` : f.format_id;
+                                                            return (
+                                                                <option key={f.format_id} value={value}>
+                                                                    🎥 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </optgroup>
+                                                </>
+                                            )}
+                                        </select>
+                                        <button 
+                                            type="button"
+                                            onClick={handleFetchFormats}
+                                            disabled={fetchingFormats || !url}
+                                            className="fetch-formats-btn"
+                                        >
+                                            {fetchingFormats ? 'Fetching...' : 'Fetch Formats'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {currentStep === 2 && (
+                        <div className="step-fields-container-visible">
+                            {/* Device Selector */}
                             <div className="form-group">
-                                <label className="form-label">URL</label>
+                                <label className="form-label">Device</label>
+                                {devices.length === 0 ? (
+                                    <div className="device-selector-empty">
+                                        <span>⚠️ No devices found. Connect a HermesLink agent first.</span>
+                                    </div>
+                                ) : (
+                                    <select
+                                        value={selectedDevice?.device_id || ''}
+                                        onChange={(e) => {
+                                            const dev = devices.find(d => d.device_id === e.target.value);
+                                            setSelectedDevice(dev || null);
+                                        }}
+                                        className="form-select"
+                                        required
+                                    >
+                                        <option value="" disabled>Select a device...</option>
+                                        {devices.map(device => (
+                                            <option key={device.device_id} value={device.device_id}>
+                                                {device.status === 'online' ? '🟢' : '🔴'} {device.name} ({device.platform}) {device.status === 'offline' ? '(Offline)' : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Storage Profile</label>
+                                {(!selectedDevice || !selectedDevice.storage_profiles || Object.keys(selectedDevice.storage_profiles).length === 0) ? (
+                                    <select disabled className="form-select opacity-50 cursor-not-allowed">
+                                        <option>Default Storage</option>
+                                    </select>
+                                ) : (
+                                    <select
+                                        value={selectedStorageProfile}
+                                        onChange={(e) => {
+                                            setSelectedStorageProfile(e.target.value);
+                                            setDestinationPathIndex(0);
+                                        }}
+                                        className="form-select"
+                                        required
+                                    >
+                                        {Object.entries(selectedDevice.storage_profiles).map(([p_id, p_info]) => (
+                                            <option key={p_id} value={p_id}>
+                                                {p_info.name || p_id}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+
+                            {/* Destination Path — shown only if profile has multiple paths */}
+                            {profilePaths.length > 1 && (
+                                <div className="form-group">
+                                    <label className="form-label">Destination</label>
+                                    <select
+                                        value={destinationPathIndex}
+                                        onChange={(e) => setDestinationPathIndex(Number(e.target.value))}
+                                        className="form-select"
+                                    >
+                                        {profileBaseNames.map((name, idx) => (
+                                            <option key={idx} value={idx}>
+                                                {name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            <div className="form-group relative">
+                                <label className="form-label">Sub-directory (Optional)</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={destination}
+                                        onChange={(e) => {
+                                            setDestination(e.target.value);
+                                            setShowSuggestions(true);
+                                        }}
+                                        onFocus={() => setShowSuggestions(true)}
+                                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                        placeholder="Type a new folder name or select..."
+                                        className="form-input pr-10"
+                                        autoComplete="off"
+                                    />
+                                    {Array.isArray(selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders) && 
+                                     selectedDevice.storage_profiles[selectedStorageProfile].subfolders.length > 0 && (
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                                            onClick={() => setShowSuggestions(!showSuggestions)}
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="m6 9 6 6 6-6"/>
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
+
+                                {showSuggestions && 
+                                 Array.isArray(selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders) && 
+                                 selectedDevice.storage_profiles[selectedStorageProfile].subfolders.length > 0 && (
+                                    <div className="suggestions-list">
+                                        {selectedDevice.storage_profiles[selectedStorageProfile].subfolders.map((folder, idx) => {
+                                            const folderName = folder.split('/').filter(Boolean).pop();
+                                            if (!folderName) return null;
+                                            
+                                            // Simple filtering based on input
+                                            if (destination && !folderName.toLowerCase().includes(destination.toLowerCase())) return null;
+
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    className="suggestion-item"
+                                                    onClick={() => {
+                                                        setDestination(folderName);
+                                                        setShowSuggestions(false);
+                                                    }}
+                                                >
+                                                    📁 {folderName}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {currentStep === 3 && (
+                        <div className="step-fields-container-visible">
+                            <div className="form-group">
+                                <label className="form-label">Schedule Download (Optional)</label>
                                 <input
-                                    type="text"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    placeholder="https://example.com/file.zip"
+                                    type="datetime-local"
+                                    value={scheduledAt}
+                                    onChange={(e) => setScheduledAt(e.target.value)}
                                     className="form-input"
-                                    required={!batchMode}
                                 />
                             </div>
+
+                            {/* Auto-Extract Toggle */}
                             <div className="form-group">
-                                <label className="form-label">
-                                    File Name {fetchingFileName && <span style={{ fontSize: '12px', color: '#818cf8', marginLeft: '8px' }}>⏱️ Fetching...</span>}
-                                </label>
-                                <input
-                                    type="text"
-                                    value={useCustomName ? byUserFileName : (fetchingFileName ? 'Fetching...' : originalFileName)}
-                                    onChange={(e) => {
-                                        if (useCustomName) {
-                                            setByUserFileName(e.target.value);
-                                        }
-                                    }}
-                                    disabled={!useCustomName || fetchingFileName}
-                                    placeholder="original_filename.ext"
-                                    className="form-input"
-                                    style={{ opacity: (!useCustomName || fetchingFileName) ? 0.7 : 1 }}
-                                />
-                                
                                 <label style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    cursor: 'pointer', fontSize: '13px', color: '#d1d5db', marginTop: '8px'
+                                    display: 'flex', alignItems: 'center', gap: '10px',
+                                    cursor: 'pointer', fontSize: '13px', color: '#d1d5db'
                                 }}>
                                     <input
                                         type="checkbox"
-                                        checked={useCustomName}
-                                        onChange={(e) => {
-                                            setUseCustomName(e.target.checked);
-                                            if (!e.target.checked) {
-                                                setByUserFileName(originalFileName);
-                                            }
-                                        }}
-                                        style={{ width: '15px', height: '15px', accentColor: '#818cf8' }}
+                                        checked={autoExtract}
+                                        onChange={(e) => setAutoExtract(e.target.checked)}
+                                        style={{ width: '16px', height: '16px', accentColor: '#ffffff' }}
                                     />
-                                    Use custom name
+                                    📦 Auto-extract archives (.zip, .tar, .gz, .rar) after download
                                 </label>
                             </div>
-                        </>
-                    ) : (
-                        <div className="form-group">
-                            <label className="form-label">
-                                URLs (one per line)
-                                <span style={{ float: 'right', fontSize: '11px', color: '#6b7280' }}>
-                                    {batchUrls.split('\n').filter(u => u.trim()).length} URL(s)
-                                </span>
-                            </label>
-                            <textarea
-                                value={batchUrls}
-                                onChange={(e) => setBatchUrls(e.target.value)}
-                                placeholder={"https://example.com/file1.zip\nhttps://example.com/file2.zip\nhttps://example.com/file3.zip"}
-                                className="form-input"
-                                rows={5}
-                                style={{ resize: 'vertical', fontFamily: 'monospace', fontSize: '12px' }}
-                            />
-                            <label
-                                style={{
-                                    display: 'inline-flex', alignItems: 'center', gap: '6px',
-                                    marginTop: '8px', padding: '6px 12px', borderRadius: '6px',
-                                    border: '1px dashed rgba(255,255,255,0.15)', cursor: 'pointer',
-                                    fontSize: '12px', color: '#9ca3af', transition: 'all 0.2s'
-                                }}
-                            >
-                                📄 Import from .txt file
-                                <input
-                                    type="file"
-                                    accept=".txt"
-                                    onChange={handleFileImport}
-                                    style={{ display: 'none' }}
-                                />
-                            </label>
-                        </div>
-                    )}
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="form-group">
-                            <label className="form-label">Type</label>
-                            <select
-                                value={type}
-                                onChange={(e) => setType(e.target.value)}
-                                className="form-select"
-                            >
-                                <option value="aria2">Aria2 (Default)</option>
-                                <option value="yt-dlp">yt-dlp (YouTube/Media)</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label className="form-label">Queue</label>
-                            <select
-                                value={queueId}
-                                onChange={(e) => setQueueId(e.target.value)}
-                                className="form-select"
-                            >
-                                <option value="auto">🌟 Auto-detect Routing</option>
-                                {queues.map(q => (
-                                    <option key={q.queue_id} value={q.queue_id}>
-                                        {q.name || q.queue_id} (P: {q.priority})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {type === 'yt-dlp' && (
-                        <div className="form-group mb-4">
-                            <label className="form-label">Format Selection</label>
-                            <div className="flex gap-2">
-                                <select 
-                                    className="form-select flex-1 w-full"
-                                    value={selectedFormat}
-                                    onChange={(e) => setSelectedFormat(e.target.value)}
-                                    disabled={formats.length === 0}
-                                >
-                                    {formats.length === 0 ? (
-                                        <option value="">Fetch to select exactly...</option>
-                                    ) : (
-                                        <>
-                                            <option value="">🌟 Best Quality (Auto-Merge)</option>
-                                            
-                                            <optgroup label="Audio Only">
-                                                {formats.filter(f => f.vcodec === 'none').map(f => (
-                                                    <option key={f.format_id} value={f.format_id}>
-                                                        🎵 Audio: {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-
-                                            <optgroup label="Video + Audio">
-                                                {formats.filter(f => f.vcodec !== 'none').map(f => {
-                                                    const value = f.acodec === 'none' ? `${f.format_id}+ba/b` : f.format_id;
-                                                    return (
-                                                        <option key={f.format_id} value={value}>
-                                                            🎥 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </optgroup>
-                                        </>
-                                    )}
-                                </select>
-                                <button 
-                                    type="button"
-                                    onClick={handleFetchFormats}
-                                    disabled={fetchingFormats || !url}
-                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex-shrink-0 disabled:opacity-50 min-w-max transition-colors"
-                                >
-                                    {fetchingFormats ? 'Fetching...' : 'Fetch Formats'}
-                                </button>
+                            {/* Dynamic Folder Routing Toggle */}
+                            <div className="form-group">
+                                <label style={{
+                                    display: 'flex', alignItems: 'center', gap: '10px',
+                                    cursor: 'pointer', fontSize: '13px', color: '#d1d5db'
+                                }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={dynamicFolder}
+                                        onChange={(e) => setDynamicFolder(e.target.checked)}
+                                        style={{ width: '16px', height: '16px', accentColor: '#ffffff' }}
+                                    />
+                                    📁 Dynamic folder creation (organized storage by category)
+                                </label>
                             </div>
                         </div>
                     )}
-
-                    {/* Device Selector */}
-                    <div className="form-group">
-                        <label className="form-label">Device</label>
-                        {devices.length === 0 ? (
-                            <div className="device-selector-empty">
-                                <span>⚠️ No devices found. Connect a HermesLink agent first.</span>
-                            </div>
-                        ) : (
-                            <select
-                                value={selectedDevice?.device_id || ''}
-                                onChange={(e) => {
-                                    const dev = devices.find(d => d.device_id === e.target.value);
-                                    setSelectedDevice(dev || null);
-                                }}
-                                className="form-select"
-                                required
-                            >
-                                <option value="" disabled>Select a device...</option>
-                                {devices.map(device => (
-                                    <option key={device.device_id} value={device.device_id}>
-                                        {device.status === 'online' ? '🟢' : '🔴'} {device.name} ({device.platform}) {device.status === 'offline' ? '(Offline)' : ''}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label className="form-label">Storage Profile</label>
-                        {(!selectedDevice || !selectedDevice.storage_profiles || Object.keys(selectedDevice.storage_profiles).length === 0) ? (
-                            <select disabled className="form-select opacity-50 cursor-not-allowed">
-                                <option>Default Storage</option>
-                            </select>
-                        ) : (
-                            <select
-                                value={selectedStorageProfile}
-                                onChange={(e) => {
-                                    setSelectedStorageProfile(e.target.value);
-                                    setDestinationPathIndex(0);
-                                }}
-                                className="form-select"
-                                required
-                            >
-                                {Object.entries(selectedDevice.storage_profiles).map(([p_id, p_info]) => (
-                                    <option key={p_id} value={p_id}>
-                                        {p_info.name || p_id}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
-
-                    {/* Destination Path — shown only if profile has multiple paths */}
-                    {profilePaths.length > 1 && (
-                        <div className="form-group">
-                            <label className="form-label">Destination</label>
-                            <select
-                                value={destinationPathIndex}
-                                onChange={(e) => setDestinationPathIndex(Number(e.target.value))}
-                                className="form-select"
-                            >
-                                {profileBaseNames.map((name, idx) => (
-                                    <option key={idx} value={idx}>
-                                        {name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-
-                    <div className="form-group relative">
-                        <label className="form-label">Sub-directory (Optional)</label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={destination}
-                                onChange={(e) => {
-                                    setDestination(e.target.value);
-                                    setShowSuggestions(true);
-                                }}
-                                onFocus={() => setShowSuggestions(true)}
-                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                                placeholder="Type a new folder name or select..."
-                                className="form-input pr-10"
-                                autoComplete="off"
-                            />
-                            {selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders?.length > 0 && (
-                                <button
-                                    type="button"
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
-                                    onClick={() => setShowSuggestions(!showSuggestions)}
-                                >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="m6 9 6 6 6-6"/>
-                                    </svg>
-                                </button>
-                            )}
-                        </div>
-
-                        {showSuggestions && selectedDevice?.storage_profiles?.[selectedStorageProfile]?.subfolders?.length > 0 && (
-                            <div className="absolute z-10 left-0 right-0 top-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl max-h-40 overflow-y-auto overflow-x-hidden">
-                                {selectedDevice.storage_profiles[selectedStorageProfile].subfolders.map((folder, idx) => {
-                                    const folderName = folder.split('/').filter(Boolean).pop();
-                                    if (!folderName) return null;
-                                    
-                                    // Simple filtering based on input
-                                    if (destination && !folderName.toLowerCase().includes(destination.toLowerCase())) return null;
-
-                                    return (
-                                        <button
-                                            key={idx}
-                                            type="button"
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 last:border-0 truncate"
-                                            onClick={() => {
-                                                setDestination(folderName);
-                                                setShowSuggestions(false);
-                                            }}
-                                        >
-                                            📁 {folderName}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label className="form-label">Schedule Download (Optional)</label>
-                        <input
-                            type="datetime-local"
-                            value={scheduledAt}
-                            onChange={(e) => setScheduledAt(e.target.value)}
-                            className="form-input"
-                        />
-                    </div>
-
-                    {/* Auto-Extract Toggle */}
-                    <div className="form-group">
-                        <label style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            cursor: 'pointer', fontSize: '13px', color: '#d1d5db'
-                        }}>
-                            <input
-                                type="checkbox"
-                                checked={autoExtract}
-                                onChange={(e) => setAutoExtract(e.target.checked)}
-                                style={{ width: '16px', height: '16px', accentColor: '#818cf8' }}
-                            />
-                            📦 Auto-extract archives (.zip, .tar, .gz, .rar) after download
-                        </label>
-                    </div>
-
-                    {/* Dynamic Folder Routing Toggle */}
-                    <div className="form-group">
-                        <label style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            cursor: 'pointer', fontSize: '13px', color: '#d1d5db'
-                        }}>
-                            <input
-                                type="checkbox"
-                                checked={dynamicFolder}
-                                onChange={(e) => setDynamicFolder(e.target.checked)}
-                                style={{ width: '16px', height: '16px', accentColor: '#818cf8' }}
-                            />
-                            📁 Dynamic folder creation (organized storage by category)
-                        </label>
-                    </div>
 
                     {error && (
                         <div className="text-red-400 text-sm p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
@@ -618,17 +658,62 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                     )}
 
                     <div className="modal-actions">
-                        <button type="button" onClick={onClose} className="cancel-button">
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loading || devices.length === 0}
-                            className="submit-button"
-                        >
-                            {loading ? 'Creating...' : 'Start Download'}
-                        </button>
-                    </div>
+                                        {currentStep === 1 ? (
+                                            <button type="button" onClick={onClose} className="cancel-button">
+                                                Cancel
+                                            </button>
+                                        ) : (
+                                            <button type="button" onClick={handleBack} className="cancel-button">
+                                                Back
+                                            </button>
+                                        )}
+
+                                        <div className="dots-container">
+                                            <span 
+                                                className={`dot-node ${currentStep === 1 ? 'active' : ''}`} 
+                                                onClick={() => { if (url || batchMode) setCurrentStep(1); }}
+                                                title="URL & Name"
+                                            />
+                                            <span 
+                                                className={`dot-node ${currentStep === 2 ? 'active' : ''}`} 
+                                                onClick={() => {
+                                                    if (batchMode) {
+                                                        const urls = batchUrls.split('\n').map(u => u.trim()).filter(Boolean);
+                                                        if (urls.length > 0) setCurrentStep(2);
+                                                    } else if (url) {
+                                                        setCurrentStep(2);
+                                                    }
+                                                }}
+                                                title="Device & Path"
+                                            />
+                                            <span 
+                                                className={`dot-node ${currentStep === 3 ? 'active' : ''}`} 
+                                                onClick={() => {
+                                                    if (batchMode) {
+                                                        const urls = batchUrls.split('\n').map(u => u.trim()).filter(Boolean);
+                                                        if (urls.length > 0 && selectedDevice) setCurrentStep(3);
+                                                    } else if (url && selectedDevice) {
+                                                        setCurrentStep(3);
+                                                    }
+                                                }}
+                                                title="Options"
+                                            />
+                                        </div>
+
+                                        {currentStep < 3 ? (
+                                            <button type="button" onClick={handleNext} className="submit-button">
+                                                Next
+                                            </button>
+                                        ) : (
+                                            <button
+                                                type="submit"
+                                                disabled={loading || devices.length === 0}
+                                                className="submit-button"
+                                            >
+                                                {loading ? 'Creating...' : 'Start Download'}
+                                            </button>
+                                        )}
+                                    </div>
                 </form>
             </div>
         </div>
