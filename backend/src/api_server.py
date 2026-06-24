@@ -30,9 +30,10 @@ from core.job_runner import JobRunner
 from core.job_controller import JobController
 from core.zombie_sweeper import ZombieSweeper
 from core.firebase_config import initialize_firebase
+from core.classifier import _get_filename_from_headers
 
 # Default download directory (same as controller.py)
-DEFAULT_DOWNLOAD_DIR = os.path.expanduser("~/Downloads/hermeslink_downloads")
+DEFAULT_DOWNLOAD_DIR = os.path.expanduser("~/Downloads/Hermeslink_downloads")
 
 # --- Pydantic Models for API responses ---
 
@@ -152,6 +153,7 @@ def job_to_model(job) -> JobModel:
 
 class CreateJobRequest(BaseModel):
     url: str
+    file_name: str
     type: str = "aria2"
     queue_id: str = "default"
     destination: Optional[str] = None
@@ -199,15 +201,72 @@ def get_all_jobs(user: dict = Depends(get_current_user)):
 
 
 
+@app.get("/api/resolve-filename")
+def resolve_filename(url: str, user: dict = Depends(get_current_user)):
+    """Fetch filename from a URL using head request / content-disposition."""
+    import requests
+    try:
+        headers = {}
+        try:
+            response = requests.head(url, allow_redirects=True, timeout=3)
+            headers = response.headers
+        except Exception:
+            pass
+            
+        cd = headers.get('Content-Disposition')
+        if not cd:
+            try:
+                response = requests.get(url, stream=True, allow_redirects=True, timeout=3)
+                headers = response.headers
+                response.close()
+            except Exception:
+                pass
+        
+        filename = _get_filename_from_headers(headers) if headers else None
+            
+        if not filename:
+            from urllib.parse import urlparse
+            path = urlparse(url).path
+            filename = os.path.basename(path)
+            
+        if not filename:
+            filename = "download"
+            
+        return {"filename": filename}
+    except Exception as e:
+        try:
+            from urllib.parse import urlparse
+            path = urlparse(url).path
+            filename = os.path.basename(path) or "download"
+            return {"filename": filename}
+        except Exception:
+            raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.post("/api/jobs", response_model=JobModel, status_code=201)
 def create_job(request: CreateJobRequest, user: dict = Depends(get_current_user)):
     """Create a new download job and queue it for execution."""
+    import requests
     try:
         destination = request.destination or DEFAULT_DOWNLOAD_DIR
+        
+        # Extract filename correctly
+        headers = {}
+        try:
+            response = requests.head(request.url, allow_redirects=True, timeout=3)
+            headers = response.headers
+        except Exception:
+            pass
+        file_name = _get_filename_from_headers(headers) if headers else None
+        if not file_name:
+            from urllib.parse import urlparse
+            file_name = os.path.basename(urlparse(request.url).path) or "download"
+
         engine_config = {
             "url": request.url,
             "type": request.type,
             "destination": destination,
+            "file_name": file_name,
             "format": request.format,
         }
         if request.queue_id not in job_manager.queues:

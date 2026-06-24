@@ -52,24 +52,42 @@ class YTDLPEngine(BaseEngine):
         self.url = url
         self._bridge = job_manager
         
-        # Pull format from engine_config if provided
+        # Pull format and naming options from engine_config if provided
         job_obj = self._bridge.get_job(self.job_id)
-        selected_format = job_obj.engine_config.get("format") if job_obj else None
+        selected_format = None
+        original_file_name = None
+        by_user_file_name = None
+        use_dynamic_folder = True
+        
+        if job_obj and job_obj.engine_config:
+            selected_format = job_obj.engine_config.get("format")
+            original_file_name = job_obj.engine_config.get("original_file_name")
+            by_user_file_name = job_obj.engine_config.get("by_user_file_name")
+            use_dynamic_folder = job_obj.engine_config.get("dynamic_folder", True)
         
         # Dynamic Folder Routing
-        category = categorize_download(url, 'media', job_obj)
-        output_path = os.path.join(output_path, category)
+        if use_dynamic_folder:
+            category = categorize_download(url, 'media', job_obj, filename=original_file_name)
+            output_path = os.path.join(output_path, category)
+            
         os.makedirs(output_path, exist_ok=True)
         self.output_path = output_path
         
         logger.info(f"Starting yt-dlp for Job {job_id} | URL: {url} | Path: {output_path}")
         
+        out_template = "%(title)s.%(ext)s"
+        if by_user_file_name:
+            if '.' in by_user_file_name:
+                out_template = by_user_file_name
+            else:
+                out_template = f"{by_user_file_name}.%(ext)s"
+
         cmd = [
             "yt-dlp",
             "--newline",
             "--no-playlist",
             "-P", output_path,
-            "-o", "%(title)s.%(ext)s"
+            "-o", out_template
         ]
         
         # Check for cookies file to bypass YouTube bot detection

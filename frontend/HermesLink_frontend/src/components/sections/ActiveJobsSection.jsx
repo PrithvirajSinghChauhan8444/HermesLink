@@ -120,7 +120,10 @@ const ActiveJobCard = ({ job, actionLoading, handleAction, deviceMap }) => {
                 <div className="job-title-container">
                     <div className={`status-indicator ${isRunning ? 'status-running' : 'status-pending'}`} />
                     <h3 className="job-filename">
-                        {mergedProgress.filename || job.engine_config?.url || jobKey}
+                        {job.engine_config?.by_user_file_name 
+                            || mergedProgress.filename 
+                            || job.engine_config?.url?.split('/').filter(Boolean).pop() 
+                            || jobKey}
                     </h3>
                 </div>
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>

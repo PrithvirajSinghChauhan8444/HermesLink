@@ -125,14 +125,26 @@ class Aria2Engine(BaseEngine):
     def start(self, job_id: str, url: str, output_path: str, job_manager: Any) -> str:
         logger.info(f"Starting download process for Job {job_id} | URL: {url}")
         
-        from core.classifier import categorize_download
-        category = categorize_download(url, 'aria2', job_manager.get_job(job_id))
+        job = job_manager.get_job(job_id)
+        original_file_name = None
+        by_user_file_name = None
+        use_dynamic_folder = True
         
-        output_path = os.path.join(output_path, category)
+        if job and job.engine_config:
+            original_file_name = job.engine_config.get("original_file_name")
+            by_user_file_name = job.engine_config.get("by_user_file_name")
+            use_dynamic_folder = job.engine_config.get("dynamic_folder", True)
+        
+        if use_dynamic_folder:
+            from core.classifier import categorize_download
+            category = categorize_download(url, 'aria2', job, filename=original_file_name)
+            output_path = os.path.join(output_path, category)
+        
         os.makedirs(output_path, exist_ok=True)
         
         self.current_url = url
         self.current_output_path = output_path
+        self.by_user_file_name = by_user_file_name
         self.is_downgraded = False 
         
         from core.models import JobState
@@ -147,7 +159,7 @@ class Aria2Engine(BaseEngine):
             logger.info("Pre-flight check reveals server does NOT support multi-threading. Downgrading proactively.")
             self.is_downgraded = True
 
-        gid = self._add_uri_internal(url, output_path, use_multithread=supports_resume)
+        gid = self._add_uri_internal(url, output_path, use_multithread=supports_resume, filename=by_user_file_name)
         
         if gid and gid != "ERROR":
             self.gid = gid
@@ -157,15 +169,21 @@ class Aria2Engine(BaseEngine):
             job_manager.transition_job(job_id, JobState.FAILED, "Failed to add URI to Aria2")
             return "ERROR"
 
-    def _add_uri_internal(self, url, output_path, use_multithread=True):
+    def _add_uri_internal(self, url, output_path, use_multithread=True, filename=None):
         logger.info(f"Sending addUri command to {self.rpc_url} (Multi-thread: {use_multithread})")
         
+        if filename is None:
+            filename = getattr(self, 'by_user_file_name', None)
+
         options = {
             "dir": output_path,
             "check-certificate": "false",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
         
+        if filename:
+            options["out"] = filename
+            
         if use_multithread:
             options.update({
                 "max-connection-per-server": "16",

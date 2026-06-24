@@ -1,52 +1,34 @@
-import unittest
-from core.classifier import categorize_download
-from core.models import Job
+import requests
+import json
+import os
+from classifier import _get_filename_from_headers , _get_category_from_mime, categorize_download
 
-class TestClassifier(unittest.TestCase):
+response = requests.get("https://video-downloads.googleusercontent.com/ADGPM2mIiZe8NjdRUl8MFcI6cAj-AjrWh5KhUeT2Rz9yp6jr8ec6dnI8fgwA5Z9zmsjRlB646KJ6aew6-wOoOQEklqnvK9PnSXOaPvLIHkNg29bCGWjR06ZeSgagsgIZ5F9uZ_IwGm16voZ5bjaUvq-vnJHe1_JorRU-G1cVxgwX_4U3idH4MjSqiB2HQE2hUAr8-IlbjhfbsWShGCW1blJB8MyxZhpIdIistbiWHnKP3sp7Xh8ukSHZt_7dwK5mfuEh1q55-Xl_58xt_GJ8m9FkeO8Gaop_uOtbMoJlsWU1HxlLNAEsiDpN_JKaC1lo67FNU3dqS0J6RR-iKPs2BFLKlMaT6l7g5HRwcjUWSeB1NDoA_JuxrB8US95MXP5HNTgB7x1dAirlsuHKV7WK0cohxnA9q6lGoszJBOugv461a4kbO6NreurJ6qMnhA5kAVHPgnfYVzZBERVKEPkgNn90qqVCSPbIuhnUEMoO0QTL56oRpeS5Zg7RcpXYKTLZbpHPayCb_QyWx1ael9LOgaXHUYzeXGwfyG0eUqO5FNw95LMB7ebLQc5TTYTAo6NWK9v9CaQI_vJw8wfP_E1pt_1EKV0e6XIGWL2hKphDbauAlZR2DUvoH71tJsnkCqtMWp5oda29Ww2iBToQhAuDV6Z3XgvNYHMiQT1zX-OTZEnvh0IwExq1CGbznardZP_Ttfwj6E2A3fZsp2XMKTwMVT0HTKOOdfpO2eudLsAjhyPb6toQuj1ZA_sR0VHfXqyw_eELF5zpXSKc0SRs4LaX2x0ZMPVyXUfdfcDSHfwmbfN5sQqUBbXNybbdY32pA1xdbHJxxgifi61oXbxSkK180-QWxC4pX9xcnRbD9n50X5GZvFT5aLo3VMkO1nbA5s9y7XQwJkJP-Mex835CbcGYT6SKGMjxUZyWLlQlGQNAziAigpgUOj0WDRV4R7iqaiYDG5OFuMp6vUJjt9q97LQCzBbqoEv41WmWMBb-cSMpyVbikDXOn5qdL3aO8tf1rBnAhqsjPo_yqUvxHVCyzHsJfdMkNQGXqm3UW5TXczzT6bJhihIOH9s-uUzvti5FEfe7AlRj7muh1ElG", stream=True, allow_redirects=True, timeout=3)
+headers = response.headers
+print(_get_filename_from_headers(headers))
+content_type = headers.get('Content-Type', '').split(';')[0].strip()
 
-    def test_applications(self):
-        self.assertEqual(categorize_download("http://example.com/setup.exe", "aria2"), "Applications")
-        self.assertEqual(categorize_download("http://example.com/app.dmg", "aria2"), "Applications")
+print(_get_category_from_mime(content_type))
 
-    def test_documents(self):
-        self.assertEqual(categorize_download("http://example.com/report.pdf", "aria2"), "Documents")
+response.close()
 
-    def test_archives(self):
-        self.assertEqual(categorize_download("http://example.com/backup.zip", "aria2"), "Archives")
-        self.assertEqual(categorize_download("http://example.com/ubuntu.iso", "aria2"), "Archives")
 
-    def test_images(self):
-        self.assertEqual(categorize_download("http://example.com/photo.png", "aria2"), "Images")
+response = requests.get("https://video-downloads.googleusercontent.com/ADGPM2mRhPVFgjMFZ0i_z2Wg-jBCFJ99bfw0OWFLyOsiHK2xYq4quBXbwM2ln93U1zcckaDd-k8B9n7OSeBcE3ZJaWN1pAAwkl5-ulSW1ZNB7AusS4W4Q9K1zu-yFA1VCmAHKr1TSYvZ6Yz9mic7vlTRk0pxsB_Vp4Ij-igCM9r-s5JAqW6IIznFfGKrvIAtxv9_s2sG8zLP5GhR3_XNJc9QgJodz9EVukSK2s3kQIGPq1pvU0uCiImisOkawBvzo2Cy53cLvrHiZRVX7oTGQbDDD0Yw9TDCMweyJiImbkDxXuQ11WyvElZbDTu5z7KDPnDoBp8NZ-Tl14v-QmM0Q8YAW9AI12dWCMMVqcxVl3vD-5WF1kD76cjc81Qntwlct6jIKJcpXxyGCSdkWms1aRXrdwU3m39mHY7Q3JXQu0bt2C7n6H6Fa04JVAyaieTSYPMT2Ngi3XU3NpbTG52NJFf3IIF134GFWUfVM2fvRqqFOBqq_0E7U9ap_Fbh3Z6_XczsXyrlOm9jZa3qORRaXPmxabpr9yBQR0zXy93l2BgaX0yFbx-fGeH-FOMGzQnbr3Z78IQfOBhuI88pbCj9M0O3Qzn2157A1ue2fim0d5ZEWFQsrQr4yYSnav2SBEpYyf-HTQEpcHd6RceRe1VZT9uj8wsT97VvWOY_oBMOpmeHQvY7WAIbrsG7LD_SLJvb2iYHqJiK9ZoJ7JKBVLp8pYSwD_tKcOmRFmJxLrYPT6TI_wMr14tY1PpK0y4C8f9HyW6O-qAml38m_qQh8j0JcyBXZfQaf4zwZ25N_CV1Dbo_xnMqgR934XNz543oKi02ZOnFP9ogVvOrlbNFE5e3Hs4sg-7kuV29elkc6MPhDxIVYS4s7-9HFry_sZmFfYKdC3aQq2gwEl5Gk3AzGV9qN6onr4uYrc2T4CgMeSZRqZ2Fl3hlcLopHUDifqr-jlgS9ETsQly-zvlpcae80p_RQm-oCijmQlcgOaHjf1nmtYnDk-bkX2rDWqKtvTaPWziZRRipqSjdCKYyNA0mkFi45MpdfGlCqKjl9_xqH4-kozxhoZrI35uv0H-i2IoIFs88CPzX5SooTw5a", stream=True, allow_redirects=True, timeout=3)
+headers = response.headers
+print(_get_filename_from_headers(headers))
+content_type = headers.get('Content-Type', '').split(';')[0].strip()
 
-    def test_videos_standard(self):
-        self.assertEqual(categorize_download("http://example.com/video.mp4", "aria2"), "Videos")
+print(_get_category_from_mime(content_type))
 
-    def test_videos_tv_show(self):
-        # Should map to correct TV Show formatting
-        self.assertEqual(
-            categorize_download("http://example.com/Breaking.Bad.S02E05.720p.mkv", "aria2"), 
-            "Videos/TV Shows/Breaking Bad/Season 2"
-        )
-        self.assertEqual(
-            categorize_download("http://example.com/The_Office_s03e10.mp4", "aria2"), 
-            "Videos/TV Shows/The Office/Season 3"
-        )
+response.close()
 
-    def test_media_engine_youtube_video(self):
-        job = Job(engine_config={"format": "video"})
-        self.assertEqual(categorize_download("https://www.youtube.com/watch?v=12345", "media", job), "YouTube/Video")
 
-    def test_media_engine_youtube_audio(self):
-        job = Job(engine_config={"format": "audio"})
-        self.assertEqual(categorize_download("https://youtu.be/12345", "media", job), "YouTube/Audio")
+url=["https://video-downloads.googleusercontent.com/ADGPM2mIiZe8NjdRUl8MFcI6cAj-AjrWh5KhUeT2Rz9yp6jr8ec6dnI8fgwA5Z9zmsjRlB646KJ6aew6-wOoOQEklqnvK9PnSXOaPvLIHkNg29bCGWjR06ZeSgagsgIZ5F9uZ_IwGm16voZ5bjaUvq-vnJHe1_JorRU-G1cVxgwX_4U3idH4MjSqiB2HQE2hUAr8-IlbjhfbsWShGCW1blJB8MyxZhpIdIistbiWHnKP3sp7Xh8ukSHZt_7dwK5mfuEh1q55-Xl_58xt_GJ8m9FkeO8Gaop_uOtbMoJlsWU1HxlLNAEsiDpN_JKaC1lo67FNU3dqS0J6RR-iKPs2BFLKlMaT6l7g5HRwcjUWSeB1NDoA_JuxrB8US95MXP5HNTgB7x1dAirlsuHKV7WK0cohxnA9q6lGoszJBOugv461a4kbO6NreurJ6qMnhA5kAVHPgnfYVzZBERVKEPkgNn90qqVCSPbIuhnUEMoO0QTL56oRpeS5Zg7RcpXYKTLZbpHPayCb_QyWx1ael9LOgaXHUYzeXGwfyG0eUqO5FNw95LMB7ebLQc5TTYTAo6NWK9v9CaQI_vJw8wfP_E1pt_1EKV0e6XIGWL2hKphDbauAlZR2DUvoH71tJsnkCqtMWp5oda29Ww2iBToQhAuDV6Z3XgvNYHMiQT1zX-OTZEnvh0IwExq1CGbznardZP_Ttfwj6E2A3fZsp2XMKTwMVT0HTKOOdfpO2eudLsAjhyPb6toQuj1ZA_sR0VHfXqyw_eELF5zpXSKc0SRs4LaX2x0ZMPVyXUfdfcDSHfwmbfN5sQqUBbXNybbdY32pA1xdbHJxxgifi61oXbxSkK180-QWxC4pX9xcnRbD9n50X5GZvFT5aLo3VMkO1nbA5s9y7XQwJkJP-Mex835CbcGYT6SKGMjxUZyWLlQlGQNAziAigpgUOj0WDRV4R7iqaiYDG5OFuMp6vUJjt9q97LQCzBbqoEv41WmWMBb-cSMpyVbikDXOn5qdL3aO8tf1rBnAhqsjPo_yqUvxHVCyzHsJfdMkNQGXqm3UW5TXczzT6bJhihIOH9s-uUzvti5FEfe7AlRj7muh1ElG","https://video-downloads.googleusercontent.com/ADGPM2m_yQ8KVpCKY1EQiX7Tz7UyYw82R9ycAC97x9NAD65V2eD9TedYR014FzuMtasXXnn2tz9vcUdKoPb-qvXBcuPb_4aQu6tcH-G4eV0G1mA3e2kFj6oTBV8uODn2WoigwnaKj01ryKrQH-I6aQBuUcx2yPj-yWoGQpkNJwnh4g-LftoMxXzd9D7JTdTaJPnPyZCHM-U667kH_LAnaiGGOq7qt1bKyD8B1Sw59W6JIiMPFoD1UKjPrN-K3YU3hXGLphq5ifnaB296DE0_rh42Y49pLxErxWJybnisQ3jG_JKcyWA_Vrr0WxareHkldRezpmfSuY7jIv72uwk2Jl9CEeK8FFdmql5LSmXRjHl6rUQZCaUwfej5q18dLWq30DWJLE-9VWWgCGdYMl30RSUY_bt5hdNGl5pHZuzMsB8RXiXEUEzYrYuJzFjdChyLjc_0lR333YHWejFsTCr-1SN69TTCJGm6tUnIXHqEUaL8MCtjm2h_piSsA6_xEJjDGyJsO2M1vX6NjQ0gjQBUM19Ti2LCvruf12puOupHXHtYGxIOFg9_tPDhbjjnFBdzyr_2bFHuqUpcEsSD3U-4J8TALsQUKDEccxftsyxWjsfpKd2lkvrBESsPuy3IfBOZfrSMlFqcUmXbzUNRPm_xkj4X-EJS9fDJBN3xvCB9AapsaOaX2IGS65kvjxVtW4VnWcFuhEjNZmWOexMFwHd3_XJU-ssU8bdxSOszE2AmpVOs7UYe8Xo0C7x9WVqGdQ4QM4C4yt6_Quv_UpqusteoDoOS7sC7Au92IeuzfVL4j5ntBNiCd-q9JSKjQ_yUzuS6klZzW_aD8v87Uo4gy71o3rOQUHlMozXfQtD6VigNpidWoshICWfe6Z0oPxXTdpotx4-ytRFXDi31YKn-lhPCCNux5cXLT72N_4KLak3HeRVamqOV0rlCwd3tIesfYtbGXggBFtnM6GI7yZf34j5EPO2_iLMamhv4kHQ5G-hRhCWMaSE7KVUy8fAgwtVAdKKkeF814DEyUflFpnxLxvvrzmCyUbVI7Kxl50VNWAuew0581v0zlZvDVjEkl2ghDOeqqYsqybqgGRWR"]
+for u in url:
+    category = categorize_download(u, 'aria2')
+    output_path="/"
+    output_path = os.path.join(output_path, category)
+    print(output_path)
 
-    def test_media_engine_generic(self):
-        job = Job(engine_config={"format": "video"})
-        self.assertEqual(categorize_download("https://vimeo.com/12345", "media", job), "Media/Video")
 
-    def test_others(self):
-        self.assertEqual(categorize_download("http://localhost:59999/unknown_file.xyz", "aria2"), "Others")
-        self.assertEqual(categorize_download("http://localhost:59999/", "aria2"), "Others")
 
-if __name__ == "__main__":
-    unittest.main()

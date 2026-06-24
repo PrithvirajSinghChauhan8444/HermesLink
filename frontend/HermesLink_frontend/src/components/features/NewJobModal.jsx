@@ -25,6 +25,13 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
     const [autoExtract, setAutoExtract] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
+    // New custom naming & folder routing states
+    const [originalFileName, setOriginalFileName] = useState('');
+    const [byUserFileName, setByUserFileName] = useState('');
+    const [useCustomName, setUseCustomName] = useState(false);
+    const [fetchingFileName, setFetchingFileName] = useState(false);
+    const [dynamicFolder, setDynamicFolder] = useState(true);
+
     const { devices } = useDevices();
     const { queues } = useQueues();
 
@@ -45,6 +52,13 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setBatchMode(false);
             setBatchUrls('');
             setAutoExtract(false);
+            
+            // Reset custom filename & routing states
+            setOriginalFileName('');
+            setByUserFileName('');
+            setUseCustomName(false);
+            setFetchingFileName(false);
+            setDynamicFolder(true);
         }
     }, [isOpen]);
 
@@ -68,6 +82,46 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
             setDestinationPathIndex(0);
         }
     }, [selectedDevice]);
+
+    // Fetch original filename when URL changes (with 600ms debounce)
+    useEffect(() => {
+        if (!url || batchMode || !url.startsWith('http')) {
+            setOriginalFileName('');
+            if (!useCustomName) {
+                setByUserFileName('');
+            }
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            setFetchingFileName(true);
+            try {
+                const response = await api.get('/resolve-filename', { params: { url } });
+                const fetchedName = response.data.filename || '';
+                setOriginalFileName(fetchedName);
+                if (!useCustomName) {
+                    setByUserFileName(fetchedName);
+                }
+            } catch (err) {
+                console.error("Failed to fetch filename:", err);
+                try {
+                    const parsedUrl = new URL(url);
+                    const pathName = parsedUrl.pathname;
+                    const fallbackName = pathName.substring(pathName.lastIndexOf('/') + 1) || 'download';
+                    setOriginalFileName(fallbackName);
+                    if (!useCustomName) {
+                        setByUserFileName(fallbackName);
+                    }
+                } catch (e) {
+                    // Ignore URL parsing errors
+                }
+            } finally {
+                setFetchingFileName(false);
+            }
+        }, 600);
+
+        return () => clearTimeout(timer);
+    }, [url, batchMode, useCustomName]);
 
     // Get paths for the currently selected profile
     const selectedProfileData = selectedDevice?.storage_profiles?.[selectedStorageProfile];
@@ -134,6 +188,18 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
 
             // Create a separate job for each URL
             for (const jobUrl of urls) {
+                let urlOriginalName = '';
+                try {
+                    const parsedUrl = new URL(jobUrl);
+                    const pathName = parsedUrl.pathname;
+                    urlOriginalName = pathName.substring(pathName.lastIndexOf('/') + 1) || 'download';
+                } catch (e) {
+                    urlOriginalName = 'download';
+                }
+
+                const payloadOriginalName = batchMode ? urlOriginalName : (originalFileName || urlOriginalName);
+                const payloadByUser = batchMode ? urlOriginalName : (useCustomName ? (byUserFileName || originalFileName || urlOriginalName) : (originalFileName || urlOriginalName));
+
                 const jobPayload = {
                     device_id: selectedDevice.device_id,
                     state: 'PENDING',
@@ -145,6 +211,9 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                         destination_path_index: destinationPathIndex,
                         sub_directory: destination || "",
                         auto_extract: autoExtract,
+                        original_file_name: payloadOriginalName,
+                        by_user_file_name: payloadByUser,
+                        dynamic_folder: dynamicFolder,
                         ...(type === 'yt-dlp' && selectedFormat ? { format: selectedFormat } : {}),
                     },
                     progress: {},
@@ -211,17 +280,55 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
 
                     {/* URL Input — single or batch */}
                     {!batchMode ? (
-                        <div className="form-group">
-                            <label className="form-label">URL</label>
-                            <input
-                                type="text"
-                                value={url}
-                                onChange={(e) => setUrl(e.target.value)}
-                                placeholder="https://example.com/file.zip"
-                                className="form-input"
-                                required={!batchMode}
-                            />
-                        </div>
+                        <>
+                            <div className="form-group">
+                                <label className="form-label">URL</label>
+                                <input
+                                    type="text"
+                                    value={url}
+                                    onChange={(e) => setUrl(e.target.value)}
+                                    placeholder="https://example.com/file.zip"
+                                    className="form-input"
+                                    required={!batchMode}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">
+                                    File Name {fetchingFileName && <span style={{ fontSize: '12px', color: '#818cf8', marginLeft: '8px' }}>⏱️ Fetching...</span>}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={useCustomName ? byUserFileName : (fetchingFileName ? 'Fetching...' : originalFileName)}
+                                    onChange={(e) => {
+                                        if (useCustomName) {
+                                            setByUserFileName(e.target.value);
+                                        }
+                                    }}
+                                    disabled={!useCustomName || fetchingFileName}
+                                    placeholder="original_filename.ext"
+                                    className="form-input"
+                                    style={{ opacity: (!useCustomName || fetchingFileName) ? 0.7 : 1 }}
+                                />
+                                
+                                <label style={{
+                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                    cursor: 'pointer', fontSize: '13px', color: '#d1d5db', marginTop: '8px'
+                                }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={useCustomName}
+                                        onChange={(e) => {
+                                            setUseCustomName(e.target.checked);
+                                            if (!e.target.checked) {
+                                                setByUserFileName(originalFileName);
+                                            }
+                                        }}
+                                        style={{ width: '15px', height: '15px', accentColor: '#818cf8' }}
+                                    />
+                                    Use custom name
+                                </label>
+                            </div>
+                        </>
                     ) : (
                         <div className="form-group">
                             <label className="form-label">
@@ -485,6 +592,22 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                 style={{ width: '16px', height: '16px', accentColor: '#818cf8' }}
                             />
                             📦 Auto-extract archives (.zip, .tar, .gz, .rar) after download
+                        </label>
+                    </div>
+
+                    {/* Dynamic Folder Routing Toggle */}
+                    <div className="form-group">
+                        <label style={{
+                            display: 'flex', alignItems: 'center', gap: '10px',
+                            cursor: 'pointer', fontSize: '13px', color: '#d1d5db'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={dynamicFolder}
+                                onChange={(e) => setDynamicFolder(e.target.checked)}
+                                style={{ width: '16px', height: '16px', accentColor: '#818cf8' }}
+                            />
+                            📁 Dynamic folder creation (organized storage by category)
                         </label>
                     </div>
 
