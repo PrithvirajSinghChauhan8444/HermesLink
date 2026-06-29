@@ -492,18 +492,15 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                 <div className="form-group mb-4">
                                     <label className="form-label">Format Selection</label>
                                     <div className="flex gap-2">
-                                        <select 
+                                                                        <select 
                                             className="form-select flex-1 w-full"
                                             value={selectedFormat}
                                             onChange={(e) => setSelectedFormat(e.target.value)}
-                                            disabled={formats.length === 0}
                                         >
-                                            {formats.length === 0 ? (
-                                                <option value="">Fetch to select exactly...</option>
-                                            ) : (
+                                            <option value="">🌟 Best Quality (Auto-Merge)</option>
+                                            
+                                            {formats.length > 0 && (
                                                 <>
-                                                    <option value="">🌟 Best Quality (Auto-Merge)</option>
-                                                    
                                                     <optgroup label="Audio Only">
                                                         {formats.filter(f => f.vcodec === 'none').map(f => (
                                                             <option key={f.format_id} value={f.format_id}>
