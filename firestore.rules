@@ -52,5 +52,13 @@ service cloud.firestore {
       // Administrative state is only managed via Admin SDK
       allow read, write: if false;
     }
+
+    // Rules for the cookies collection
+    match /cookies/{document} {
+      // Allow authenticated clients to read the synced cookies
+      allow read: if isAuthenticated();
+      // Only Admin SDK (sync script) can write/update
+      allow write: if false;
+    }
   }
 }

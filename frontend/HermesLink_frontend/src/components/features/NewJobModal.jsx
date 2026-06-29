@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { api } from '../../services/api';
 import { useDevices } from '../../hooks/useDevices';
@@ -98,6 +98,31 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
         const timer = setTimeout(async () => {
             setFetchingFileName(true);
             try {
+                // 1. If it's a YouTube URL, try to get the actual video title directly
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    let fetchedTitle = null;
+                    try {
+                        const res = await api.get('/yt-dlp/info', { params: { url } });
+                        fetchedTitle = res.data.title;
+                    } catch (e) {
+                        try {
+                            const res = await fetch(`/api/yt-dlp/info?url=${encodeURIComponent(url)}`);
+                            if (res.ok) {
+                                const data = await res.json();
+                                fetchedTitle = data.title;
+                            }
+                        } catch (err) {}
+                    }
+                    if (fetchedTitle) {
+                        setOriginalFileName(fetchedTitle);
+                        if (!useCustomName) {
+                            setByUserFileName(fetchedTitle);
+                        }
+                        return;
+                    }
+                }
+
+                // 2. Otherwise use the standard filename resolver
                 const response = await api.get('/resolve-filename', { params: { url } });
                 const fetchedName = response.data.filename || '';
                 setOriginalFileName(fetchedName);
@@ -135,13 +160,55 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
         setFetchingFormats(true);
         setError(null);
         try {
+            // 1. Try fetching from the main API (pointing to your home PC backend)
             const response = await api.get('/yt-dlp/info', { params: { url } });
             setFormats(response.data.formats || []);
             if (response.data.formats && response.data.formats.length > 0) {
                 setSelectedFormat(response.data.formats[0].format_id);
             }
         } catch (err) {
-            setError(err.response?.data?.detail || err.message || "Failed to fetch formats");
+            console.warn("Primary API failed, falling back to Vercel serverless metadata fetch:", err);
+            try {
+                // Fetch cookies from Firestore securely
+                let cookiesText = null;
+                try {
+                    const cookieDoc = await getDoc(doc(db, 'cookies', 'youtube'));
+                    if (cookieDoc.exists()) {
+                        cookiesText = cookieDoc.data().cookies_text;
+                    }
+                } catch (dbErr) {
+                    console.warn("Could not read cookies from Firestore:", dbErr);
+                }
+
+                // 2. Fall back to Vercel's serverless endpoint (uses POST)
+                const fallbackResponse = await fetch(`/api/yt-dlp/info`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        cookies: cookiesText
+                    })
+                });
+                if (!fallbackResponse.ok) {
+                    throw new Error("Vercel serverless request failed");
+                }
+                const data = await fallbackResponse.json();
+                setFormats(data.formats || []);
+                if (data.formats && data.formats.length > 0) {
+                    setSelectedFormat(data.formats[0].format_id);
+                }
+                // If it returned the video title (e.g. from oEmbed fallback), prefill it
+                if (data.title) {
+                    setOriginalFileName(data.title);
+                    if (!useCustomName) {
+                        setByUserFileName(data.title);
+                    }
+                }
+            } catch (fallbackErr) {
+                setError(err.response?.data?.detail || err.message || "Failed to fetch formats");
+            }
         } finally {
             setFetchingFormats(false);
         }

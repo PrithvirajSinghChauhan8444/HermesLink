@@ -106,11 +106,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS for frontend dev server
-ORIGINS = ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"]
+# CORS for frontend (allows local development, local network devices like phones, and Vercel domains)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ORIGINS,
+    allow_origin_regex="https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -205,6 +204,23 @@ def get_all_jobs(user: dict = Depends(get_current_user)):
 def resolve_filename(url: str, user: dict = Depends(get_current_user)):
     """Fetch filename from a URL using head request / content-disposition."""
     import requests
+    import json
+    import urllib.request
+    from urllib.parse import quote
+    
+    # 1. Direct oEmbed check for YouTube videos (avoids returning "watch")
+    if "youtube.com" in url.lower() or "youtu.be" in url.lower():
+        try:
+            oembed_url = f"https://www.youtube.com/oembed?url={quote(url)}&format=json"
+            req = urllib.request.Request(oembed_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=3) as response:
+                oembed_data = json.loads(response.read().decode())
+                title = oembed_data.get("title")
+                if title:
+                    return {"filename": title}
+        except Exception:
+            pass
+
     try:
         headers = {}
         try:
@@ -338,9 +354,15 @@ def get_yt_dlp_info(url: str, user: dict = Depends(get_current_user)):
     """Fetch video metadata and available formats using yt-dlp."""
     import subprocess
     import json
+    from utils.ytdlp_utils import get_auth_args
+    
+    cmd = ["yt-dlp", "--dump-json", "--no-playlist", "--no-warnings"]
+    cmd.extend(get_auth_args())
+    cmd.append(url)
+    
     try:
         process = subprocess.run(
-            ["yt-dlp", "--dump-json", "--no-playlist", "--no-warnings", url],
+            cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
