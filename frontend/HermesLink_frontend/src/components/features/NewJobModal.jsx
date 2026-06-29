@@ -502,7 +502,7 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                             {formats.length > 0 && (
                                                 <>
                                                     <optgroup label="Audio Only">
-                                                        {formats.filter(f => f.vcodec === 'none').map(f => (
+                                                        {formats.filter(f => f.vcodec === 'none' || !f.vcodec).map(f => (
                                                             <option key={f.format_id} value={f.format_id}>
                                                                 🎵 Audio: {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}
                                                             </option>
@@ -510,8 +510,8 @@ export default function NewJobModal({ isOpen, onClose, onJobCreated }) {
                                                     </optgroup>
 
                                                     <optgroup label="Video + Audio">
-                                                        {formats.filter(f => f.vcodec !== 'none').map(f => {
-                                                            const value = f.acodec === 'none' ? `${f.format_id}+ba/b` : f.format_id;
+                                                        {formats.filter(f => f.vcodec && f.vcodec !== 'none').map(f => {
+                                                            const value = (f.acodec === 'none' || !f.acodec) ? `${f.format_id}+ba/b` : f.format_id;
                                                             return (
                                                                 <option key={f.format_id} value={value}>
                                                                     🎥 {f.resolution} {f.ext.toUpperCase()} | {f.filesize ? `${(f.filesize / 1024 / 1024).toFixed(1)} MB` : '~ Size'}

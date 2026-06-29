@@ -74,11 +74,11 @@ class handler(BaseHTTPRequestHandler):
                         {
                             "format_id": f.get("format_id"),
                             "ext": f.get("ext"),
-                            "resolution": f.get("resolution", "audio only" if f.get("vcodec") == "none" else "unknown"),
-                            "vcodec": f.get("vcodec"),
-                            "acodec": f.get("acodec"),
+                            "resolution": f.get("resolution") or ("audio only" if (f.get("vcodec") or "none") == "none" else "unknown"),
+                            "vcodec": f.get("vcodec") or "none",
+                            "acodec": f.get("acodec") or "none",
                             "format_note": f.get("format_note"),
-                            "filesize": f.get("filesize", 0)
+                            "filesize": f.get("filesize") or f.get("filesize_approx") or 0
                         } for f in formats if f.get("format_id")
                     ]
                 }

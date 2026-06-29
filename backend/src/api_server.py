@@ -352,11 +352,12 @@ def reload_jobs(user: dict = Depends(get_current_user)):
 @app.get("/api/yt-dlp/info")
 def get_yt_dlp_info(url: str, user: dict = Depends(get_current_user)):
     """Fetch video metadata and available formats using yt-dlp."""
+    import sys
     import subprocess
     import json
     from utils.ytdlp_utils import get_auth_args
     
-    cmd = ["yt-dlp", "--dump-json", "--no-playlist", "--no-warnings"]
+    cmd = [sys.executable, "-m", "yt_dlp", "--dump-json", "--no-playlist", "--no-warnings"]
     cmd.extend(get_auth_args())
     cmd.append(url)
     
@@ -378,11 +379,11 @@ def get_yt_dlp_info(url: str, user: dict = Depends(get_current_user)):
                 {
                     "format_id": f.get("format_id"),
                     "ext": f.get("ext"),
-                    "resolution": f.get("resolution", "audio only" if f.get("vcodec") == "none" else "unknown"),
-                    "vcodec": f.get("vcodec"),
-                    "acodec": f.get("acodec"),
+                    "resolution": f.get("resolution") or ("audio only" if (f.get("vcodec") or "none") == "none" else "unknown"),
+                    "vcodec": f.get("vcodec") or "none",
+                    "acodec": f.get("acodec") or "none",
                     "format_note": f.get("format_note"),
-                    "filesize": f.get("filesize", 0)
+                    "filesize": f.get("filesize") or f.get("filesize_approx") or 0
                 } for f in formats if f.get("format_id")
             ]
         }

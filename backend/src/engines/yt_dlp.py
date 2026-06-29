@@ -82,8 +82,9 @@ class YTDLPEngine(BaseEngine):
             else:
                 out_template = f"{by_user_file_name}.%(ext)s"
 
+        import sys
         cmd = [
-            "yt-dlp",
+            sys.executable, "-m", "yt_dlp",
             "--newline",
             "--no-playlist",
             "-P", output_path,
