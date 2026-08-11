@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, off } from 'firebase/database';
-import { rtdb } from '../config/firebase';
+import { rtdb, isFirebaseConfigured } from '../config/firebase';
+import { demoSimulator } from '../services/demoSimulator';
 
 const LS_KEY = 'hl_devices';
 
@@ -16,10 +17,28 @@ function lsSet(key, value) {
  * returns an array of device objects with online/offline status.
  */
 export function useDevices() {
-    const [devices, setDevices] = useState(() => lsGet(LS_KEY) || []);
-    const [loading, setLoading] = useState(() => !lsGet(LS_KEY));
+    const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
+
+    const [devices, setDevices] = useState(() => {
+        if (isDemo) {
+            return demoSimulator.getDevices();
+        }
+        return lsGet(LS_KEY) || [];
+    });
+    const [loading, setLoading] = useState(() => {
+        if (isDemo) return false;
+        return !lsGet(LS_KEY);
+    });
 
     useEffect(() => {
+        if (isDemo) {
+            const unsubscribe = demoSimulator.subscribe(() => {
+                setDevices(demoSimulator.getDevices());
+                setLoading(false);
+            });
+            return unsubscribe;
+        }
+
         const presenceRef = ref(rtdb, 'presence');
 
         const unsubscribe = onValue(presenceRef, (snapshot) => {
@@ -60,7 +79,7 @@ export function useDevices() {
 
         // Cleanup: detach listener on unmount
         return () => off(presenceRef, 'value', unsubscribe);
-    }, []);
+    }, [isDemo]);
 
     return { devices, loading };
 }

@@ -142,3 +142,48 @@
     color: var(--brand-blue);
     text-decoration: underline;
 }
+
+.demo-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin: 16px 0;
+    opacity: 0.6;
+}
+
+.demo-separator::before,
+.demo-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.demo-separator:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.demo-separator:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.demo-mode-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.demo-mode-btn:hover {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.1);
+}

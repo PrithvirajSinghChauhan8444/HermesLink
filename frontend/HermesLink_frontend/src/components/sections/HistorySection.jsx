@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
 import { ref, set } from 'firebase/database';
-import { rtdb } from '../../config/firebase';
+import { rtdb, isFirebaseConfigured } from '../../config/firebase';
 import { useJobs } from '../../hooks/useJobs';
 import { useDevices } from '../../hooks/useDevices';
 import { formatBytes } from '../../utils/format';
+import { demoSimulator } from '../../services/demoSimulator';
 import './HistorySection.css';
 
 export default function HistorySection() {
+    const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
     const { jobs, loading } = useJobs({ states: ['COMPLETED', 'FAILED', 'STOPPED'] });
     const { devices } = useDevices();
     const deviceMap = Object.fromEntries(devices.map(d => [d.device_id, d]));
@@ -15,8 +17,12 @@ export default function HistorySection() {
     const handleAction = async (jobId, action) => {
         setActionLoading(prev => ({ ...prev, [jobId]: action }));
         try {
-            const actionRef = ref(rtdb, `jobs/${jobId}/action`);
-            await set(actionRef, action);
+            if (isDemo) {
+                await demoSimulator.sendJobAction(jobId, action);
+            } else {
+                const actionRef = ref(rtdb, `jobs/${jobId}/action`);
+                await set(actionRef, action);
+            }
         } catch (error) {
             console.error(`Error sending ${action} for job ${jobId}:`, error);
         } finally {

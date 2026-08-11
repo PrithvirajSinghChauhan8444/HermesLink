@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { ref, set } from 'firebase/database';
 import gsap from 'gsap';
-import { rtdb } from '../../config/firebase';
+import { rtdb, isFirebaseConfigured } from '../../config/firebase';
 import { useJobs } from '../../hooks/useJobs';
 import { useDevices } from '../../hooks/useDevices';
 import NewJobModal from '../features/NewJobModal';
 import ActiveJobCard from '../jobs/ActiveJobCard';
+import { demoSimulator } from '../../services/demoSimulator';
 
 import './ActiveJobsSection.css';
 
 export default function ActiveJobsSection() {
+    const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [actionLoading, setActionLoading] = useState({}); // { job_id: action }
     const containerRef = useRef(null);
@@ -34,9 +36,13 @@ export default function ActiveJobsSection() {
     const handleAction = async (jobId, action) => {
         setActionLoading(prev => ({ ...prev, [jobId]: action }));
         try {
-            // Write control action to RTDB for the agent to pick up
-            const actionRef = ref(rtdb, `jobs/${jobId}/action`);
-            await set(actionRef, action);
+            if (isDemo) {
+                await demoSimulator.sendJobAction(jobId, action);
+            } else {
+                // Write control action to RTDB for the agent to pick up
+                const actionRef = ref(rtdb, `jobs/${jobId}/action`);
+                await set(actionRef, action);
+            }
         } catch (error) {
             console.error(`Error sending ${action} for job ${jobId}:`, error);
         } finally {

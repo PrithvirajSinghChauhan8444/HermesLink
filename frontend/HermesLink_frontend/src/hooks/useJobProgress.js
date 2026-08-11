@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, off } from 'firebase/database';
-import { rtdb } from '../config/firebase';
+import { rtdb, isFirebaseConfigured } from '../config/firebase';
 import { getCookie, setCookie } from '../utils/cookieUtils';
+import { demoSimulator } from '../services/demoSimulator';
 
 /**
  * Real-time hook that listens to the RTDB `jobs/${jobId}/progress` path.
@@ -11,11 +12,27 @@ import { getCookie, setCookie } from '../utils/cookieUtils';
  * @returns {Object|null} The current progress dictionary or null
  */
 export function useJobProgress(jobId) {
+    const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
     const cacheKey = jobId ? `hl_prog_${jobId}` : null;
-    const [progress, setProgress] = useState(() => getCookie(cacheKey));
+
+    const [progress, setProgress] = useState(() => {
+        if (isDemo) {
+            const job = demoSimulator.getJobs().find(j => j.id === jobId || j.job_id === jobId);
+            return job ? job.progress : null;
+        }
+        return getCookie(cacheKey);
+    });
 
     useEffect(() => {
         if (!jobId) return;
+
+        if (isDemo) {
+            const unsubscribe = demoSimulator.subscribe(() => {
+                const job = demoSimulator.getJobs().find(j => j.id === jobId || j.job_id === jobId);
+                setProgress(job ? job.progress : null);
+            });
+            return unsubscribe;
+        }
 
         const progressRef = ref(rtdb, `jobs/${jobId}/progress`);
         
@@ -36,7 +53,7 @@ export function useJobProgress(jobId) {
         return () => {
             off(progressRef, 'value', unsubscribe);
         };
-    }, [jobId, cacheKey]);
+    }, [jobId, cacheKey, isDemo]);
 
     return progress;
 }

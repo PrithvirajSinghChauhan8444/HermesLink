@@ -10,12 +10,14 @@ import HistorySection from '../sections/HistorySection';
 import SettingsSection from '../sections/SettingsSection';
 import Squares from '../animated_components/Minimal_background/Squares';
 import FloatingDoodles from './FloatingDoodles';
+import { isFirebaseConfigured } from '../../config/firebase';
 
 import './MainLayout.css';
 
 gsap.registerPlugin(ScrollToPlugin);
 
 export default function MainLayout() {
+    const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
     const [activeSection, setActiveSection] = useState('landing');
     const containerRef = useRef(null);
 
@@ -136,6 +138,25 @@ export default function MainLayout() {
 
     return (
         <div ref={containerRef} className="main-layout-container">
+            {isDemo && (
+                <div className="demo-banner">
+                    <span className="demo-banner-text">
+                        <strong>Preview Mode</strong>: Standalone mock site. No downloads are executed on physical devices.
+                    </span>
+                    {isFirebaseConfigured && (
+                        <button
+                            className="demo-exit-btn"
+                            onClick={() => {
+                                localStorage.removeItem('hl_demo_mode');
+                                sessionStorage.removeItem('hl_demo_proceeded');
+                                window.location.reload();
+                            }}
+                        >
+                            Exit Demo
+                        </button>
+                    )}
+                </div>
+            )}
             <div id="global-bg" className="global-bg" />
 
             <div className="squares-container">

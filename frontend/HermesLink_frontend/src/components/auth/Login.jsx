@@ -78,6 +78,21 @@ export default function Login() {
                     >
                         {isLoginView ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
                     </button>
+
+                    <div className="demo-separator">
+                        <span>or</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="demo-mode-btn"
+                        onClick={() => {
+                            localStorage.setItem('hl_demo_mode', 'true');
+                            window.location.reload();
+                        }}
+                    >
+                        Explore Interactive Demo
+                    </button>
                 </div>
             </div>
         </div>

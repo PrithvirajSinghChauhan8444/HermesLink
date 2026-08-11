@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db, isFirebaseConfigured } from '../config/firebase';
 import { api } from '../services/api';
 import { useDevices } from './useDevices';
 import { useQueues } from './useQueues';
+import { demoSimulator } from '../services/demoSimulator';
 
 export function useNewJobForm({ isOpen, onClose, onJobCreated }) {
+    const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
     const [url, setUrl] = useState('');
     const [type, setType] = useState('aria2');
     const [queueId, setQueueId] = useState('auto');
@@ -93,6 +95,22 @@ export function useNewJobForm({ isOpen, onClose, onJobCreated }) {
             return;
         }
 
+        if (isDemo) {
+            const timer = setTimeout(() => {
+                let cleanName = 'download';
+                try {
+                    const parsedUrl = new URL(url);
+                    cleanName = parsedUrl.pathname.split('/').filter(Boolean).pop() || 'download';
+                    cleanName = cleanName.split('?')[0];
+                } catch (e) {}
+                setOriginalFileName(cleanName);
+                if (!useCustomName) {
+                    setByUserFileName(cleanName);
+                }
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+
         const timer = setTimeout(async () => {
             setFetchingFileName(true);
             try {
@@ -157,6 +175,20 @@ export function useNewJobForm({ isOpen, onClose, onJobCreated }) {
         if (!url) return;
         setFetchingFormats(true);
         setError(null);
+
+        if (isDemo) {
+            setTimeout(() => {
+                setFormats([
+                    { format_id: '137', ext: 'mp4', resolution: '1920x1080', filesize: 2500000000 },
+                    { format_id: '136', ext: 'mp4', resolution: '1280x720', filesize: 1200000000 },
+                    { format_id: '140', ext: 'm4a', resolution: 'audio only', filesize: 15000000 }
+                ]);
+                setSelectedFormat('137');
+                setFetchingFormats(false);
+            }, 500);
+            return;
+        }
+
         try {
             const response = await api.get('/yt-dlp/info', { params: { url } });
             setFormats(response.data.formats || []);
@@ -313,7 +345,11 @@ export function useNewJobForm({ isOpen, onClose, onJobCreated }) {
                     jobPayload.scheduled_at = new Date(scheduledAt).toISOString();
                 }
 
-                await addDoc(collection(db, 'jobs'), jobPayload);
+                if (isDemo) {
+                    demoSimulator.addJob(jobPayload);
+                } else {
+                    await addDoc(collection(db, 'jobs'), jobPayload);
+                }
             }
 
             onJobCreated?.();
