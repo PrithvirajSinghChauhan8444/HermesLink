@@ -282,7 +282,13 @@ Go to the `backend` directory, create a `.env` file, and fill in the environment
 ```env
 GOOGLE_APPLICATION_CREDENTIALS=serviceAccountKey.json
 FIREBASE_DATABASE_URL=https://<your-project-id>-default-rtdb.firebaseio.com
+
+# Optional: CORS Origin validation pattern. Defaults to allowing localhost and vercel.app subdomains.
+# ALLOWED_CORS_ORIGINS_REGEX=https?://(localhost|127\.0\.0\.1)(:\d+)?|https?://[a-zA-Z0-9-]+\.vercel\.app
 ```
+
+> [!TIP]
+> **Vercel-Ready Security:** The FastAPI server automatically permits cross-origin requests from localhost and any `vercel.app` subdomain to support Vercel preview branches and production deployments out of the box. If you host the frontend on a custom production domain (e.g. `https://my-custom-domain.com`), override this by setting `ALLOWED_CORS_ORIGINS_REGEX=https?://(localhost|127\.0\.0\.1)(:\d+)?|https?://([a-zA-Z0-9-]+\.)?my-custom-domain\.com`.
 
 Create a `backend/config.yaml` configuration file to configure local paths:
 

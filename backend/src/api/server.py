@@ -52,9 +52,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Securely allow local development hosts and Vercel preview/production deployments
+allowed_origins_regex = os.getenv(
+    "ALLOWED_CORS_ORIGINS_REGEX",
+    r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https?://[a-zA-Z0-9-]+\.vercel\.app"
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https?://.*",
+    allow_origin_regex=allowed_origins_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
