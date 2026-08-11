@@ -12,13 +12,14 @@ This directory contains the beating heart of **HermesLink**. Every line of Pytho
 | :------------------------------ | :------------------------------------------------------------------------ |
 | **[`core/`](./core)**           | 🧠 **The Brains**: Job management, scheduling logic, and state control.   |
 | **[`engines/`](./engines)**     | 🏎️ **The Muscle**: Wrappers for Aria2, direct downloads, and media tools. |
-| **[`dashboard/`](./dashboard)** | 📺 **The Face**: A retro-style Terminal User Interface (TUI).             |
+| **[`tools/`](./tools)**         | 🔧 **The Tools**: Job classification and filename extraction helpers.      |
 | **[`research/`](./research)**   | 📚 **The Library**: Research notes, plans, and feature specs.             |
-| **[`utils/`](./utils)**         | 🛠️ **The Toolkit**: Handy helpers and common utilities.                   |
+| **[`utils/`](./utils)**         | 🛠️ **The Toolkit**: Browser cookie syncer and yt-dlp auth helpers.       |
 
 ---
 
 ## 🏁 Entry Points
 
-- **`main.py`**: The primary launch script. Run this to start the backend daemon.
-- **`dashboard.py`**: The UI script. Run this in a separate terminal to control the daemon.
+- **`src/agent/hermes_agent.py`**: The primary launch script for the download agent daemon.
+- **`src/api/server.py`**: The FastAPI server entry point.
+- **`cli_working/dashboard.py`**: The interactive TUI dashboard. Run this in a terminal to inspect and control queues.

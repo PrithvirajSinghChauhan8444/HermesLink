@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hermeslink-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./downloads:/root/Downloads
+      - /media:/media
+    env_file:
+      - ./backend/.env
+
+  agent:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hermeslink-agent
+    restart: unless-stopped
+    volumes:
+      - ./downloads:/root/Downloads
+      - /media:/media
+    env_file:
+      - ./backend/.env
+    command: ["python", "src/agent.py"]
+
+  frontend:
+    build:
+      context: ./frontend/HermesLink_frontend
+      dockerfile: Dockerfile
+    container_name: hermeslink-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

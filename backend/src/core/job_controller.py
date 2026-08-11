@@ -1,6 +1,6 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from .job_manager import JobManager
-from .models import Job, JobState
+from models import Job, JobState
 
 class JobController:
     """
@@ -67,15 +67,14 @@ class JobController:
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
-    def get_job_status(self, job_id: str) -> Optional[Dict]:
+    def get_job_status(self, job_id: str) -> Optional[Dict[str, Any]]:
         """Returns details for a specific job."""
         job = self.job_manager.get_job(job_id)
         if job:
             return job.to_dict()
         return None
 
-    def get_all_jobs_status(self) -> List[Dict]:
+    def get_all_jobs_status(self) -> List[Dict[str, Any]]:
         """Returns status summary for all jobs."""
         jobs = self.job_manager.list_jobs()
-        # Ensure we return a consistent summary structure
         return [job.to_dict() for job in jobs]
