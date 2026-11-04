@@ -110,12 +110,26 @@ async function resolve_filename(url) {
 }
 
 export default async function handler(req, res) {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin || '';
+    // Securely allow local development hosts, Vercel deployments, or custom domain
+    const isAllowedOrigin = !origin || 
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+        /^https?:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin) ||
+        (process.env.ALLOWED_ORIGIN && origin === process.env.ALLOWED_ORIGIN);
+
+    if (origin && isAllowedOrigin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else if (!origin) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') {
+        if (origin && !isAllowedOrigin) {
+            return res.status(403).end();
+        }
         return res.status(200).end();
     }
 

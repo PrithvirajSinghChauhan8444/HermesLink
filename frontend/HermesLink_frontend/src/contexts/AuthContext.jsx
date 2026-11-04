@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     const isDemo = !isFirebaseConfigured || localStorage.getItem('hl_demo_mode') === 'true';
+    const isSignupAllowed = import.meta.env.VITE_ALLOW_SIGNUP !== 'false';
 
     function login(email, password) {
         if (isDemo) {
@@ -24,6 +25,9 @@ export function AuthProvider({ children }) {
     function signup(email, password) {
         if (isDemo) {
             return Promise.resolve();
+        }
+        if (!isSignupAllowed) {
+            return Promise.reject(new Error("Public sign-ups are disabled on this instance. Please contact the administrator."));
         }
         return createUserWithEmailAndPassword(auth, email, password);
     }
@@ -62,7 +66,8 @@ export function AuthProvider({ children }) {
         currentUser,
         login,
         signup,
-        logout
+        logout,
+        isSignupAllowed
     };
 
     return (

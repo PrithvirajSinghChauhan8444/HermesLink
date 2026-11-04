@@ -10,7 +10,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login, signup } = useAuth();
+    const { login, signup, isSignupAllowed } = useAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -25,7 +25,11 @@ export default function Login() {
             }
         } catch (err) {
             console.error("Auth error:", err);
-            setError(err.message || 'Failed to authenticate');
+            if (err.code === 'auth/admin-restricted-operation') {
+                setError('Sign-ups have been disabled by the administrator on this project.');
+            } else {
+                setError(err.message || 'Failed to authenticate');
+            }
         } finally {
             setLoading(false);
         }
@@ -71,13 +75,15 @@ export default function Login() {
                 </form>
 
                 <div className="login-footer">
-                    <button
-                        type="button"
-                        className="toggle-view-btn"
-                        onClick={() => setIsLoginView(!isLoginView)}
-                    >
-                        {isLoginView ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
-                    </button>
+                    {isSignupAllowed && (
+                        <button
+                            type="button"
+                            className="toggle-view-btn"
+                            onClick={() => setIsLoginView(!isLoginView)}
+                        >
+                            {isLoginView ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
+                        </button>
+                    )}
 
                     <div className="demo-separator">
                         <span>or</span>
